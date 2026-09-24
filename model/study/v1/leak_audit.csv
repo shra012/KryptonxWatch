@@ -1,0 +1,12 @@
+video_a,split_a,class_a,video_b,split_b,class_b,matched_frac_of_shorter,cross_split
+Shoplifting028_x264,test,Shoplifting,Shoplifting029_x264,test,Shoplifting,0.261,False
+Shoplifting028_x264,test,Shoplifting,Shoplifting030_x264,train,Shoplifting,0.261,True
+Normal_Videos_063_x264,test,Normal,Normal_Videos_876_x264,test,Normal,1.0,False
+Normal_Videos_439_x264,test,Normal,Normal_Videos_874_x264,test,Normal,1.0,False
+Normal_Videos_903_x264,test,Normal,Normal_Videos_904_x264,test,Normal,0.741,False
+Normal_Videos_903_x264,test,Normal,Normal_Videos_905_x264,test,Normal,0.704,False
+Normal_Videos_904_x264,test,Normal,Normal_Videos_905_x264,test,Normal,0.71,False
+Normal_Videos_906_x264,test,Normal,Normal_Videos_908_x264,test,Normal,0.261,False
+Normal_Videos_907_x264,test,Normal,Normal_Videos_915_x264,test,Normal,0.762,False
+Normal_Videos_911_x264,test,Normal,Normal_Videos_912_x264,test,Normal,0.8,False
+Normal_Videos_936_x264,test,Normal,Normal_Videos_937_x264,test,Normal,1.0,False

@@ -1,0 +1,13 @@
+{
+  "model_id": "Qwen/Qwen3.8-27B",
+  "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "license": "apache-2.0",
+  "architecture": "Qwen3_5ForConditionalGeneration",
+  "files": 32,
+  "safetensors_shards": 18,
+  "total_bytes_reported_by_hub": 55586114863,
+  "local_dir": "/data/models/qwen3.8-27b/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "downloaded": "2026-09-24",
+  "sha256_manifest": "weights.sha256",
+  "sha256_verified_against_hub": true
+}

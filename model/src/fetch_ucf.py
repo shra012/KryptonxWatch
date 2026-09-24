@@ -8,7 +8,7 @@ the system CA bundle plus model/certs/incommon-rsa-ov-ssl-ca-3.pem (verification
 
 Examples:
   python3 model/src/fetch_ucf.py --classes Robbery --list
-  python3 model/src/fetch_ucf.py --classes Robbery --out /srv/kryptonx-data/ucf-crime/raw
+  python3 model/src/fetch_ucf.py --classes Shoplifting --out /data/ucf-crime/raw
 """
 
 import argparse
