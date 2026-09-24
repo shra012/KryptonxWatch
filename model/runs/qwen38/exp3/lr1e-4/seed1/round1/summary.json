@@ -1,0 +1,20 @@
+{
+  "windows": 372,
+  "positives": 62,
+  "lr": 0.0001,
+  "epochs": 1,
+  "rank": 16,
+  "batch": 4,
+  "accum": 2,
+  "seed": 101,
+  "steps": 47,
+  "sec_per_step": 6.63,
+  "peak_gpu_mem_gib": 56.6,
+  "first_10pct_loss": 0.42183218335008454,
+  "last_10pct_loss": 0.00022402989472741156,
+  "model": "Qwen/Qwen3.8-27B",
+  "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "precision": "bf16",
+  "lora_targets": "model\\.language_model\\.layers\\.\\d+\\.(self_attn\\.(q|k|v|o)_proj|linear_attn\\.(in_proj_qkv|in_proj_z|out_proj)|mlp\\.(gate|up|down)_proj)",
+  "torch": "2.14.0+cu130"
+}
