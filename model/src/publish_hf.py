@@ -20,7 +20,8 @@ SRC = Path(__file__).resolve().parent
 STUDY = SRC.parent / "study/v1"
 EXP3 = Path("/data/runs/qwen38/exp3")
 FINAL = EXP3 / "final"
-STAGE = Path("/data/runs/qwen38/hf_stage")
+ZS = Path("/data/runs/qwen38/exp2")
+STAGE = Path.home() / "hf_stage/qwen38-shoplifting"  # small files only; /data is at its quota
 BASE = "Qwen/Qwen3.8-27B"
 REVISION = "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0"
 
@@ -79,6 +80,42 @@ def verdict(seeds: list[dict]) -> str:
             "so this study does not show that fine-tuning helps.")
 
 
+def event_lengths() -> str:
+    """Median predicted event length on test shoplifting videos, zero-shot vs each seed."""
+    import pandas as pd
+    from localize import video_events
+    from evaluate import threshold_1fph
+    zs = pd.read_csv(ZS / "zeroshot_test_SEALED.csv")
+    thr = threshold_1fph(ZS / "zeroshot_trainpool.csv")
+    zl = [e["endSec"] - e["startSec"] for v, w in zs[zs["class"] == "Shoplifting"].groupby("video_id")
+          for e in video_events(w, thr)]
+    sl = []
+    for i in (1, 2, 3):
+        d = load(FINAL / f"detections_seed{i}.json")
+        sl.append(np.median([x["endSec"] - x["startSec"] for j in d if j["job"]["videoId"].startswith("Shoplifting")
+                             for x in j["detections"]]))
+    return f"{np.median(zl):.0f} s zero-shot vs " + " / ".join(f"{x:.0f}" for x in sl) + " s for seeds 1-3"
+
+
+def tradeoffs(zs: dict, seeds: list[dict], zs_loc: dict, seed_loc: list[dict]) -> str:
+    """Plain statement of the secondary metrics that moved the other way from the primary endpoint."""
+    notes = []
+    auprc = np.mean([s["window_auprc"] for s in seeds])
+    if auprc < zs["window_auprc"]:
+        notes.append(f"window AUPRC fell ({zs['window_auprc']:.3f} zero-shot vs {auprc:.3f} mean)")
+    ap = np.mean([s["ap@0.3"] for s in seed_loc])
+    if ap < zs_loc["ap@0.3"]:
+        onset = np.mean([s["median_onset_error_sec"] for s in seed_loc])
+        notes.append(f"event localisation got worse (AP@tIoU0.3 {zs_loc['ap@0.3']:.3f} vs {ap:.3f} mean; median onset "
+                     f"error {zs_loc['median_onset_error_sec']:.0f} s vs {onset:.0f} s). Its events on shoplifting videos "
+                     f"are much longer (median {event_lengths()}), so it marks long stretches around a theft, "
+                     f"not just the theft itself")
+    if not notes:
+        return ""
+    return ("Point estimates favour the adapter on AUROC for every seed, but " + "; ".join(notes) +
+            ". **For the timeline use case, the zero-shot model is currently at least as good.**")
+
+
 def card(sel: dict, zs: dict, seeds: list[dict], zs_loc: dict, seed_loc: list[dict], env: dict) -> str:
     s = sel["selected"]
     grid = "\n".join(f"| {g['lr']} | {g['round']} | {g['mil_nll']:.4f} | {g['video_auroc']:.3f} |"
@@ -102,15 +139,21 @@ are shown on a timeline **for a person to review**. It is not an automated decis
 
 {verdict(seeds)}
 
-Primary endpoint: window-level AUROC on the locked UCF-Crime test cohort ({n_test['videos']} videos,
-{n_test['windows']} windows, {n_test['positives']} positive), fine-tuned vs zero-shot with the same prompt and frames.
+{tradeoffs(zs, seeds, zs_loc, seed_loc)}
+
+Primary endpoint: window-level AUROC on the locked UCF-Crime test cohort ({n_test['videos']} videos with at least one
+full window (2 normal test videos are shorter than 8 s), {n_test['windows']} windows, {n_test['positives']} positive),
+fine-tuned vs zero-shot with the same prompt and frames.
 95% CIs come from a paired bootstrap ({n_test['bootstrap_resamples']} resamples) that **resamples whole videos**,
 because windows from the same video are not independent.
 
 {results_table(zs, seeds)}
 
 The threshold for sensitivity and FP/h is set on validation Normal footage at about 1 false positive per hour,
-never on the test set. The zero-shot test scores were sealed (checksum committed) before any fine-tuned
+never on the test set. **It does not transfer:** validation has only about 6 minutes of Normal footage
+(7 videos, 85 windows), so the "1 FP/h" threshold is simply its highest-scoring normal window, and on the
+150 test Normal videos it gives the FP/h shown above. Before deployment, set the threshold on a much larger
+sample of in-domain normal footage. The zero-shot test scores were sealed (checksum committed) before any fine-tuned
 model was frozen, and were read only for this comparison.
 
 ### Temporal localisation (secondary)
@@ -197,11 +240,12 @@ def main() -> int:
     if STAGE.exists():
         shutil.rmtree(STAGE)
     (STAGE / "results").mkdir(parents=True)
+    weights = {}  # repo path -> frozen adapter file, uploaded in place rather than copied
     for i in (1, 2, 3):
         src = EXP3 / f"lr{lr}/seed{i}/round{r}/adapter"
         for dst in [STAGE / f"seed{i}"] + ([STAGE] if i == 1 else []):
             dst.mkdir(exist_ok=True)
-            shutil.copy(src / "adapter_model.safetensors", dst)
+            weights[str((dst / "adapter_model.safetensors").relative_to(STAGE))] = src / "adapter_model.safetensors"
             cfg = load(src / "adapter_config.json")
             cfg["base_model_name_or_path"] = BASE
             cfg["revision"] = REVISION
@@ -221,10 +265,12 @@ def main() -> int:
     if args.dry_run:
         return 0
 
-    from huggingface_hub import HfApi
+    from huggingface_hub import CommitOperationAdd, HfApi
     api = HfApi()
     api.create_repo(args.repo, private=False, exist_ok=True)
-    api.upload_folder(repo_id=args.repo, folder_path=str(STAGE),
+    ops = [CommitOperationAdd(str(p.relative_to(STAGE)), str(p)) for p in sorted(STAGE.rglob("*")) if p.is_file()]
+    ops += [CommitOperationAdd(k, str(v)) for k, v in weights.items()]
+    api.create_commit(repo_id=args.repo, operations=ops,
                       commit_message=f"Frozen adapters (lr {lr}, MIL round {r}, seeds 1-3), results and model card")
     print(f"https://huggingface.co/{args.repo}")
     return 0

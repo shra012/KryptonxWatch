@@ -1,0 +1,28 @@
+{
+  "scores": "/data/runs/qwen38/exp3/final/test_seed2.csv",
+  "window_auroc": 0.9244367778605123,
+  "window_auprc": 0.11048931045898125,
+  "video_auroc": 0.9401544401544402,
+  "windows": 5808,
+  "positives": 89,
+  "videos": 169,
+  "threshold_1fph_on_val": 0.133023,
+  "fp_per_hour_normal_test": 93.73558800922368,
+  "sensitivity_at_thr": 0.8202247191011236,
+  "baseline": "/data/runs/qwen38/exp2/zeroshot_test_SEALED.csv",
+  "baseline_window_auroc": 0.8954117066902951,
+  "window_auroc_ci": [
+    0.8651308966683436,
+    0.9684093234207869
+  ],
+  "baseline_window_auroc_ci": [
+    0.8403420728089546,
+    0.9456244994528791
+  ],
+  "delta_auroc": 0.02902507117021713,
+  "delta_auroc_ci": [
+    -0.013505036124339198,
+    0.07193593188291492
+  ],
+  "bootstrap_resamples": 2000
+}

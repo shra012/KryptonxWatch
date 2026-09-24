@@ -1,0 +1,12 @@
+{
+  "scores": "/data/runs/qwen38/exp2/zeroshot_test_SEALED.csv",
+  "window_auroc": 0.8954117066902951,
+  "window_auprc": 0.14194575220150235,
+  "video_auroc": 0.8603603603603603,
+  "windows": 5808,
+  "positives": 89,
+  "videos": 169,
+  "threshold_1fph_on_val": 0.109211,
+  "fp_per_hour_normal_test": 29.05457340507302,
+  "sensitivity_at_thr": 0.39325842696629215
+}

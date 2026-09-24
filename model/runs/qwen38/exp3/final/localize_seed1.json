@@ -1,0 +1,17 @@
+{
+  "scores": "/data/runs/qwen38/exp3/final/test_seed1.csv",
+  "split": "test",
+  "threshold": 0.048778,
+  "gap_sec": 2.0,
+  "events_predicted": 160,
+  "events_annotated": 25,
+  "recall@0.3": 0.32,
+  "precision@0.3": 0.05,
+  "ap@0.3": 0.0393027343027343,
+  "recall@0.5": 0.08,
+  "precision@0.5": 0.0125,
+  "ap@0.5": 0.0019191919191919194,
+  "median_onset_error_sec": 13.0,
+  "events_with_overlapping_detection": 19,
+  "events_on_normal_videos": 100
+}

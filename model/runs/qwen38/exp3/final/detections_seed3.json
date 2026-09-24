@@ -1,0 +1,7035 @@
+[
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_003_x264",
+   "videoId": "Normal_Videos_003_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_006_x264",
+   "videoId": "Normal_Videos_006_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_010_x264",
+   "videoId": "Normal_Videos_010_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_010_x264-00",
+    "videoId": "Normal_Videos_010_x264",
+    "jobId": "job-Normal_Videos_010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0204,
+    "startSec": 6.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_010_x264-01",
+    "videoId": "Normal_Videos_010_x264",
+    "jobId": "job-Normal_Videos_010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0375,
+    "startSec": 14.0,
+    "endSec": 18.0,
+    "peakSec": 16.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 16.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_010_x264-02",
+    "videoId": "Normal_Videos_010_x264",
+    "jobId": "job-Normal_Videos_010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0261,
+    "startSec": 22.0,
+    "endSec": 26.0,
+    "peakSec": 24.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 24.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_014_x264",
+   "videoId": "Normal_Videos_014_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_015_x264",
+   "videoId": "Normal_Videos_015_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_018_x264",
+   "videoId": "Normal_Videos_018_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_019_x264",
+   "videoId": "Normal_Videos_019_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_024_x264",
+   "videoId": "Normal_Videos_024_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_025_x264",
+   "videoId": "Normal_Videos_025_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_027_x264",
+   "videoId": "Normal_Videos_027_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_027_x264-00",
+    "videoId": "Normal_Videos_027_x264",
+    "jobId": "job-Normal_Videos_027_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9997,
+    "startSec": 2.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_033_x264",
+   "videoId": "Normal_Videos_033_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_034_x264",
+   "videoId": "Normal_Videos_034_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_041_x264",
+   "videoId": "Normal_Videos_041_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_041_x264-00",
+    "videoId": "Normal_Videos_041_x264",
+    "jobId": "job-Normal_Videos_041_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.6795,
+    "startSec": 2.0,
+    "endSec": 30.0,
+    "peakSec": 16.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 16.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_042_x264",
+   "videoId": "Normal_Videos_042_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_048_x264",
+   "videoId": "Normal_Videos_048_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_050_x264",
+   "videoId": "Normal_Videos_050_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_051_x264",
+   "videoId": "Normal_Videos_051_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_056_x264",
+   "videoId": "Normal_Videos_056_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_059_x264",
+   "videoId": "Normal_Videos_059_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_059_x264-00",
+    "videoId": "Normal_Videos_059_x264",
+    "jobId": "job-Normal_Videos_059_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3213,
+    "startSec": 2.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_059_x264-01",
+    "videoId": "Normal_Videos_059_x264",
+    "jobId": "job-Normal_Videos_059_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4694,
+    "startSec": 14.0,
+    "endSec": 26.0,
+    "peakSec": 16.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 16.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_059_x264-02",
+    "videoId": "Normal_Videos_059_x264",
+    "jobId": "job-Normal_Videos_059_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0375,
+    "startSec": 30.0,
+    "endSec": 34.0,
+    "peakSec": 32.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 32.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_059_x264-03",
+    "videoId": "Normal_Videos_059_x264",
+    "jobId": "job-Normal_Videos_059_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0181,
+    "startSec": 46.0,
+    "endSec": 50.0,
+    "peakSec": 48.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 48.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_063_x264",
+   "videoId": "Normal_Videos_063_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_067_x264",
+   "videoId": "Normal_Videos_067_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_070_x264",
+   "videoId": "Normal_Videos_070_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_100_x264",
+   "videoId": "Normal_Videos_100_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_129_x264",
+   "videoId": "Normal_Videos_129_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_150_x264",
+   "videoId": "Normal_Videos_150_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_168_x264",
+   "videoId": "Normal_Videos_168_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_175_x264",
+   "videoId": "Normal_Videos_175_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_175_x264-00",
+    "videoId": "Normal_Videos_175_x264",
+    "jobId": "job-Normal_Videos_175_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0125,
+    "startSec": 130.0,
+    "endSec": 134.0,
+    "peakSec": 132.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 132.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_182_x264",
+   "videoId": "Normal_Videos_182_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_182_x264-00",
+    "videoId": "Normal_Videos_182_x264",
+    "jobId": "job-Normal_Videos_182_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4385,
+    "startSec": 62.0,
+    "endSec": 66.0,
+    "peakSec": 64.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 64.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_182_x264-01",
+    "videoId": "Normal_Videos_182_x264",
+    "jobId": "job-Normal_Videos_182_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9047,
+    "startSec": 70.0,
+    "endSec": 78.0,
+    "peakSec": 72.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 72.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_182_x264-02",
+    "videoId": "Normal_Videos_182_x264",
+    "jobId": "job-Normal_Videos_182_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.011,
+    "startSec": 102.0,
+    "endSec": 106.0,
+    "peakSec": 104.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 104.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_182_x264-03",
+    "videoId": "Normal_Videos_182_x264",
+    "jobId": "job-Normal_Videos_182_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0159,
+    "startSec": 122.0,
+    "endSec": 126.0,
+    "peakSec": 124.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 124.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_189_x264",
+   "videoId": "Normal_Videos_189_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_196_x264",
+   "videoId": "Normal_Videos_196_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_196_x264-00",
+    "videoId": "Normal_Videos_196_x264",
+    "jobId": "job-Normal_Videos_196_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.623,
+    "startSec": 18.0,
+    "endSec": 38.0,
+    "peakSec": 32.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 32.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_203_x264",
+   "videoId": "Normal_Videos_203_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_210_x264",
+   "videoId": "Normal_Videos_210_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_210_x264-00",
+    "videoId": "Normal_Videos_210_x264",
+    "jobId": "job-Normal_Videos_210_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1831,
+    "startSec": 118.0,
+    "endSec": 126.0,
+    "peakSec": 124.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 124.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_217_x264",
+   "videoId": "Normal_Videos_217_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_224_x264",
+   "videoId": "Normal_Videos_224_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_224_x264-00",
+    "videoId": "Normal_Videos_224_x264",
+    "jobId": "job-Normal_Videos_224_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.8809,
+    "startSec": 2.0,
+    "endSec": 22.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_246_x264",
+   "videoId": "Normal_Videos_246_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_247_x264",
+   "videoId": "Normal_Videos_247_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_247_x264-00",
+    "videoId": "Normal_Videos_247_x264",
+    "jobId": "job-Normal_Videos_247_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.011,
+    "startSec": 230.0,
+    "endSec": 234.0,
+    "peakSec": 232.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 232.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_247_x264-01",
+    "videoId": "Normal_Videos_247_x264",
+    "jobId": "job-Normal_Videos_247_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1197,
+    "startSec": 258.0,
+    "endSec": 266.0,
+    "peakSec": 264.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 264.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_248_x264",
+   "videoId": "Normal_Videos_248_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_251_x264",
+   "videoId": "Normal_Videos_251_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_289_x264",
+   "videoId": "Normal_Videos_289_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_310_x264",
+   "videoId": "Normal_Videos_310_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_312_x264",
+   "videoId": "Normal_Videos_312_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_317_x264",
+   "videoId": "Normal_Videos_317_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_352_x264",
+   "videoId": "Normal_Videos_352_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_360_x264",
+   "videoId": "Normal_Videos_360_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_360_x264-00",
+    "videoId": "Normal_Videos_360_x264",
+    "jobId": "job-Normal_Videos_360_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1486,
+    "startSec": 18.0,
+    "endSec": 26.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_365_x264",
+   "videoId": "Normal_Videos_365_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_365_x264-00",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0159,
+    "startSec": 10.0,
+    "endSec": 14.0,
+    "peakSec": 12.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 12.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-01",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.107,
+    "startSec": 30.0,
+    "endSec": 34.0,
+    "peakSec": 32.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 32.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-02",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.018,
+    "startSec": 42.0,
+    "endSec": 46.0,
+    "peakSec": 44.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 44.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-03",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0536,
+    "startSec": 54.0,
+    "endSec": 58.0,
+    "peakSec": 56.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 56.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-04",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3492,
+    "startSec": 94.0,
+    "endSec": 102.0,
+    "peakSec": 96.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 96.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-05",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.7984,
+    "startSec": 110.0,
+    "endSec": 118.0,
+    "peakSec": 116.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 116.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-06",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9972,
+    "startSec": 134.0,
+    "endSec": 154.0,
+    "peakSec": 140.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 140.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-07",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.977,
+    "startSec": 170.0,
+    "endSec": 182.0,
+    "peakSec": 176.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 176.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-08",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.8521,
+    "startSec": 186.0,
+    "endSec": 194.0,
+    "peakSec": 188.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 188.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_365_x264-09",
+    "videoId": "Normal_Videos_365_x264",
+    "jobId": "job-Normal_Videos_365_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9987,
+    "startSec": 202.0,
+    "endSec": 218.0,
+    "peakSec": 204.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 204.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_401_x264",
+   "videoId": "Normal_Videos_401_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_417_x264",
+   "videoId": "Normal_Videos_417_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_439_x264",
+   "videoId": "Normal_Videos_439_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_452_x264",
+   "videoId": "Normal_Videos_452_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_453_x264",
+   "videoId": "Normal_Videos_453_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_453_x264-00",
+    "videoId": "Normal_Videos_453_x264",
+    "jobId": "job-Normal_Videos_453_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0476,
+    "startSec": 10.0,
+    "endSec": 14.0,
+    "peakSec": 12.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 12.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_453_x264-01",
+    "videoId": "Normal_Videos_453_x264",
+    "jobId": "job-Normal_Videos_453_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.7064,
+    "startSec": 110.0,
+    "endSec": 118.0,
+    "peakSec": 112.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 112.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_478_x264",
+   "videoId": "Normal_Videos_478_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_576_x264",
+   "videoId": "Normal_Videos_576_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_597_x264",
+   "videoId": "Normal_Videos_597_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_603_x264",
+   "videoId": "Normal_Videos_603_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_606_x264",
+   "videoId": "Normal_Videos_606_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_621_x264",
+   "videoId": "Normal_Videos_621_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_634_x264",
+   "videoId": "Normal_Videos_634_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_641_x264",
+   "videoId": "Normal_Videos_641_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_641_x264-00",
+    "videoId": "Normal_Videos_641_x264",
+    "jobId": "job-Normal_Videos_641_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.8522,
+    "startSec": 6.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_641_x264-01",
+    "videoId": "Normal_Videos_641_x264",
+    "jobId": "job-Normal_Videos_641_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4691,
+    "startSec": 26.0,
+    "endSec": 38.0,
+    "peakSec": 28.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 28.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_641_x264-02",
+    "videoId": "Normal_Videos_641_x264",
+    "jobId": "job-Normal_Videos_641_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3491,
+    "startSec": 86.0,
+    "endSec": 106.0,
+    "peakSec": 104.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 104.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_656_x264",
+   "videoId": "Normal_Videos_656_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_686_x264",
+   "videoId": "Normal_Videos_686_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_696_x264",
+   "videoId": "Normal_Videos_696_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_702_x264",
+   "videoId": "Normal_Videos_702_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_704_x264",
+   "videoId": "Normal_Videos_704_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_704_x264-00",
+    "videoId": "Normal_Videos_704_x264",
+    "jobId": "job-Normal_Videos_704_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0261,
+    "startSec": 38.0,
+    "endSec": 42.0,
+    "peakSec": 40.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 40.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_710_x264",
+   "videoId": "Normal_Videos_710_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_717_x264",
+   "videoId": "Normal_Videos_717_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_722_x264",
+   "videoId": "Normal_Videos_722_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_725_x264",
+   "videoId": "Normal_Videos_725_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_745_x264",
+   "videoId": "Normal_Videos_745_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_758_x264",
+   "videoId": "Normal_Videos_758_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_778_x264",
+   "videoId": "Normal_Videos_778_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_780_x264",
+   "videoId": "Normal_Videos_780_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_781_x264",
+   "videoId": "Normal_Videos_781_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_782_x264",
+   "videoId": "Normal_Videos_782_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_782_x264-00",
+    "videoId": "Normal_Videos_782_x264",
+    "jobId": "job-Normal_Videos_782_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0181,
+    "startSec": 138.0,
+    "endSec": 142.0,
+    "peakSec": 140.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 140.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_783_x264",
+   "videoId": "Normal_Videos_783_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_798_x264",
+   "videoId": "Normal_Videos_798_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_801_x264",
+   "videoId": "Normal_Videos_801_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_801_x264-00",
+    "videoId": "Normal_Videos_801_x264",
+    "jobId": "job-Normal_Videos_801_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1831,
+    "startSec": 10.0,
+    "endSec": 18.0,
+    "peakSec": 12.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 12.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_801_x264-01",
+    "videoId": "Normal_Videos_801_x264",
+    "jobId": "job-Normal_Videos_801_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0294,
+    "startSec": 22.0,
+    "endSec": 26.0,
+    "peakSec": 24.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 24.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_801_x264-02",
+    "videoId": "Normal_Videos_801_x264",
+    "jobId": "job-Normal_Videos_801_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.016,
+    "startSec": 50.0,
+    "endSec": 58.0,
+    "peakSec": 56.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 56.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_801_x264-03",
+    "videoId": "Normal_Videos_801_x264",
+    "jobId": "job-Normal_Videos_801_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0853,
+    "startSec": 70.0,
+    "endSec": 78.0,
+    "peakSec": 72.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 72.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_828_x264",
+   "videoId": "Normal_Videos_828_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_831_x264",
+   "videoId": "Normal_Videos_831_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_866_x264",
+   "videoId": "Normal_Videos_866_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_867_x264",
+   "videoId": "Normal_Videos_867_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_868_x264",
+   "videoId": "Normal_Videos_868_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_868_x264-00",
+    "videoId": "Normal_Videos_868_x264",
+    "jobId": "job-Normal_Videos_868_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.011,
+    "startSec": 62.0,
+    "endSec": 66.0,
+    "peakSec": 64.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 64.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_869_x264",
+   "videoId": "Normal_Videos_869_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_870_x264",
+   "videoId": "Normal_Videos_870_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_870_x264-00",
+    "videoId": "Normal_Videos_870_x264",
+    "jobId": "job-Normal_Videos_870_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0374,
+    "startSec": 2.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_871_x264",
+   "videoId": "Normal_Videos_871_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_872_x264",
+   "videoId": "Normal_Videos_872_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_873_x264",
+   "videoId": "Normal_Videos_873_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_873_x264-00",
+    "videoId": "Normal_Videos_873_x264",
+    "jobId": "job-Normal_Videos_873_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2231,
+    "startSec": 18.0,
+    "endSec": 22.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_874_x264",
+   "videoId": "Normal_Videos_874_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_874_x264-00",
+    "videoId": "Normal_Videos_874_x264",
+    "jobId": "job-Normal_Videos_874_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9466,
+    "startSec": 106.0,
+    "endSec": 118.0,
+    "peakSec": 112.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 112.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_875_x264",
+   "videoId": "Normal_Videos_875_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_876_x264",
+   "videoId": "Normal_Videos_876_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_877_x264",
+   "videoId": "Normal_Videos_877_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_877_x264-00",
+    "videoId": "Normal_Videos_877_x264",
+    "jobId": "job-Normal_Videos_877_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0475,
+    "startSec": 294.0,
+    "endSec": 298.0,
+    "peakSec": 296.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 296.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_878_x264",
+   "videoId": "Normal_Videos_878_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_879_x264",
+   "videoId": "Normal_Videos_879_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_880_x264",
+   "videoId": "Normal_Videos_880_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_882_x264",
+   "videoId": "Normal_Videos_882_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_882_x264-00",
+    "videoId": "Normal_Videos_882_x264",
+    "jobId": "job-Normal_Videos_882_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4384,
+    "startSec": 10.0,
+    "endSec": 22.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_883_x264",
+   "videoId": "Normal_Videos_883_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_884_x264",
+   "videoId": "Normal_Videos_884_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_884_x264-00",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0159,
+    "startSec": 26.0,
+    "endSec": 34.0,
+    "peakSec": 28.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 28.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_884_x264-01",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 38.0,
+    "endSec": 106.0,
+    "peakSec": 52.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 52.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_884_x264-02",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 122.0,
+    "endSec": 174.0,
+    "peakSec": 136.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 136.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_884_x264-03",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.016,
+    "startSec": 190.0,
+    "endSec": 194.0,
+    "peakSec": 192.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 192.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_884_x264-04",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2698,
+    "startSec": 242.0,
+    "endSec": 250.0,
+    "peakSec": 244.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 244.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_884_x264-05",
+    "videoId": "Normal_Videos_884_x264",
+    "jobId": "job-Normal_Videos_884_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9526,
+    "startSec": 266.0,
+    "endSec": 278.0,
+    "peakSec": 276.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 276.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_885_x264",
+   "videoId": "Normal_Videos_885_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_886_x264",
+   "videoId": "Normal_Videos_886_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_887_x264",
+   "videoId": "Normal_Videos_887_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_888_x264",
+   "videoId": "Normal_Videos_888_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_889_x264",
+   "videoId": "Normal_Videos_889_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_890_x264",
+   "videoId": "Normal_Videos_890_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_891_x264",
+   "videoId": "Normal_Videos_891_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_892_x264",
+   "videoId": "Normal_Videos_892_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_893_x264",
+   "videoId": "Normal_Videos_893_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_893_x264-00",
+    "videoId": "Normal_Videos_893_x264",
+    "jobId": "job-Normal_Videos_893_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9997,
+    "startSec": 6.0,
+    "endSec": 14.0,
+    "peakSec": 12.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 12.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_893_x264-01",
+    "videoId": "Normal_Videos_893_x264",
+    "jobId": "job-Normal_Videos_893_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9996,
+    "startSec": 22.0,
+    "endSec": 58.0,
+    "peakSec": 32.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 32.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_893_x264-02",
+    "videoId": "Normal_Videos_893_x264",
+    "jobId": "job-Normal_Videos_893_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4082,
+    "startSec": 70.0,
+    "endSec": 74.0,
+    "peakSec": 72.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 72.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_893_x264-03",
+    "videoId": "Normal_Videos_893_x264",
+    "jobId": "job-Normal_Videos_893_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9998,
+    "startSec": 94.0,
+    "endSec": 118.0,
+    "peakSec": 112.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 112.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_894_x264",
+   "videoId": "Normal_Videos_894_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_894_x264-00",
+    "videoId": "Normal_Videos_894_x264",
+    "jobId": "job-Normal_Videos_894_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9964,
+    "startSec": 14.0,
+    "endSec": 26.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_894_x264-01",
+    "videoId": "Normal_Videos_894_x264",
+    "jobId": "job-Normal_Videos_894_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1195,
+    "startSec": 30.0,
+    "endSec": 38.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_894_x264-02",
+    "videoId": "Normal_Videos_894_x264",
+    "jobId": "job-Normal_Videos_894_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.5007,
+    "startSec": 42.0,
+    "endSec": 50.0,
+    "peakSec": 44.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 44.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_894_x264-03",
+    "videoId": "Normal_Videos_894_x264",
+    "jobId": "job-Normal_Videos_894_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.6518,
+    "startSec": 62.0,
+    "endSec": 74.0,
+    "peakSec": 64.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 64.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_895_x264",
+   "videoId": "Normal_Videos_895_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_896_x264",
+   "videoId": "Normal_Videos_896_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_897_x264",
+   "videoId": "Normal_Videos_897_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_898_x264",
+   "videoId": "Normal_Videos_898_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_898_x264-00",
+    "videoId": "Normal_Videos_898_x264",
+    "jobId": "job-Normal_Videos_898_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3213,
+    "startSec": 10.0,
+    "endSec": 14.0,
+    "peakSec": 12.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 12.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_898_x264-01",
+    "videoId": "Normal_Videos_898_x264",
+    "jobId": "job-Normal_Videos_898_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.026,
+    "startSec": 18.0,
+    "endSec": 22.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_899_x264",
+   "videoId": "Normal_Videos_899_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_900_x264",
+   "videoId": "Normal_Videos_900_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_901_x264",
+   "videoId": "Normal_Videos_901_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_902_x264",
+   "videoId": "Normal_Videos_902_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_903_x264",
+   "videoId": "Normal_Videos_903_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_904_x264",
+   "videoId": "Normal_Videos_904_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_905_x264",
+   "videoId": "Normal_Videos_905_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_906_x264",
+   "videoId": "Normal_Videos_906_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_907_x264",
+   "videoId": "Normal_Videos_907_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_908_x264",
+   "videoId": "Normal_Videos_908_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_909_x264",
+   "videoId": "Normal_Videos_909_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_910_x264",
+   "videoId": "Normal_Videos_910_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_911_x264",
+   "videoId": "Normal_Videos_911_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_912_x264",
+   "videoId": "Normal_Videos_912_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_913_x264",
+   "videoId": "Normal_Videos_913_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_914_x264",
+   "videoId": "Normal_Videos_914_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_915_x264",
+   "videoId": "Normal_Videos_915_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_923_x264",
+   "videoId": "Normal_Videos_923_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_923_x264-00",
+    "videoId": "Normal_Videos_923_x264",
+    "jobId": "job-Normal_Videos_923_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.4079,
+    "startSec": 98.0,
+    "endSec": 106.0,
+    "peakSec": 104.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 104.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_923_x264-01",
+    "videoId": "Normal_Videos_923_x264",
+    "jobId": "job-Normal_Videos_923_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2457,
+    "startSec": 494.0,
+    "endSec": 498.0,
+    "peakSec": 496.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 496.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_924_x264",
+   "videoId": "Normal_Videos_924_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_924_x264-00",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0124,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-01",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0125,
+    "startSec": 98.0,
+    "endSec": 102.0,
+    "peakSec": 100.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 100.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-02",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.018,
+    "startSec": 114.0,
+    "endSec": 118.0,
+    "peakSec": 116.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 116.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-03",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0261,
+    "startSec": 122.0,
+    "endSec": 126.0,
+    "peakSec": 124.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 124.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-04",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0476,
+    "startSec": 154.0,
+    "endSec": 158.0,
+    "peakSec": 156.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 156.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-05",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0141,
+    "startSec": 190.0,
+    "endSec": 194.0,
+    "peakSec": 192.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 192.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-06",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3213,
+    "startSec": 202.0,
+    "endSec": 222.0,
+    "peakSec": 216.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 216.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-07",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0141,
+    "startSec": 258.0,
+    "endSec": 262.0,
+    "peakSec": 260.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 260.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-08",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1483,
+    "startSec": 266.0,
+    "endSec": 278.0,
+    "peakSec": 272.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 272.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-09",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1332,
+    "startSec": 314.0,
+    "endSec": 326.0,
+    "peakSec": 324.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 324.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-10",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 334.0,
+    "endSec": 398.0,
+    "peakSec": 392.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 392.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-11",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 402.0,
+    "endSec": 502.0,
+    "peakSec": 440.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 440.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-12",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 506.0,
+    "endSec": 794.0,
+    "peakSec": 520.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 520.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-13",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0294,
+    "startSec": 834.0,
+    "endSec": 838.0,
+    "peakSec": 836.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 836.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-14",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0125,
+    "startSec": 842.0,
+    "endSec": 846.0,
+    "peakSec": 844.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 844.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-15",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 854.0,
+    "endSec": 1278.0,
+    "peakSec": 1100.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1100.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-16",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.6794,
+    "startSec": 1282.0,
+    "endSec": 1334.0,
+    "peakSec": 1328.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1328.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-17",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9999,
+    "startSec": 1338.0,
+    "endSec": 1402.0,
+    "peakSec": 1356.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1356.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-18",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 1406.0,
+    "endSec": 1522.0,
+    "peakSec": 1428.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1428.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-19",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 1538.0,
+    "endSec": 1582.0,
+    "peakSec": 1560.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1560.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-20",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9797,
+    "startSec": 1710.0,
+    "endSec": 1718.0,
+    "peakSec": 1712.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1712.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-21",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.7983,
+    "startSec": 2102.0,
+    "endSec": 2110.0,
+    "peakSec": 2108.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 2108.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-22",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.107,
+    "startSec": 3210.0,
+    "endSec": 3218.0,
+    "peakSec": 3216.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3216.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-23",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3217,
+    "startSec": 3442.0,
+    "endSec": 3450.0,
+    "peakSec": 3444.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3444.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-24",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2232,
+    "startSec": 3546.0,
+    "endSec": 3550.0,
+    "peakSec": 3548.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3548.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_924_x264-25",
+    "videoId": "Normal_Videos_924_x264",
+    "jobId": "job-Normal_Videos_924_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2695,
+    "startSec": 3558.0,
+    "endSec": 3570.0,
+    "peakSec": 3564.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3564.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_925_x264",
+   "videoId": "Normal_Videos_925_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_926_x264",
+   "videoId": "Normal_Videos_926_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_926_x264-00",
+    "videoId": "Normal_Videos_926_x264",
+    "jobId": "job-Normal_Videos_926_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1487,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_927_x264",
+   "videoId": "Normal_Videos_927_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_928_x264",
+   "videoId": "Normal_Videos_928_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_928_x264-00",
+    "videoId": "Normal_Videos_928_x264",
+    "jobId": "job-Normal_Videos_928_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.016,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_928_x264-01",
+    "videoId": "Normal_Videos_928_x264",
+    "jobId": "job-Normal_Videos_928_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.982,
+    "startSec": 14.0,
+    "endSec": 26.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_929_x264",
+   "videoId": "Normal_Videos_929_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_930_x264",
+   "videoId": "Normal_Videos_930_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_931_x264",
+   "videoId": "Normal_Videos_931_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_932_x264",
+   "videoId": "Normal_Videos_932_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_932_x264-00",
+    "videoId": "Normal_Videos_932_x264",
+    "jobId": "job-Normal_Videos_932_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0181,
+    "startSec": 6.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_933_x264",
+   "videoId": "Normal_Videos_933_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_934_x264",
+   "videoId": "Normal_Videos_934_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_934_x264-00",
+    "videoId": "Normal_Videos_934_x264",
+    "jobId": "job-Normal_Videos_934_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0677,
+    "startSec": 46.0,
+    "endSec": 54.0,
+    "peakSec": 52.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 52.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_935_x264",
+   "videoId": "Normal_Videos_935_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_935_x264-00",
+    "videoId": "Normal_Videos_935_x264",
+    "jobId": "job-Normal_Videos_935_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0535,
+    "startSec": 2954.0,
+    "endSec": 2958.0,
+    "peakSec": 2956.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 2956.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_935_x264-01",
+    "videoId": "Normal_Videos_935_x264",
+    "jobId": "job-Normal_Videos_935_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2695,
+    "startSec": 2974.0,
+    "endSec": 2990.0,
+    "peakSec": 2988.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 2988.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_935_x264-02",
+    "videoId": "Normal_Videos_935_x264",
+    "jobId": "job-Normal_Videos_935_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0125,
+    "startSec": 3010.0,
+    "endSec": 3014.0,
+    "peakSec": 3012.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3012.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_935_x264-03",
+    "videoId": "Normal_Videos_935_x264",
+    "jobId": "job-Normal_Videos_935_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0678,
+    "startSec": 3122.0,
+    "endSec": 3126.0,
+    "peakSec": 3124.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 3124.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_936_x264",
+   "videoId": "Normal_Videos_936_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_937_x264",
+   "videoId": "Normal_Videos_937_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_938_x264",
+   "videoId": "Normal_Videos_938_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_938_x264-00",
+    "videoId": "Normal_Videos_938_x264",
+    "jobId": "job-Normal_Videos_938_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.2022,
+    "startSec": 146.0,
+    "endSec": 150.0,
+    "peakSec": 148.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 148.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_939_x264",
+   "videoId": "Normal_Videos_939_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_939_x264-00",
+    "videoId": "Normal_Videos_939_x264",
+    "jobId": "job-Normal_Videos_939_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.5935,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_939_x264-01",
+    "videoId": "Normal_Videos_939_x264",
+    "jobId": "job-Normal_Videos_939_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.8934,
+    "startSec": 10.0,
+    "endSec": 18.0,
+    "peakSec": 16.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 16.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_940_x264",
+   "videoId": "Normal_Videos_940_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Normal_Videos_940_x264-00",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9994,
+    "startSec": 354.0,
+    "endSec": 362.0,
+    "peakSec": 356.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 356.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-01",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0475,
+    "startSec": 686.0,
+    "endSec": 690.0,
+    "peakSec": 688.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 688.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-02",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3212,
+    "startSec": 706.0,
+    "endSec": 734.0,
+    "peakSec": 728.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 728.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-03",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0602,
+    "startSec": 918.0,
+    "endSec": 922.0,
+    "peakSec": 920.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 920.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-04",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.3779,
+    "startSec": 946.0,
+    "endSec": 958.0,
+    "peakSec": 952.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 952.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-05",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.7774,
+    "startSec": 1022.0,
+    "endSec": 1030.0,
+    "peakSec": 1028.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1028.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-06",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9994,
+    "startSec": 1062.0,
+    "endSec": 1070.0,
+    "peakSec": 1064.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1064.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Normal_Videos_940_x264-07",
+    "videoId": "Normal_Videos_940_x264",
+    "jobId": "job-Normal_Videos_940_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9992,
+    "startSec": 1078.0,
+    "endSec": 1106.0,
+    "peakSec": 1092.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 1092.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_941_x264",
+   "videoId": "Normal_Videos_941_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_943_x264",
+   "videoId": "Normal_Videos_943_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Normal_Videos_944_x264",
+   "videoId": "Normal_Videos_944_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": []
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting001_x264",
+   "videoId": "Shoplifting001_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting001_x264-00",
+    "videoId": "Shoplifting001_x264",
+    "jobId": "job-Shoplifting001_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9999,
+    "startSec": 10.0,
+    "endSec": 74.0,
+    "peakSec": 28.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 28.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting001_x264-01",
+    "videoId": "Shoplifting001_x264",
+    "jobId": "job-Shoplifting001_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0536,
+    "startSec": 122.0,
+    "endSec": 126.0,
+    "peakSec": 124.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 124.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting004_x264",
+   "videoId": "Shoplifting004_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting004_x264-00",
+    "videoId": "Shoplifting004_x264",
+    "jobId": "job-Shoplifting004_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 218.0,
+    "peakSec": 80.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 80.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting005_x264",
+   "videoId": "Shoplifting005_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting005_x264-00",
+    "videoId": "Shoplifting005_x264",
+    "jobId": "job-Shoplifting005_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 22.0,
+    "endSec": 46.0,
+    "peakSec": 28.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 28.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting007_x264",
+   "videoId": "Shoplifting007_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting007_x264-00",
+    "videoId": "Shoplifting007_x264",
+    "jobId": "job-Shoplifting007_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 58.0,
+    "peakSec": 24.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 24.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting007_x264-01",
+    "videoId": "Shoplifting007_x264",
+    "jobId": "job-Shoplifting007_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 62.0,
+    "endSec": 166.0,
+    "peakSec": 80.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 80.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting010_x264",
+   "videoId": "Shoplifting010_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting010_x264-00",
+    "videoId": "Shoplifting010_x264",
+    "jobId": "job-Shoplifting010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9903,
+    "startSec": 2.0,
+    "endSec": 54.0,
+    "peakSec": 32.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 32.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting010_x264-01",
+    "videoId": "Shoplifting010_x264",
+    "jobId": "job-Shoplifting010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0231,
+    "startSec": 58.0,
+    "endSec": 62.0,
+    "peakSec": 60.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 60.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting010_x264-02",
+    "videoId": "Shoplifting010_x264",
+    "jobId": "job-Shoplifting010_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0763,
+    "startSec": 78.0,
+    "endSec": 86.0,
+    "peakSec": 80.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 80.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting015_x264",
+   "videoId": "Shoplifting015_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting015_x264-00",
+    "videoId": "Shoplifting015_x264",
+    "jobId": "job-Shoplifting015_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0374,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting015_x264-01",
+    "videoId": "Shoplifting015_x264",
+    "jobId": "job-Shoplifting015_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.5317,
+    "startSec": 46.0,
+    "endSec": 54.0,
+    "peakSec": 48.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 48.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting015_x264-02",
+    "videoId": "Shoplifting015_x264",
+    "jobId": "job-Shoplifting015_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1487,
+    "startSec": 58.0,
+    "endSec": 66.0,
+    "peakSec": 64.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 64.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting016_x264",
+   "videoId": "Shoplifting016_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting016_x264-00",
+    "videoId": "Shoplifting016_x264",
+    "jobId": "job-Shoplifting016_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 38.0,
+    "peakSec": 20.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 20.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting017_x264",
+   "videoId": "Shoplifting017_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting017_x264-00",
+    "videoId": "Shoplifting017_x264",
+    "jobId": "job-Shoplifting017_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9841,
+    "startSec": 2.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting020_x264",
+   "videoId": "Shoplifting020_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting020_x264-00",
+    "videoId": "Shoplifting020_x264",
+    "jobId": "job-Shoplifting020_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 102.0,
+    "peakSec": 80.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 80.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting020_x264-01",
+    "videoId": "Shoplifting020_x264",
+    "jobId": "job-Shoplifting020_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9998,
+    "startSec": 110.0,
+    "endSec": 134.0,
+    "peakSec": 116.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 116.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting020_x264-02",
+    "videoId": "Shoplifting020_x264",
+    "jobId": "job-Shoplifting020_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.915,
+    "startSec": 158.0,
+    "endSec": 186.0,
+    "peakSec": 180.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 180.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting021_x264",
+   "videoId": "Shoplifting021_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting021_x264-00",
+    "videoId": "Shoplifting021_x264",
+    "jobId": "job-Shoplifting021_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 114.0,
+    "peakSec": 108.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 108.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting022_x264",
+   "videoId": "Shoplifting022_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting022_x264-00",
+    "videoId": "Shoplifting022_x264",
+    "jobId": "job-Shoplifting022_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.999,
+    "startSec": 6.0,
+    "endSec": 38.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting022_x264-01",
+    "videoId": "Shoplifting022_x264",
+    "jobId": "job-Shoplifting022_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9972,
+    "startSec": 46.0,
+    "endSec": 54.0,
+    "peakSec": 48.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 48.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting027_x264",
+   "videoId": "Shoplifting027_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting027_x264-00",
+    "videoId": "Shoplifting027_x264",
+    "jobId": "job-Shoplifting027_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.026,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting027_x264-01",
+    "videoId": "Shoplifting027_x264",
+    "jobId": "job-Shoplifting027_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9707,
+    "startSec": 38.0,
+    "endSec": 50.0,
+    "peakSec": 40.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 40.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting028_x264",
+   "videoId": "Shoplifting028_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting028_x264-00",
+    "videoId": "Shoplifting028_x264",
+    "jobId": "job-Shoplifting028_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 42.0,
+    "peakSec": 16.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 16.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting029_x264",
+   "videoId": "Shoplifting029_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting029_x264-00",
+    "videoId": "Shoplifting029_x264",
+    "jobId": "job-Shoplifting029_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9964,
+    "startSec": 6.0,
+    "endSec": 14.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting029_x264-01",
+    "videoId": "Shoplifting029_x264",
+    "jobId": "job-Shoplifting029_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9859,
+    "startSec": 22.0,
+    "endSec": 54.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting029_x264-02",
+    "videoId": "Shoplifting029_x264",
+    "jobId": "job-Shoplifting029_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.6229,
+    "startSec": 58.0,
+    "endSec": 66.0,
+    "peakSec": 60.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 60.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting031_x264",
+   "videoId": "Shoplifting031_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting031_x264-00",
+    "videoId": "Shoplifting031_x264",
+    "jobId": "job-Shoplifting031_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0097,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting033_x264",
+   "videoId": "Shoplifting033_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting033_x264-00",
+    "videoId": "Shoplifting033_x264",
+    "jobId": "job-Shoplifting033_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.023,
+    "startSec": 2.0,
+    "endSec": 6.0,
+    "peakSec": 4.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 4.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting033_x264-01",
+    "videoId": "Shoplifting033_x264",
+    "jobId": "job-Shoplifting033_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0602,
+    "startSec": 22.0,
+    "endSec": 26.0,
+    "peakSec": 24.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 24.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting034_x264",
+   "videoId": "Shoplifting034_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting034_x264-00",
+    "videoId": "Shoplifting034_x264",
+    "jobId": "job-Shoplifting034_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 22.0,
+    "endSec": 174.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting034_x264-01",
+    "videoId": "Shoplifting034_x264",
+    "jobId": "job-Shoplifting034_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 202.0,
+    "endSec": 302.0,
+    "peakSec": 244.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 244.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting034_x264-02",
+    "videoId": "Shoplifting034_x264",
+    "jobId": "job-Shoplifting034_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.9627,
+    "startSec": 358.0,
+    "endSec": 366.0,
+    "peakSec": 364.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 364.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting037_x264",
+   "videoId": "Shoplifting037_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting037_x264-00",
+    "videoId": "Shoplifting037_x264",
+    "jobId": "job-Shoplifting037_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 42.0,
+    "peakSec": 40.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 40.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting039_x264",
+   "videoId": "Shoplifting039_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting039_x264-00",
+    "videoId": "Shoplifting039_x264",
+    "jobId": "job-Shoplifting039_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.1194,
+    "startSec": 30.0,
+    "endSec": 38.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting044_x264",
+   "videoId": "Shoplifting044_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting044_x264-00",
+    "videoId": "Shoplifting044_x264",
+    "jobId": "job-Shoplifting044_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 0.0125,
+    "startSec": 6.0,
+    "endSec": 10.0,
+    "peakSec": 8.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 8.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   },
+   {
+    "id": "det-Shoplifting044_x264-01",
+    "videoId": "Shoplifting044_x264",
+    "jobId": "job-Shoplifting044_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 22.0,
+    "endSec": 482.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ },
+ {
+  "schemaVersion": "0.1",
+  "job": {
+   "id": "job-Shoplifting049_x264",
+   "videoId": "Shoplifting049_x264",
+   "status": "complete",
+   "models": [
+    {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   ]
+  },
+  "detections": [
+   {
+    "id": "det-Shoplifting049_x264-00",
+    "videoId": "Shoplifting049_x264",
+    "jobId": "job-Shoplifting049_x264",
+    "category": "shoplifting",
+    "severity": "high",
+    "confidence": 1.0,
+    "startSec": 2.0,
+    "endSec": 62.0,
+    "peakSec": 36.0,
+    "description": "Possible shoplifting; human review needed",
+    "keyframes": [
+     {
+      "seconds": 36.0,
+      "boxes": [
+       {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "label": "Scene"
+       }
+      ]
+     }
+    ],
+    "model": {
+     "name": "qwen3.8-27b-shoplifting-lora",
+     "version": "0.1.0"
+    }
+   }
+  ]
+ }
+]
