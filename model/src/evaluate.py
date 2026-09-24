@@ -47,6 +47,14 @@ def fp_per_hour(neg: pd.DataFrame, thr: float) -> float:
     return float((neg.p_yes >= thr).sum() / hours)
 
 
+def threshold_1fph(val_scores: Path) -> float:
+    """Score threshold giving about 1 false positive per hour on validation Normal windows."""
+    v = with_splits(val_scores)
+    vneg = v[(v.study_split == "val") & (v["class"] == "Normal")].p_yes.sort_values(ascending=False)
+    hours = len(vneg) * 4.0 / 3600
+    return float(vneg.iloc[max(int(np.floor(hours)) - 1, 0)]) if len(vneg) else 0.5
+
+
 def window_metrics(t: pd.DataFrame) -> dict:
     y, p = t.label.values, t.p_yes.values
     vmax = t.groupby(["video_id", "class"]).p_yes.max().reset_index()
@@ -93,10 +101,7 @@ def main() -> int:
         res = {"scores": str(args.scores), **window_metrics(t)}
         neg = t[t["class"] == "Normal"]
         if args.threshold_from:
-            v = with_splits(args.threshold_from)
-            vneg = v[(v.study_split == "val") & (v["class"] == "Normal")].p_yes.sort_values(ascending=False)
-            hours = len(vneg) * 4.0 / 3600
-            thr = float(vneg.iloc[max(int(np.floor(hours)) - 1, 0)]) if len(vneg) else 0.5
+            thr = threshold_1fph(args.threshold_from)
             res.update({"threshold_1fph_on_val": thr, "fp_per_hour_normal_test": fp_per_hour(neg, thr),
                         "sensitivity_at_thr": float((t[t.label == 1].p_yes >= thr).mean())})
         if args.baseline:
