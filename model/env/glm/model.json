@@ -1,0 +1,12 @@
+{
+  "model_id": "zai-org/GLM-4.5V",
+  "revision": "ed47433b37111465ec527affaaddceff371bca04",
+  "license": "mit",
+  "files": 56,
+  "safetensors_shards": 46,
+  "total_bytes_reported_by_hub": 215400000000,
+  "local_dir": "/srv/kryptonx-data/models/glm-4.5v/ed47433b37111465ec527affaaddceff371bca04",
+  "downloaded": "2026-09-24",
+  "sha256_manifest": "weights.sha256",
+  "sha256_verified_against_hub": true
+}

@@ -1,0 +1,22 @@
+
+==========
+== vLLM ==
+==========
+
+NVIDIA Release 26.03.post1 (build 295860572)
+vLLM Version 0.17.1+bd67d66a
+Container image Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+GOVERNING TERMS: The software and materials are governed by the NVIDIA Software License Agreement
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-software-license-agreement/)
+and the Product-Specific Terms for NVIDIA AI Products
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/product-specific-terms-for-ai-products/).
+
+NOTE: CUDA Forward Compatibility mode ENABLED.
+  Using CUDA 13.2 driver version 595.45.04 with kernel driver version 580.159.03.
+  See https://docs.nvidia.com/deploy/cuda-compatibility/ for details.
+
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Loading checkpoint shards:   0%|          | 0/46 [00:00<?, ?it/s]Loading checkpoint shards:   2%|▏         | 1/46 [00:32<24:33, 32.75s/it]Loading checkpoint shards:   4%|▍         | 2/46 [00:47<16:20, 22.29s/it]Loading checkpoint shards:   7%|▋         | 3/46 [01:01<13:20, 18.61s/it]Loading checkpoint shards:   9%|▊         | 4/46 [01:16<11:47, 16.85s/it]Loading checkpoint shards:  11%|█         | 5/46 [01:31<11:02, 16.15s/it]Loading checkpoint shards:  13%|█▎        | 6/46 [01:45<10:23, 15.58s/it]Loading checkpoint shards:  15%|█▌        | 7/46 [02:00<09:55, 15.28s/it]Loading checkpoint shards:  17%|█▋        | 8/46 [02:14<09:29, 14.98s/it]Loading checkpoint shards:  20%|█▉        | 9/46 [02:28<09:02, 14.67s/it]Loading checkpoint shards:  22%|██▏       | 10/46 [02:43<08:54, 14.83s/it]Loading checkpoint shards:  24%|██▍       | 11/46 [02:58<08:38, 14.83s/it]Loading checkpoint shards:  26%|██▌       | 12/46 [03:12<08:16, 14.61s/it]Loading checkpoint shards:  28%|██▊       | 13/46 [03:28<08:13, 14.94s/it]Loading checkpoint shards:  30%|███       | 14/46 [03:43<08:00, 15.02s/it]Loading checkpoint shards:  33%|███▎      | 15/46 [04:00<08:05, 15.66s/it]Loading checkpoint shards:  35%|███▍      | 16/46 [04:17<08:04, 16.14s/it]

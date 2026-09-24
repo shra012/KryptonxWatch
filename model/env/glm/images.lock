@@ -1,0 +1,5 @@
+# Container images for the GLM-4.5V arm (see Dockerfile). Recorded 2026-09-24.
+base  nvcr.io/nvidia/vllm:26.03.post1-py3@sha256:fe21f1b1f3a53886515a191ba6309065a54b3e026fe8a43573e75e4ecdfd530d
+built kryptonx/glm:dev  image-id sha256:066cb738173c122c64f7b6ba85cc461f62b8f8204d8a5597effc3f41ec333716
+host  NVIDIA GB10 sm_121, driver 580.159.03, container CUDA 13.2 (forward-compat), aarch64
+libs  torch 2.11.0a0+a6c236b9fd.nv26.03 (CUDA 13.2), vllm 0.17.1+nvinternal.26.03.post1, transformers 4.57.5 (full pins: requirements.lock)
