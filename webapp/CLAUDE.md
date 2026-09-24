@@ -1,18 +1,22 @@
 # KryptonxWatch web app
 
-Next.js 15 dashboard for reviewing recorded security video. It has a local demo data layer only: no real detection, and live views are simulated or preview-only until a service connects. Another team builds the models; they integrate through [the data contract](../docs/data-contract.md). Roadmap: [webapp-roadmap.md](.plans/webapp-roadmap.md).
+Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter now, a local server on the GB10 later) analyses uploads and live feeds. Without a model configured, the app runs in demo mode. Another team builds the fine-tuned models; they integrate through [the data contract](../docs/data-contract.md). Roadmap: [webapp-roadmap.md](.plans/webapp-roadmap.md). Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
 
 ## Planning context
 Before planning or changing the web app, read the recent plans in `.plans/` and use them alongside this guidance and the data contract. Keep the relevant plan there up to date when scope or decisions change. Save every new plan to `.plans/<topic>.md` with Context, ordered steps and Verification.
 
 ## Commands
-- `npm run dev`: http://localhost:3000
+- `npm run dev`: http://localhost:3000. Model config lives in `.env.local` (see `.env.example`); restart after changing it.
 - `npm run lint` / `npm run typecheck` / `npm run build`
 - `npm run test:e2e`: Playwright; first run `npx playwright install chromium`
+- `node scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`)
 - `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
 
 ## Where things live
-- `app/`: pages: `/` overview, `/upload`, `/videos`, `/videos/[id]` (player, timeline, boxes, assistant), `/detections`, `/analytics`, `/settings`. Pages are client components because state lives in the browser.
+- `app/`: pages: `/` overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics`, `/settings`. Pages are client components because state lives in the browser.
+- `app/api/`: server routes `model`, `analyze` (one window of frames), `chat`, `summary`. They are the only code that reads `VLM_*` env vars (via `lib/server/vlm-config.ts`).
+- `lib/vlm/`: prompt, parsing and merging (`analysis.ts`), assistant/summary prompts (`assistant.ts`), OpenAI-compatible client (`client.ts`). No runtime imports, so the benchmark script shares them.
+- `lib/detection-client.ts`: browser side: frame capture, windowed analysis, assistant and summary calls, `useModelStatus()`.
 - `components/app-provider.tsx`: the single client store. Read and write videos, review status, theme and toasts through `useApp()` only.
 - `components/ui.tsx`: shared primitives (`PageTitle`, `Panel`, `SeverityBadge`, `StatusBadge`, `EmptyState`, `EventTime`). Reuse or extend them before writing new ones.
 - `components/shell.tsx`: sidebar and mobile nav. Register new pages in `nav`.
@@ -29,11 +33,12 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - Link to an event moment as `/videos/{id}?t={seconds}`.
 
 ## Product guardrails
-- Samples and their annotations are always labelled simulated. Uploads never get invented detections.
+- Samples and their annotations are always labelled simulated. Uploads only get detections from a real model run, labelled AI-suspected with model name and confidence. The AI summary excludes simulated samples.
 - Incidents are "suspected" until a human reviews them. Queue tracking is a measurement, not an incident.
 - Totals, charts and CSV all derive from provider state via `lib/analytics.ts`.
 - Uploads and review decisions survive reload. Revoke object URLs you create.
-- No credentials or API keys in browser code. Backends plug in behind the service interfaces without changing UI types.
+- No credentials or API keys in browser code: keys live in `.env.local` and are read only in `app/api`. Only sampled frames leave the browser.
+- E2E tests never call a real model: `tests/workflows.spec.ts` mocks `/api/model` (and `/api/analyze`, `/api/chat` where needed).
 
 ## Before finishing
 Run `npm run lint && npm run typecheck`. Run `npm run test:e2e` when changing upload, review, detections, analytics or storage. Update selectors in `tests/workflows.spec.ts` if visible labels change.

@@ -1,0 +1,309 @@
+// Bake-off of vision-language models on the KryptonxWatch analysis pipeline.
+// Uses the app's own prompt, parser and merge logic (lib/vlm), so a score here is what the app would do.
+//
+//   node scripts/vlm-benchmark.ts frames   (once; extracts JPEG frames with ffmpeg)
+//   node scripts/vlm-benchmark.ts run   --models qwen/qwen3-vl-8b-instruct,google/gemma-4-31b-it [--sets hawkwatch,timed,normal] [--limit 1]
+//   node scripts/vlm-benchmark.ts run   --models google/gemini-2.5-flash --pipeline hawkwatch   (HawkWatch's own prompt, 1 frame / 3 s)
+//   node scripts/vlm-benchmark.ts score
+//
+// Reads VLM_BASE_URL / VLM_API_KEY from the environment or webapp/.env.local.
+// Data: data/bakeoff/manifest.json (model/openrouter-bakeoff/fetch_data.py). Results: model/openrouter-bakeoff/results/.
+import { execFile } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, appendFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
+import { INCIDENT_THRESHOLD, extractJson, mergeDetections, parseWindow, planWindows, windowMessages, type WindowResult } from "../lib/vlm/analysis.ts";
+import { chat } from "../lib/vlm/client.ts";
+
+const run = promisify(execFile);
+const here = dirname(fileURLToPath(import.meta.url));
+const repo = resolve(here, "../..");
+const dataDir = join(repo, "data/bakeoff");
+const outDir = join(repo, "model/openrouter-bakeoff/results");
+
+interface Item { id: string; set: "hawkwatch" | "timed" | "normal"; path: string; label: string; duration: number; events: [number, number][] | null }
+interface Row { model: string; video: string; set: string; start: number; end: number; ok: boolean; error?: string; latencyMs?: number; cost?: number; promptTokens?: number; completionTokens?: number; raw?: string; result?: WindowResult }
+
+function env(name: string): string | undefined {
+  if (name in process.env) return process.env[name] || undefined; // an explicitly empty value means "unset", e.g. VLM_API_KEY= for a local server
+  const file = join(here, "../.env.local");
+  if (!existsSync(file)) return undefined;
+  const line = readFileSync(file, "utf8").split("\n").find(l => l.startsWith(`${name}=`));
+  return line?.slice(name.length + 1).trim();
+}
+
+function arg(name: string, fallback?: string) {
+  const i = process.argv.indexOf(`--${name}`);
+  return i > 0 ? process.argv[i + 1] : fallback;
+}
+
+const slug = (model: string) => model.replace(/[/:]/g, "__");
+
+async function frame(item: Item, seconds: number): Promise<string> {
+  const cache = join(dataDir, "frames", item.id, `${seconds.toFixed(2)}.jpg`);
+  if (!existsSync(cache)) {
+    mkdirSync(dirname(cache), { recursive: true });
+    const tmp = `${cache}.${process.pid}.tmp.jpg`; // write then rename, so parallel runs never read a partial file
+    await run("ffmpeg", ["-v", "error", "-y", "-ss", String(seconds), "-i", join(dataDir, item.path), "-frames:v", "1",
+      "-vf", "scale='min(512,iw)':-2", "-pix_fmt", "yuvj420p", "-q:v", "4", tmp]);
+    renameSync(tmp, cache);
+  }
+  return `data:image/jpeg;base64,${readFileSync(cache).toString("base64")}`;
+}
+
+async function pool<T>(items: T[], size: number, fn: (item: T) => Promise<void>) {
+  let next = 0;
+  await Promise.all(Array.from({ length: size }, async () => { while (next < items.length) await fn(items[next++]); }));
+}
+
+async function runModels() {
+  const models = (arg("models") ?? "").split(",").filter(Boolean);
+  const sets = (arg("sets") ?? "hawkwatch,timed,normal").split(",");
+  const limit = Number(arg("limit", "0"));
+  const concurrency = Number(arg("concurrency", "6"));
+  const baseUrl = env("VLM_BASE_URL") ?? "https://openrouter.ai/api/v1";
+  const apiKey = env("VLM_API_KEY");
+  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const items = manifest.items.filter(i => sets.includes(i.set));
+  mkdirSync(outDir, { recursive: true });
+
+  const hawkwatch = arg("pipeline") === "hawkwatch";
+  const repeat = arg("repeat"); // e.g. --repeat 2 writes a second, independent run to measure run-to-run stability
+  for (const baseModel of models) {
+    const model = (hawkwatch ? baseModel + HAWKWATCH_SUFFIX : baseModel) + (repeat ? ` #${repeat}` : "");
+    const file = join(outDir, `${slug(baseModel)}${hawkwatch ? "__hawkwatch-pipeline" : ""}${repeat ? `__r${repeat}` : ""}.jsonl`);
+    const done = new Set(existsSync(file) ? readFileSync(file, "utf8").split("\n").filter(Boolean).map(l => { const r: Row = JSON.parse(l); return r.ok ? `${r.video}@${r.start}` : ""; }) : []);
+    const jobs = items.flatMap(item => (hawkwatch ? hawkwatchWindows(item.duration) : planWindows(item.duration)).map(w => ({ item, w })))
+      .filter(j => !done.has(`${j.item.id}@${j.w.start}`))
+      .slice(0, limit || undefined);
+    let cost = 0, fails = 0, n = 0;
+    const started = Date.now();
+    await pool(jobs, concurrency, async ({ item, w }) => {
+      const frames = await Promise.all(w.times.map(async t => ({ seconds: t, image: await frame(item, t) })));
+      const row: Row = { model, video: item.id, set: item.set, start: w.start, end: w.end, ok: false };
+      try {
+        const reply = await chat({ baseUrl, apiKey, model: baseModel }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens: 600 });
+        Object.assign(row, { latencyMs: reply.latencyMs, cost: reply.cost, promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, raw: reply.text });
+        row.result = hawkwatch ? parseHawkwatch(reply.text, frames[0].seconds, w.start, w.end) : parseWindow(reply.text, frames, w.start, w.end);
+        row.ok = true;
+      } catch (e) {
+        row.error = e instanceof Error ? e.message : String(e);
+        fails++;
+      }
+      cost += row.cost ?? 0;
+      appendFileSync(file, JSON.stringify(row) + "\n");
+      if (++n % 20 === 0) console.error(`${model}: ${n}/${jobs.length} windows, $${cost.toFixed(4)}, ${fails} failed`);
+    });
+    console.error(`${model}: done ${n} windows in ${((Date.now() - started) / 1000).toFixed(0)} s, $${cost.toFixed(4)}, ${fails} failed`);
+  }
+}
+
+// ---------- HawkWatch reference pipeline ----------
+// Verbatim prompt from github.com/Grace-Shao/Treehacks2025 app/pages/upload/actions.ts: one frame every 3 s,
+// "isDangerous" events, no categories. Used only as a baseline.
+const HAWKWATCH_PROMPT = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
+
+1. Medical Emergencies:
+- Person unconscious or lying motionless
+- Person clutching chest/showing signs of heart problems
+- Seizures or convulsions
+- Difficulty breathing or choking
+
+2. Falls and Injuries:
+- Person falling or about to fall
+- Person on the ground after a fall
+- Signs of injury or bleeding
+- Limping or showing signs of physical trauma
+
+3. Distress Signals:
+- Person calling for help or showing distress
+- Panic attacks or severe anxiety symptoms
+- Signs of fainting or dizziness
+- Headache or unease
+- Signs of unconsciousness
+
+4. Violence or Threats:
+- Physical altercations
+- Threatening behavior
+- Weapons visible
+
+5. Suspicious Activities:
+- Shoplifting
+- Vandalism
+- Trespassing
+
+Return a JSON object in this exact format:
+
+{
+    "events": [
+        {
+            "timestamp": "mm:ss",
+            "description": "Brief description of what's happening in this frame",
+            "isDangerous": true/false // Set to true if the event involves a fall, injury, unease, pain, accident, or concerning behavior
+        }
+    ]
+}`;
+const HAWKWATCH_SUFFIX = " (HawkWatch pipeline)";
+const isHawkwatch = (model: string) => model.endsWith(HAWKWATCH_SUFFIX);
+const hawkwatchWindows = (duration: number) => planWindows(duration, 3, 1);
+
+function hawkwatchMessages(image: string) {
+  return [{ role: "user", content: [{ type: "text", text: HAWKWATCH_PROMPT }, { type: "image_url", image_url: { url: image } }] }];
+}
+
+function parseHawkwatch(text: string, seconds: number, start: number, end: number): WindowResult {
+  const raw = extractJson(text) as { events?: { description?: string; isDangerous?: boolean }[] };
+  const events = Array.isArray(raw.events) ? raw.events : [];
+  const incidents = events.filter(e => e?.isDangerous === true).map(e => ({
+    category: "Suspicious activity" as const, severity: "high" as const, confidence: 1, seconds, description: String(e.description ?? ""),
+  }));
+  return { start, end, summary: String(events[0]?.description ?? ""), incidents, score: incidents.length ? 1 : 0 };
+}
+
+// ---------- scoring ----------
+
+// Categories accepted as a correct call for each UCF-Crime label.
+const accepted: Record<string, string[]> = {
+  Shoplifting: ["Shoplifting", "Theft", "Kiosk nonpayment"],
+  Stealing: ["Theft", "Shoplifting", "Robbery", "Pickpocketing"],
+  Robbery: ["Robbery", "Gun"],
+  Fighting: ["Fighting"],
+  Vandalism: ["Vandalism"],
+};
+
+function auroc(pos: number[], neg: number[]) {
+  if (!pos.length || !neg.length) return NaN;
+  let wins = 0;
+  for (const p of pos) for (const n of neg) wins += p > n ? 1 : p === n ? 0.5 : 0;
+  return wins / (pos.length * neg.length);
+}
+const pct = (x: number) => Number.isFinite(x) ? `${(x * 100).toFixed(0)}%` : "–";
+const quantile = (xs: number[], q: number) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(q * s.length))] : NaN; };
+
+const THRESHOLDS = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95];
+
+/** Clip-level score at a confidence threshold: mean of (right category on anomalous clips) and (no detection on normal clips). */
+function clipScore(items: Item[], perVideo: Map<string, WindowResult[]>, threshold: number, hw: boolean) {
+  const res = items.map(i => {
+    const dets = mergeDetections(i.id, perVideo.get(i.id) ?? [], "m", threshold);
+    return { normal: i.set === "normal", hit: i.set === "normal" ? dets.length === 0 : hw ? dets.length > 0 : dets.some(d => accepted[i.label]?.includes(d.category)) };
+  });
+  const a = res.filter(r => !r.normal), n = res.filter(r => r.normal);
+  return { correct: a.filter(r => r.hit).length, anomalous: a.length, silent: n.filter(r => r.hit).length, normals: n.length };
+}
+
+/** 2-fold cross-validation of the threshold: choose it on one half of the videos, score the other half, swap. */
+function crossValidated(items: Item[], perVideo: Map<string, WindowResult[]>, hw: boolean) {
+  const folds = [0, 1].map(k => items.filter((_, idx) => idx % 2 === k));
+  let correct = 0, anomalous = 0, silent = 0, normals = 0;
+  const chosen: number[] = [];
+  for (let k = 0; k < 2; k++) {
+    const train = folds[1 - k], test = folds[k];
+    const rate = (c: ReturnType<typeof clipScore>) => (c.correct / c.anomalous + c.silent / c.normals) / 2;
+    const best = THRESHOLDS.reduce((b, t) => rate(clipScore(train, perVideo, t, hw)) > rate(clipScore(train, perVideo, b, hw)) ? t : b, INCIDENT_THRESHOLD);
+    chosen.push(best);
+    const c = clipScore(test, perVideo, best, hw);
+    correct += c.correct; anomalous += c.anomalous; silent += c.silent; normals += c.normals;
+  }
+  return { cvScore: (correct / anomalous + silent / normals) / 2, cvThresholds: chosen };
+}
+
+function score() {
+  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const files = (arg("models") ?? "").split(",").filter(Boolean).map(m => join(outDir, `${slug(m)}.jsonl`));
+  const list = files.length ? files : readdir(outDir).filter(f => f.endsWith(".jsonl")).map(f => join(outDir, f));
+  const summaries = [];
+  for (const file of list) {
+    const rows: Row[] = readFileSync(file, "utf8").split("\n").filter(Boolean).map(l => JSON.parse(l));
+    // keep the last attempt per window
+    const last = new Map<string, Row>();
+    for (const r of rows) last.set(`${r.video}@${r.start}`, r);
+    const final = [...last.values()];
+    const model = final[0]?.model ?? file;
+    const hw = isHawkwatch(model);
+    const expected = manifest.items.reduce((n, i) => n + (hw ? hawkwatchWindows(i.duration) : planWindows(i.duration)).length, 0);
+    const okRows = final.filter(r => r.ok);
+    const perVideo = new Map<string, WindowResult[]>();
+    for (const r of okRows) perVideo.set(r.video, [...(perVideo.get(r.video) ?? []), r.result!]);
+
+    const anomalous = manifest.items.filter(i => i.set !== "normal");
+    const normals = manifest.items.filter(i => i.set === "normal");
+    const clip = anomalous.map(i => {
+      const dets = mergeDetections(i.id, perVideo.get(i.id) ?? [], model);
+      return { id: i.id, label: i.label, detected: dets.length > 0, correct: dets.some(d => accepted[i.label]?.includes(d.category)), categories: [...new Set(dets.map(d => d.category))] };
+    });
+    const normalDets = normals.map(i => ({ id: i.id, dets: mergeDetections(i.id, perVideo.get(i.id) ?? [], model) }));
+    const normalMinutes = normals.reduce((s, i) => s + i.duration, 0) / 60;
+
+    // window-level on timed + normal videos (official temporal labels)
+    const pos: number[] = [], neg: number[] = [];
+    let hits = 0, events = 0; const onsetErr: number[] = [];
+    for (const i of manifest.items.filter(i => i.set !== "hawkwatch")) {
+      const ws = perVideo.get(i.id) ?? [];
+      for (const w of ws) {
+        const overlap = (i.events ?? []).some(([a, b]) => Math.min(b, w.end) - Math.max(a, w.start) > 0.5);
+        (overlap ? pos : neg).push(w.score);
+      }
+      for (const [a, b] of i.events ?? []) {
+        events++;
+        const d = mergeDetections(i.id, ws, model).find(d => Math.min(b, d.endSeconds ?? d.seconds) - Math.max(a, d.seconds - 1) > 0);
+        if (d) { hits++; onsetErr.push(Math.abs(d.seconds - a)); }
+      }
+    }
+    const flaggedNeg = neg.filter(s => s >= INCIDENT_THRESHOLD).length, flaggedPos = pos.filter(s => s >= INCIDENT_THRESHOLD).length;
+    const detectRate = clip.filter(c => c.detected).length / clip.length;
+    const correctRate = hw ? NaN : clip.filter(c => c.correct).length / clip.length;
+    const normalFaClips = normalDets.filter(n => n.dets.length).length / normalDets.length;
+    const lat = okRows.map(r => r.latencyMs ?? 0);
+    // interleave sets so each fold gets a mix of hawkwatch / timed / normal videos
+    const cv = crossValidated([...manifest.items].sort((a, b) => a.set.localeCompare(b.set) || a.id.localeCompare(b.id)), perVideo, hw);
+    summaries.push({
+      model,
+      windows: `${okRows.length}/${expected}`,
+      parseFailures: final.filter(r => !r.ok).length,
+      clipDetect: detectRate,
+      clipCorrectCategory: correctRate,
+      normalFalseAlarmClips: normalFaClips,
+      falseAlarmsPerMin: normalDets.reduce((s, n) => s + n.dets.length, 0) / normalMinutes,
+      balancedAccuracy: (detectRate + (1 - normalFaClips)) / 2,
+      // Primary: right crime named on anomalous clips, and silence on normal clips (HawkWatch pipeline has no categories).
+      score: ((hw ? detectRate : correctRate) + (1 - normalFaClips)) / 2,
+      ...cv,
+      windowAuroc: auroc(pos, neg),
+      windowPrecision: flaggedPos + flaggedNeg ? flaggedPos / (flaggedPos + flaggedNeg) : NaN,
+      eventHit: `${hits}/${events}`,
+      medianOnsetErrorS: quantile(onsetErr, 0.5),
+      latencyP50s: quantile(lat, 0.5) / 1000,
+      latencyP90s: quantile(lat, 0.9) / 1000,
+      costUsd: final.reduce((s, r) => s + (r.cost ?? 0), 0),
+      clips: clip,
+      normalFalseAlarms: normalDets.filter(n => n.dets.length).map(n => ({ id: n.id, categories: n.dets.map(d => d.category) })),
+      errors: [...new Set(final.filter(r => !r.ok).map(r => r.error))].slice(0, 3),
+    });
+  }
+  summaries.sort((a, b) => b.score - a.score || b.balancedAccuracy - a.balancedAccuracy);
+  writeFileSync(join(outDir, "summary.json"), JSON.stringify(summaries, null, 1));
+  const header = "| Model | Windows | Score @0.5 | CV score (tuned threshold) | Balanced acc. | Clips detected | Right category | Normal clips false-alarmed | False alarms / min | Window AUROC | Timed events hit | Median onset error | p50 latency | Cost |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|";
+  const lines = summaries.map(s => `| ${s.model} | ${s.windows} | ${pct(s.score)} | ${pct(s.cvScore)} (${s.cvThresholds.join("/")}) | ${pct(s.balancedAccuracy)} | ${pct(s.clipDetect)} | ${pct(s.clipCorrectCategory)} | ${pct(s.normalFalseAlarmClips)} | ${s.falseAlarmsPerMin.toFixed(2)} | ${Number.isFinite(s.windowAuroc) ? s.windowAuroc.toFixed(2) : "–"} | ${s.eventHit} | ${Number.isFinite(s.medianOnsetErrorS) ? s.medianOnsetErrorS.toFixed(1) + " s" : "–"} | ${s.latencyP50s.toFixed(1)} s | $${s.costUsd.toFixed(3)} |`);
+  writeFileSync(join(outDir, "summary.md"), [header, ...lines].join("\n") + "\n");
+  console.log([header, ...lines].join("\n"));
+  for (const s of summaries) console.log(`\n${s.model}\n  misses: ${s.clips.filter(c => !c.correct).map(c => `${c.id}[${c.categories.join("/") || "none"}]`).join(", ") || "none"}\n  normal false alarms: ${s.normalFalseAlarms.map(n => `${n.id}[${n.categories.join("/")}]`).join(", ") || "none"}${s.errors.length ? `\n  errors: ${s.errors.join(" | ")}` : ""}`);
+}
+
+function readdir(dir: string): string[] {
+  return existsSync(dir) ? readdirSync(dir) : [];
+}
+
+async function extractFrames() {
+  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const jobs = manifest.items.flatMap(item => planWindows(item.duration).flatMap(w => w.times.map(t => ({ item, t }))));
+  await pool(jobs, 8, async ({ item, t }) => { await frame(item, t); });
+  console.error(`${jobs.length} frames ready`);
+}
+
+const command = process.argv[2];
+if (command === "frames") await extractFrames();
+else if (command === "run") await runModels();
+else if (command === "score") score();
+else console.error("usage: node scripts/vlm-benchmark.ts run --models a,b | score");

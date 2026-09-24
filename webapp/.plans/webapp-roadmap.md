@@ -9,7 +9,7 @@ The sample videos are generated synthetic footage. Their annotations demonstrate
 The [Treehacks2025 HawkWatch project](https://github.com/Grace-Shao/Treehacks2025) has upload analysis, saved recordings, timestamp navigation, statistics, a contextual assistant, real-time camera review, account pages, and notifications. The recorded-video interactions have equivalents in this release; live and connected service features follow below.
 
 ## Later phases
-1. Connect an authenticated video and detection backend with real analysis jobs, evidence storage, service-generated summaries, and a connected contextual assistant. Replace the demo adapters without changing UI domain types.
+1. (Started 2026-09-24: model backend via OpenAI-compatible API, see [model-integration.md](model-integration.md).) Connect an authenticated video and detection backend with real analysis jobs, evidence storage, service-generated summaries, and a connected contextual assistant. Replace the demo adapters without changing UI domain types.
 2. Add secure account flows, access control, and external email or phone notifications.
 3. Add live multicamera streaming, real-time analytics, and connected incident alerts.
 4. Build a React Native app for iOS and Android that can view camera streams, broadcast the phone camera as a source, and display the detection log.

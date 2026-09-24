@@ -1,6 +1,6 @@
 # HawkWatch UI parity and improvement plan
 
-Status: approved 2026-09-24 · not started. Update this line as phases complete.
+Status: approved 2026-09-24 · model backend, upload analysis, assistant, AI summary and a live/capture page done early (see [model-integration.md](model-integration.md)); phases 0–6 otherwise not started. Update this line as phases complete.
 
 ## Context
 The KryptonxWatch web app should cover every UI capability of HawkWatch (github.com/Grace-Shao/Treehacks2025) and improve on it. The models are built by another team, so this plan covers only the UI. Where a feature needs a model, the UI is built against the service interfaces and clearly marked as simulated or not connected.
