@@ -198,8 +198,8 @@ Shoplifting007_x264,Shoplifting,test,test
 Shoplifting008_x264,Shoplifting,train,train
 Shoplifting009_x264,Shoplifting,train,train
 Shoplifting010_x264,Shoplifting,test,test
-Shoplifting012_x264,Shoplifting,train,train
-Shoplifting013_x264,Shoplifting,train,train
+Shoplifting012_x264,Shoplifting,train,excluded
+Shoplifting013_x264,Shoplifting,train,excluded
 Shoplifting014_x264,Shoplifting,train,excluded
 Shoplifting015_x264,Shoplifting,test,test
 Shoplifting016_x264,Shoplifting,test,test
@@ -227,9 +227,9 @@ Shoplifting039_x264,Shoplifting,test,test
 Shoplifting040_x264,Shoplifting,train,train
 Shoplifting041_x264,Shoplifting,train,train
 Shoplifting042_x264,Shoplifting,train,val
-Shoplifting043_x264,Shoplifting,train,train
+Shoplifting043_x264,Shoplifting,train,excluded
 Shoplifting044_x264,Shoplifting,test,test
-Shoplifting045_x264,Shoplifting,train,train
+Shoplifting045_x264,Shoplifting,train,excluded
 Shoplifting047_x264,Shoplifting,train,val
 Shoplifting048_x264,Shoplifting,train,train
 Shoplifting049_x264,Shoplifting,test,test

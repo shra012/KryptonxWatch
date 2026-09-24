@@ -1,0 +1,35 @@
+video_id,start_sec,end_sec,uca_segment,reviewed_by,note
+Shoplifting003_x264,132.3,146.8,12,sonakshi,"took something, opened a book, stuffed it in"
+Shoplifting006_x264,57.2,59.8,3,claude-proposed,escaped from the store with the necklace
+Shoplifting008_x264,172.5,177.7,15,claude-proposed,picked up a phone and put it in his pocket
+Shoplifting009_x264,145.2,153.7,8,claude-proposed,took a phone in a white box from the cabinet and hid it behind him
+Shoplifting018_x264,12.4,28.9,2,claude-proposed,put bags of things into her clothes
+Shoplifting018_x264,29.9,57.7,4,claude-proposed,hid more bags of things in her clothes
+Shoplifting019_x264,6.3,12.1,0,claude-proposed,took a box and ran out; overlaps the next row
+Shoplifting019_x264,10.3,12.1,1,claude-proposed,second man stole a box during the same run
+Shoplifting024_x264,26.4,37.6,2,claude-proposed,took something from the table and put it into her clothes
+Shoplifting026_x264,1.7,11.4,0,claude-proposed,put cloth into a bag
+Shoplifting026_x264,11.7,29.6,1,claude-proposed,rolled more fabric and stuffed the bag
+Shoplifting026_x264,30.1,45.8,2,claude-proposed,finished stuffing the bag and left
+Shoplifting036_x264,98.7,116.2,14,claude-proposed,put a pile of clothes into her skirt
+Shoplifting040_x264,42.5,69.9,5,claude-proposed,put clothes into a customer's bag
+Shoplifting040_x264,138.2,163.8,9,claude-proposed,put clothes into a bag
+Shoplifting040_x264,274.9,299.6,18,claude-proposed,put clothes into a bag
+Shoplifting040_x264,340.3,355.2,21,claude-proposed,put clothes into a bag and left
+Shoplifting040_x264,437.1,451.7,27,claude-proposed,put clothes into a bag and left
+Shoplifting041_x264,211.3,241.2,19,claude-proposed,put things from the table into a bag
+Shoplifting041_x264,241.8,248.5,20,claude-proposed,handed a bag to someone outside
+Shoplifting041_x264,291.3,308.1,22,claude-proposed,put something from the table into a bag
+Shoplifting048_x264,1.8,11.4,0,claude-proposed,sandwiched clothes between her legs
+Shoplifting048_x264,25.4,39.2,3,claude-proposed,sandwiched clothes between her legs and blocked them
+Shoplifting048_x264,39.2,47.5,4,claude-proposed,walked out with clothes hidden under her skirt
+Shoplifting051_x264,143.8,178.5,5,claude-proposed,secretly put things from the table into his clothes and walked out
+Shoplifting052_x264,31.5,34.8,2,claude-proposed,stuffed glasses into his cuff
+Shoplifting052_x264,52.8,63.7,4,claude-proposed,stuffed glasses into his cuff
+Shoplifting052_x264,89.9,93.7,6,claude-proposed,stuffed glasses into his cuff
+Shoplifting052_x264,129.1,135.0,8,claude-proposed,stuffed glasses into his cuff
+Shoplifting052_x264,138.3,143.6,9,claude-proposed,stuffed glasses into his cuff
+Shoplifting052_x264,157.4,166.7,10,claude-proposed,stuffed glasses into his cuff
+Shoplifting050_x264,4,67,,vidushi,watched interval
+Shoplifting053_x264,42,45,,vidushi,watched interval
+Shoplifting054_x264,16.8,34.2,1,claude-proposed,put the small mobile phone into his pocket
