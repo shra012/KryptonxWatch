@@ -1,0 +1,8 @@
+{
+  "mil_nll": 0.0028249573713784062,
+  "video_auroc": 1.0,
+  "pos_video_max_mean": 0.9998365999999999,
+  "neg_window_mean": 0.005245529411764706,
+  "videos": 12,
+  "windows": 224
+}
