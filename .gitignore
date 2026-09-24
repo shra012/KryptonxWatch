@@ -1,0 +1,36 @@
+# Datasets: keep the folder and its docs, ignore everything else in it
+data/*
+!data/*.md
+!data/*.yaml
+!data/*.yml
+!data/*.json
+
+# Video files anywhere in the repo
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# Model weights
+*.pt
+*.pth
+*.onnx
+*.engine
+*.safetensors
+*.ckpt
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+
+# Python and notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Secrets and OS files
+.env
+.DS_Store
