@@ -18,7 +18,7 @@ export OMP_NUM_THREADS=16
 mkdir -p "$ROOT"
 
 # Videos rescored after every round: train Shoplifting (for the next MIL selection) and all validation.
-awk -F, 'NR > 1 && (($2 == "Shoplifting" && $4 == "train") || $4 == "val") {print $1}' "$STUDY/splits.csv" \
+awk -F, '{ sub(/\r$/, "") } NR > 1 && (($2 == "Shoplifting" && $4 == "train") || $4 == "val") {print $1}' "$STUDY/splits.csv" \
   > "$ROOT/rescore_videos.txt"
 
 scores=/data/runs/qwen38/exp2/zeroshot_trainpool.csv
