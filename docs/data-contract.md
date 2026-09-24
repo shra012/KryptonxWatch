@@ -183,6 +183,38 @@ Transport is still to be decided (REST vs. queue). The shape of the exchange:
 }
 ```
 
+## Training and evaluation data
+
+Datasets each model owner uses, and how they map onto this contract. Files live on the ZGX Nano in the shared folder `/srv/kryptonx-data/` (readable by every user; writable by the `workspace` group), outside every home folder and never committed to git. Copy or symlink from there.
+
+### Shoplifting (owner: Sonakshi)
+
+| Topic | Detail |
+|---|---|
+| Datasets | UCF-Crime (`Shoplifting`, `Stealing` classes only), MERL Shopping |
+| Location | `/srv/kryptonx-data/ucf-crime/raw/`, `/srv/kryptonx-data/merl-shopping/raw/` |
+| Used for | Training the shoplifting model; replaying test videos as simulated live cameras to measure time-to-alert, latency per stream, and false alarm rate |
+| Contract mapping | Each dataset video becomes a `Video`. Ground-truth events are compared against `Detection` records with `category: shoplifting` |
+
+#### UCF-Crime
+
+| Topic | Detail |
+|---|---|
+| Source | https://www.crcv.ucf.edu/research/real-world-anomaly-detection-in-surveillance-videos/ |
+| Size | Full set: 1,900 videos, 128 hrs, 103 GB. We keep only `Shoplifting` (50 videos: 29 train / 21 test), `Stealing` (100: 95 / 5) and `Testing_Normal_Videos_Anomaly` (150, for false alarm rate) — 10.4 GB, fetched by `model/sonakshi/data_prep/download_ucf_subset.py` |
+| Labels | Train: one label per video. Test: event start/end as **frame numbers** (up to 2 events per video, `-1` = none); divide by the video's fps (30) to get `startSec` / `endSec` |
+| Licence | Research use; cite Sultani, Chen & Shah, "Real-world Anomaly Detection in Surveillance Videos", CVPR 2018 |
+
+#### MERL Shopping
+
+| Topic | Detail |
+|---|---|
+| Source | https://www.merl.com/research/highlights/merl-shopping-dataset |
+| Size | 106 videos, ~2 min each, overhead camera in a grocery-store setting |
+| Labels | Time intervals per action: reach to shelf, retract from shelf, hand in shelf, inspect product, inspect shelf |
+| Used for | Hand/shelf gesture model (pick-up vs. put-back). Contains no theft, so it produces no `Detection` categories by itself |
+| Licence | Free for research; cite Singh et al., "A Multi-Stream Bi-Directional Recurrent Neural Network for Fine-Grained Action Detection", CVPR 2016 |
+
 ## Open questions
 
 - Transport: REST polling, webhooks, or a message queue? Streaming for live cameras?
@@ -191,3 +223,4 @@ Transport is still to be decided (REST vs. queue). The shape of the exchange:
 - Should the model service provide thumbnails, or does the web app extract frames?
 - Face blurring: done by the model service before media reaches the web app, or in the web app?
 - Retention period for videos, detections and review verdicts.
+- UCF-Crime `Stealing` includes non-retail theft (e.g. bikes, cars). Should those detections be `shoplifting`, `theft`, or excluded?
