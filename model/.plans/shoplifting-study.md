@@ -1,6 +1,6 @@
 # Study plan: shoplifting detection with Qwen3.8-27B (robbery to follow)
 
-Status: approved 2026-09-24 · Exp 0 done (H100 80 GB, bf16 LoRA, G2/G3 pilots passed) · Exp 1 frozen (leak audit, study split) · Exp 2 test scores sealed · Exp 3 grid running (see Execution log).
+Status: approved 2026-09-24 · Exp 0-4 done 2026-09-24 · Exp 3 primary result: ΔAUROC +0.027 ± 0.005 (3 seeds), every 95% CI includes 0, so not conclusive; localisation worse than zero-shot · adapters public at https://huggingface.co/shra012/qwen3.8-27b-ucf-shoplifting-lora · Exp 5-6 not started.
 
 ## Context
 KryptonxWatch needs a model that flags **shoplifting** (and later **robbery**) in store CCTV and says *when* it happens, so the web app timeline can show it. We will fine-tune Qwen3.8-27B, a dense vision-language model with video input, on UCF-Crime and MERL Shopping. The study follows the rigour of the reference study: a leakage-free benchmark first, pre-specified endpoints, three seeds, 95% confidence intervals clustered by video, and everything versioned. That way the reported result means something and isn't produced by leakage or by tuning on the test set.
@@ -135,6 +135,9 @@ Repeat Experiments 1–4 for **robbery** (UCF Robbery, once downloaded and time-
 - **Leakage audit:** 6 training videos shared a store camera with test videos and were excluded (`study/v1/exclusions.csv`). Study split: Shoplifting 21 / 5 / 21, Normal 30 / 7 / 150.
 - **Zero-shot test scores** (5,808 windows) are sealed read-only, with the sha256 in `model/runs/qwen38/exp2/`. They are read only after the adapters are frozen.
 - **Publishing:** `publish_hf.py` builds the model card and uploads to a public `shra012/qwen3.8-27b-ucf-shoplifting-lora`.
+
+- **Result (sealed test, 169 videos, 5,808 windows, 89 positive):** zero-shot window AUROC 0.895 [0.840, 0.946]. LoRA seeds 0.917 / 0.924 / 0.926, ΔAUROC +0.022 [-0.019, 0.067], +0.029 [-0.014, 0.072], +0.031 [-0.004, 0.073]. AUPRC 0.142 zero-shot vs 0.112 mean. Localisation AP@tIoU0.3 0.068 vs 0.027; predicted events are 3-6× longer after MIL training. The val 1 FP/h threshold (6 min of val normals) gives about 90 FP/h on test normals. Full tables: `model/runs/qwen38/exp3/MODEL_CARD.md`.
+- **Next (suggested):** human time stamps for the 21 training shoplifting videos to replace MIL labels, a larger normal validation pool for threshold setting, then Exp 5.
 
 ## Sequence
 0 → 1 (freeze) → 2 and 3 (run; test scores unsealed together) → 4 → 5 → 6. Nothing after Experiment 1 starts until its completion gate passes.
