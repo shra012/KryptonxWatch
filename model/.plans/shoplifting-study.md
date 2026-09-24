@@ -1,6 +1,6 @@
 # Study plan: shoplifting detection with Qwen3.8-27B (robbery to follow)
 
-Status: approved 2026-09-24 · Experiment 0 blocked on user prerequisites (see end). Update this line as experiments complete.
+Status: approved 2026-09-24 · Exp 0 done (H100 80 GB, bf16 LoRA, G2/G3 pilots passed) · Exp 1 frozen (leak audit, study split) · Exp 2 test scores sealed · Exp 3 grid running (see Execution log).
 
 ## Context
 KryptonxWatch needs a model that flags **shoplifting** (and later **robbery**) in store CCTV and says *when* it happens, so the web app timeline can show it. We will fine-tune Qwen3.8-27B, a dense vision-language model with video input, on UCF-Crime and MERL Shopping. The study follows the rigour of the reference study: a leakage-free benchmark first, pre-specified endpoints, three seeds, 95% confidence intervals clustered by video, and everything versioned. That way the reported result means something and isn't produced by leakage or by tuning on the test set.
@@ -125,6 +125,16 @@ KryptonxWatch needs a model that flags **shoplifting** (and later **robbery**) i
 Repeat Experiments 1–4 for **robbery** (UCF Robbery, once downloaded and time-stamped), then train one two-label model (shoplifting, robbery) and compare it with the single-task models. This gets its own plan in `model/.plans/` when it starts.
 
 ---
+
+## Execution log (deviations from the plan above)
+- **Hardware:** runs on an NVIDIA H100 80 GB (RunPod) instead of the GB10. bf16 LoRA fits (G3 pilot: 56.6 GiB peak, about 20-25 s per 8-window step).
+- **Training labels (Exp 1 step 3):** no human time stamps were made for the training shoplifting videos. A review of the top zero-shot candidate clips found only 1 of 9 clearly showed theft, so Experiment 3 uses **multiple-instance learning** instead: each round takes the current model's top 3 windows per training shoplifting video as positives, plus Normal negatives at 5:1 (`mil_round.py`, `run_mil.sh`).
+- **Selection metric:** validation has no time stamps either, and zero-shot validation video AUROC is already 1.0 (12 videos), so the grid selects on validation MIL NLL (`evaluate.py val`), not window AUROC.
+- **Grid:** learning rate {1e-4, 2e-4} × MIL rounds {1, 2, 3}, seed 1, then seeds 2 and 3 of the selected setting (`run_study.sh`, `select_config.py`).
+- **Localisation (Exp 4):** threshold = 1 FP/h on validation Normal windows, 2 s gap merging, central 4 s of each window. Pre-specified, not tuned, because validation has no time stamps (`localize.py`).
+- **Leakage audit:** 6 training videos shared a store camera with test videos and were excluded (`study/v1/exclusions.csv`). Study split: Shoplifting 21 / 5 / 21, Normal 30 / 7 / 150.
+- **Zero-shot test scores** (5,808 windows) are sealed read-only, with the sha256 in `model/runs/qwen38/exp2/`. They are read only after the adapters are frozen.
+- **Publishing:** `publish_hf.py` builds the model card and uploads to a public `shra012/qwen3.8-27b-ucf-shoplifting-lora`.
 
 ## Sequence
 0 → 1 (freeze) → 2 and 3 (run; test scores unsealed together) → 4 → 5 → 6. Nothing after Experiment 1 starts until its completion gate passes.
