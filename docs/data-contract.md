@@ -183,6 +183,38 @@ Transport is still to be decided (REST vs. queue). The shape of the exchange:
 }
 ```
 
+## Training and evaluation data
+
+Datasets each model owner uses, and how they map onto this contract. Files live under `data/` and are never committed (see `.gitignore`).
+
+### Shoplifting (owner: Sonakshi)
+
+| Topic | Detail |
+|---|---|
+| Datasets | UCF-Crime (`Shoplifting`, `Stealing` classes only), MERL Shopping |
+| Local path | `data/ucf-crime/`, `data/merl-shopping/` |
+| Used for | Training the shoplifting model; replaying test videos as simulated live cameras to measure time-to-alert, latency per stream, and false alarm rate |
+| Contract mapping | Each dataset video becomes a `Video`. Ground-truth events are compared against `Detection` records with `category: shoplifting` |
+
+#### UCF-Crime
+
+| Topic | Detail |
+|---|---|
+| Source | https://www.crcv.ucf.edu/research/real-world-anomaly-detection-in-surveillance-videos/ |
+| Size | 1,900 videos, 128 hrs total; per the paper, `Shoplifting` = 50 and `Stealing` = 100 (to be confirmed after download) |
+| Labels | Train: one label per video. Test: start/end times of the event, used as ground truth for `startSec` / `endSec` |
+| Licence | Research use; cite Sultani, Chen & Shah, "Real-world Anomaly Detection in Surveillance Videos", CVPR 2018 |
+
+#### MERL Shopping
+
+| Topic | Detail |
+|---|---|
+| Source | https://www.merl.com/research/highlights/merl-shopping-dataset |
+| Size | 106 videos, ~2 min each, overhead camera in a grocery-store setting |
+| Labels | Time intervals per action: reach to shelf, retract from shelf, hand in shelf, inspect product, inspect shelf |
+| Used for | Hand/shelf gesture model (pick-up vs. put-back). Contains no theft, so it produces no `Detection` categories by itself |
+| Licence | Free for research; cite Singh et al., "A Multi-Stream Bi-Directional Recurrent Neural Network for Fine-Grained Action Detection", CVPR 2016 |
+
 ## Open questions
 
 - Transport: REST polling, webhooks, or a message queue? Streaming for live cameras?
@@ -191,3 +223,4 @@ Transport is still to be decided (REST vs. queue). The shape of the exchange:
 - Should the model service provide thumbnails, or does the web app extract frames?
 - Face blurring: done by the model service before media reaches the web app, or in the web app?
 - Retention period for videos, detections and review verdicts.
+- UCF-Crime `Stealing` includes non-retail theft (e.g. bikes, cars). Should those detections be `shoplifting`, `theft`, or excluded?
