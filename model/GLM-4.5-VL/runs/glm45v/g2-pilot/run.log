@@ -1,0 +1,57 @@
+
+==========
+== vLLM ==
+==========
+
+NVIDIA Release 26.03.post1 (build 295860572)
+vLLM Version 0.17.1+bd67d66a
+Container image Copyright (c) 2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+Various files include modifications (c) NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+GOVERNING TERMS: The software and materials are governed by the NVIDIA Software License Agreement
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-software-license-agreement/)
+and the Product-Specific Terms for NVIDIA AI Products
+(found at https://www.nvidia.com/en-us/agreements/enterprise-software/product-specific-terms-for-ai-products/).
+
+NOTE: CUDA Forward Compatibility mode ENABLED.
+  Using CUDA 13.2 driver version 595.45.04 with kernel driver version 580.159.03.
+  See https://docs.nvidia.com/deploy/cuda-compatibility/ for details.
+
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Loading checkpoint shards:   0%|          | 0/46 [00:00<?, ?it/s]Loading checkpoint shards:   2%|▏         | 1/46 [00:32<24:33, 32.75s/it]Loading checkpoint shards:   4%|▍         | 2/46 [00:47<16:20, 22.29s/it]Loading checkpoint shards:   7%|▋         | 3/46 [01:01<13:20, 18.61s/it]Loading checkpoint shards:   9%|▊         | 4/46 [01:16<11:47, 16.85s/it]Loading checkpoint shards:  11%|█         | 5/46 [01:31<11:02, 16.15s/it]Loading checkpoint shards:  13%|█▎        | 6/46 [01:45<10:23, 15.58s/it]Loading checkpoint shards:  15%|█▌        | 7/46 [02:00<09:55, 15.28s/it]Loading checkpoint shards:  17%|█▋        | 8/46 [02:14<09:29, 14.98s/it]Loading checkpoint shards:  20%|█▉        | 9/46 [02:28<09:02, 14.67s/it]Loading checkpoint shards:  22%|██▏       | 10/46 [02:43<08:54, 14.83s/it]Loading checkpoint shards:  24%|██▍       | 11/46 [02:58<08:38, 14.83s/it]Loading checkpoint shards:  26%|██▌       | 12/46 [03:12<08:16, 14.61s/it]Loading checkpoint shards:  28%|██▊       | 13/46 [03:28<08:13, 14.94s/it]Loading checkpoint shards:  30%|███       | 14/46 [03:43<08:00, 15.02s/it]Loading checkpoint shards:  33%|███▎      | 15/46 [04:00<08:05, 15.66s/it]Loading checkpoint shards:  35%|███▍      | 16/46 [04:17<08:04, 16.14s/it]Loading checkpoint shards:  37%|███▋      | 17/46 [04:35<07:57, 16.46s/it]Loading checkpoint shards:  39%|███▉      | 18/46 [04:54<08:06, 17.38s/it]Loading checkpoint shards:  41%|████▏     | 19/46 [05:13<08:03, 17.90s/it]Loading checkpoint shards:  43%|████▎     | 20/46 [05:31<07:43, 17.83s/it]Loading checkpoint shards:  46%|████▌     | 21/46 [05:50<07:33, 18.15s/it]Loading checkpoint shards:  48%|████▊     | 22/46 [06:09<07:21, 18.39s/it]Loading checkpoint shards:  50%|█████     | 23/46 [06:27<07:01, 18.31s/it]Loading checkpoint shards:  52%|█████▏    | 24/46 [06:44<06:34, 17.95s/it]Loading checkpoint shards:  54%|█████▍    | 25/46 [07:02<06:16, 17.93s/it]Loading checkpoint shards:  57%|█████▋    | 26/46 [07:20<06:00, 18.05s/it]Loading checkpoint shards:  59%|█████▊    | 27/46 [07:39<05:45, 18.16s/it]Loading checkpoint shards:  61%|██████    | 28/46 [07:57<05:28, 18.25s/it]Loading checkpoint shards:  63%|██████▎   | 29/46 [08:15<05:08, 18.12s/it]Loading checkpoint shards:  65%|██████▌   | 30/46 [08:33<04:51, 18.23s/it]Loading checkpoint shards:  67%|██████▋   | 31/46 [08:52<04:33, 18.26s/it]Loading checkpoint shards:  70%|██████▉   | 32/46 [09:09<04:13, 18.10s/it]Loading checkpoint shards:  72%|███████▏  | 33/46 [09:28<03:56, 18.22s/it]Loading checkpoint shards:  74%|███████▍  | 34/46 [09:46<03:38, 18.23s/it]Loading checkpoint shards:  76%|███████▌  | 35/46 [10:05<03:21, 18.34s/it]Loading checkpoint shards:  78%|███████▊  | 36/46 [10:23<03:02, 18.22s/it]Loading checkpoint shards:  80%|████████  | 37/46 [10:40<02:42, 18.03s/it]Loading checkpoint shards:  83%|████████▎ | 38/46 [10:57<02:22, 17.77s/it]Loading checkpoint shards:  85%|████████▍ | 39/46 [11:15<02:04, 17.83s/it]Loading checkpoint shards:  87%|████████▋ | 40/46 [11:34<01:47, 17.97s/it]Loading checkpoint shards:  89%|████████▉ | 41/46 [11:52<01:30, 18.07s/it]Loading checkpoint shards:  91%|█████████▏| 42/46 [12:10<01:12, 18.00s/it]Loading checkpoint shards:  93%|█████████▎| 43/46 [12:28<00:53, 17.90s/it]Loading checkpoint shards:  96%|█████████▌| 44/46 [12:44<00:34, 17.38s/it]Loading checkpoint shards:  98%|█████████▊| 45/46 [13:16<00:21, 21.75s/it]Loading checkpoint shards: 100%|██████████| 46/46 [13:31<00:00, 19.91s/it]Loading checkpoint shards: 100%|██████████| 46/46 [13:31<00:00, 17.65s/it]
+{"video_id": "Stealing087", "start_sec": 113.6, "p_yes": 0.5405824780464172, "p_yes_repeat": 0.5405824780464172, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 4.52}
+{"video_id": "Stealing097", "start_sec": 26.4, "p_yes": 0.0026262751780450344, "p_yes_repeat": 0.0026262751780450344, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.2}
+{"video_id": "Shoplifting025", "start_sec": 35.5, "p_yes": 0.8892037868499756, "p_yes_repeat": 0.8892037868499756, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.19}
+{"video_id": "Stealing048", "start_sec": 114.8, "p_yes": 0.8780698776245117, "p_yes_repeat": 0.8780698776245117, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.2}
+{"video_id": "23_1", "start_sec": 13.1, "p_yes": 0.033556412905454636, "p_yes_repeat": 0.033556412905454636, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 8.14}
+{"video_id": "21_1", "start_sec": 56.8, "p_yes": 0.6873066425323486, "p_yes_repeat": 0.6873066425323486, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 7.72}
+{"video_id": "Stealing093", "start_sec": 19.6, "p_yes": 0.01488312054425478, "p_yes_repeat": 0.01488312054425478, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.2}
+{"video_id": "Stealing061", "start_sec": 65.0, "p_yes": 0.008866270072758198, "p_yes_repeat": 0.008866270072758198, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.19}
+{"video_id": "Stealing113", "start_sec": 42.2, "p_yes": 0.00712675740942359, "p_yes_repeat": 0.00712675740942359, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.34}
+{"video_id": "Stealing078", "start_sec": 36.8, "p_yes": 0.8591094017028809, "p_yes_repeat": 0.8591094017028809, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.19}
+{"video_id": "Stealing030", "start_sec": 16.7, "p_yes": 0.02739306353032589, "p_yes_repeat": 0.02739306353032589, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.2}
+{"video_id": "22_3", "start_sec": 34.2, "p_yes": 0.022040177136659622, "p_yes_repeat": 0.022040177136659622, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 7.76}
+{"video_id": "Stealing009", "start_sec": 36.1, "p_yes": 0.01091810967773199, "p_yes_repeat": 0.01091810967773199, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.22}
+{"video_id": "Stealing054", "start_sec": 43.9, "p_yes": 0.003931192681193352, "p_yes_repeat": 0.003931192681193352, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.26}
+{"video_id": "Shoplifting051", "start_sec": 3.3, "p_yes": 0.001492667361162603, "p_yes_repeat": 0.001492667361162603, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.22}
+{"video_id": "Stealing046", "start_sec": 240.8, "p_yes": 0.0016073741717264056, "p_yes_repeat": 0.0016073741717264056, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.2}
+{"video_id": "25_1", "start_sec": 54.2, "p_yes": 0.04452724754810333, "p_yes_repeat": 0.04452724754810333, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 7.73}
+{"video_id": "Stealing011", "start_sec": 94.8, "p_yes": 0.6269667744636536, "p_yes_repeat": 0.6269667744636536, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.21}
+{"video_id": "Stealing065", "start_sec": 116.2, "p_yes": 0.0029816448222845793, "p_yes_repeat": 0.0029816448222845793, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.21}
+{"video_id": "Shoplifting052", "start_sec": 0.3, "p_yes": 0.01104299072176218, "p_yes_repeat": 0.01104299072176218, "deterministic": true, "top_token": "<|begin_of_box|>", "sec": 2.21}
+{
+  "model_dir": "/srv/kryptonx-data/models/glm-4.5v/ed47433b37111465ec527affaaddceff371bca04",
+  "precision": "nf4 (bitsandbytes, double quant), visual + lm_head bf16",
+  "windows": 20,
+  "load_sec": 819.3,
+  "median_sec_per_window": 2.21,
+  "peak_gpu_mem_gib": 59.3,
+  "all_deterministic": true,
+  "top_tokens": [
+    "<|begin_of_box|>"
+  ],
+  "torch": "2.11.0a0+a6c236b9fd.nv26.03.46836102",
+  "host": "040c485f85a9"
+}
+exit=0

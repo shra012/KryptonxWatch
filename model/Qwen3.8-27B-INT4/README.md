@@ -2,6 +2,10 @@
 
 Edge flow for HawkWatch. The camera path stays on device. Qwen3.8-27B-INT4 reads a short set of frames only after a suspicious event is detected, then the result goes to the dashboard.
 
+## Model assets
+
+`src/` contains Qwen experiment and inference code, `env/qwen/` contains the pinned environment, `runs/qwen38/` contains run outputs, and `plans/` contains experiment plans. Shared study inputs remain in `../study/`. Run scripts from the KryptonxWatch repository root.
+
 ## HawkWatch edge AI flow
 
 ```
