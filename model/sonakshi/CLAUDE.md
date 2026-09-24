@@ -111,10 +111,19 @@ Replay dataset videos into the pipeline as if they were live store cameras
       .json docs), video files, model weights, archives
 - [~] Declare my datasets (UCF-Crime Shoplifting/Stealing, MERL Shopping) in
       docs/data-contract.md — pushed on branch docs/shoplifting-datasets;
-      PR to development needs opening, Shravan to review
+      PR to development, Shravan to review
+- WORK ON BRANCH docs/shoplifting-datasets until that PR is merged. On
+  `development`, model/sonakshi/ doesn't exist yet (files vanish on switch —
+  they're safe in the branch).
 - [x] Shared data folder /srv/kryptonx-data created and verified
-- [x] MERL Shopping downloaded (1.85 GB, zips pass integrity test) ->
-      /srv/kryptonx-data/merl-shopping/raw/ (not unzipped yet)
+- [x] MERL Shopping downloaded (1.85 GB, zips pass integrity test) and
+      unzipped (videos + labels, no __MACOSX junk) ->
+      /srv/kryptonx-data/merl-shopping/raw/
+- GOTCHA: `unzip` restores the zip's stored file modes (MERL's were 0700 from
+  a Mac), which breaks shared perms. After any unzip into /srv/kryptonx-data run
+  `sg workspace -c 'chgrp -R workspace X; find X -type d -exec chmod 2775 {} +;
+  find X -type f -exec chmod 664 {} +'`, then check
+  `find /srv/kryptonx-data ! -group workspace -o ! -perm -o=r`.
 - [x] UCF-Crime PARTIAL download DONE 2026-09-24 (Shoplifting 50, Stealing 100,
       Testing_Normal 150, 11 split files, temporal annotations zip; 9.7 GB on
       disk) -> /srv/kryptonx-data/ucf-crime/raw/ via
@@ -123,9 +132,19 @@ Replay dataset videos into the pipeline as if they were live store cameras
       Log: /srv/kryptonx-data/ucf-crime/download.log.
 - [x] PR branch docs/shoplifting-datasets updated to /srv/kryptonx-data paths,
       confirmed UCF counts, frame-based labels (commit 9f84b62)
-- [ ] Commit model/sonakshi/ (CLAUDE.md, data_prep/ script + tests + cert) —
-      the contract now references download_ucf_subset.py
-- UCF facts learned: temporal annotations are FRAME numbers, not seconds
-  (videos are 320x240 @ 30 fps; still check fps per video). Up to 2 events per
-  test video; -1 = no second event. 21 Shoplifting + 5 Stealing test videos.
-- [ ] Group and clean the dataset to what is needed
+- [x] Committed model/sonakshi/ to docs/shoplifting-datasets (4003ddb)
+- [x] UCF index: /srv/kryptonx-data/ucf-crime/index/{videos,events}.csv via
+      data_prep/build_ucf_index.py. 300 videos, 32 events, 0 warnings.
+- [x] MERL index: /srv/kryptonx-data/merl-shopping/index/{videos,actions}.csv
+      via data_prep/build_merl_index.py (needs zgx env for scipy). 106 videos,
+      5,377 actions, split 60/18/28 as ReadMe. 2 benign warnings (touching
+      intervals in 10_3, 17_3).
+- Tests: `~/miniforge3/envs/zgx/bin/python -m unittest discover -s
+  model/sonakshi/data_prep/tests` -> 63 pass. Base python3 skips MERL tests.
+- UCF facts: temporal annotations are FRAME numbers (sec = frame / fps). All
+  300 videos 320x240 @ 30 fps. Up to 2 events per test video; -1 = none.
+  21 Shoplifting + 5 Stealing test videos. Shoplifting events 2-90 s long.
+- MERL facts: 920x680 @ 30 fps, overhead. Labels are 1-based inclusive frames
+  at 30 fps (sec = (start-1)/fps .. end/fps). Split by subject: 1-20 train,
+  21-26 val, 27-41 test. No theft in MERL — gestures only.
+- [ ] Next: decide model approach, then cut clips / sample frames from the index
