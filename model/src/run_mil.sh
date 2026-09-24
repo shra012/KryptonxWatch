@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Multiple-instance LoRA training of Qwen3.8-27B (Experiment 3, weak supervision).
 # Each round: pick the top-K windows of every train-split Shoplifting video under the current model
-# (round 1 uses the zero-shot scores) plus random Normal negatives, train one epoch continuing the
+# (round 1 uses the zero-shot scores) plus random train Normal negatives (always listed from the zero-shot file,
+# since later rounds only rescore Shoplifting and validation videos), train one epoch continuing the
 # previous adapter, then score train Shoplifting + validation videos with the new adapter.
 #
 #   model/src/run_mil.sh <lr> <seed> <rounds>
@@ -21,12 +22,13 @@ mkdir -p "$ROOT"
 awk -F, '{ sub(/\r$/, "") } NR > 1 && (($2 == "Shoplifting" && $4 == "train") || $4 == "val") {print $1}' "$STUDY/splits.csv" \
   > "$ROOT/rescore_videos.txt"
 
-scores=/data/runs/qwen38/exp2/zeroshot_trainpool.csv
+zeroshot=/data/runs/qwen38/exp2/zeroshot_trainpool.csv
+scores=$zeroshot
 prev=""
 for r in $(seq 1 "$ROUNDS"); do
   dir=$ROOT/round$r
   if [[ ! -f $dir/adapter/adapter_config.json ]]; then
-    "$PY" "$SRC/mil_round.py" --scores "$scores" --k "$K" --neg-ratio "$NEG_RATIO" \
+    "$PY" "$SRC/mil_round.py" --scores "$scores" --neg-scores "$zeroshot" --k "$K" --neg-ratio "$NEG_RATIO" \
       --seed "$((SEED * 100 + r))" --out "$dir/windows.csv"
     "$PY" "$SRC/train_lora.py" --windows "$dir/windows.csv" --lr "$LR" --epochs 1 --seed "$((SEED * 100 + r))" \
       ${prev:+--init-adapter "$prev"} --out "$dir"
