@@ -10,6 +10,8 @@ const alertEnv = {
   ALERT_OWNER_NUMBER: "+14085551234",
   TWILIO_API_BASE: "http://127.0.0.1:4010",
   ALERT_REVIEW_BASE: base,
+  // The demo recordings are hidden in the app now; the tests still drive them.
+  NEXT_PUBLIC_DEMO_SAMPLES: "1",
 };
 export default defineConfig({
   testDir: "./tests", timeout: 60000, workers: 1,
@@ -17,7 +19,10 @@ export default defineConfig({
   expect: { timeout: 15000 },
   use: { baseURL: base, ...devices["Desktop Chrome"], launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH || undefined } },
   webServer: [
-    { command: "node tests/fake-twilio.mjs 4010", url: "http://127.0.0.1:4010/__sent", reuseExistingServer: false, timeout: 30000 },
+    // The alert tests count messages as a delta, so a fake you started by hand for a
+    // demo is safe to reuse. The dev server is not: it carries this config's Twilio env.
+    { command: "node tests/fake-twilio.mjs 4010", url: "http://127.0.0.1:4010/__sent", reuseExistingServer: true, timeout: 30000 },
+
     { command: "npm run dev -- --hostname 127.0.0.1 --port 3100", url: base, reuseExistingServer: false, timeout: 180000, env: alertEnv },
   ],
 });
