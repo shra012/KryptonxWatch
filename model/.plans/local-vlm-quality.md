@@ -1,6 +1,6 @@
 # Local model as good as Gemini 2.5 Flash (detection, scene log, boxes)
 
-Status: 2026-09-25 · Phase 0 done · Phase 1 result in (Qwen3-VL-30B-A3B local) · Phase 2 running (frame density) · data consolidation downloading (UCF crime classes, then training normals) · Phases 2–7 pending. Update this line as phases finish.
+Status: 2026-09-25 · Phase 0 done · Phase 1 result in (Qwen3-VL-30B-A3B local) · Phase 2 done (defaults kept) · Phase 3 done (YOLO snapping built; visual review pending) · data consolidation downloading (UCF crime classes, then training normals) · Phases 2–7 pending. Update this line as phases finish.
 
 ## Context
 Local analysis in the web app gives weaker detections, scene log and boxes than `google/gemini-2.5-flash` via OpenRouter. The team's [OpenRouter bake-off](../openrouter-bakeoff/README.md) (the app's own pipeline, 36 UCF clips) shows the first model we served, Qwen3.8-27B, is among the weakest open options: it flagged 39% of crime clips against Gemini's 94%. Open models also draw boxes that barely overlap Gemini's (median IoU about 0.1). No open model matches Gemini at naming the crime (50–61% vs 83%).
@@ -59,10 +59,18 @@ Local FP8 is at least as good as the OpenRouter-served model. It ties Gemini on 
 ### Phase 2: Tune the pipeline (no training)
 Options, each run on v1 with its own `--tag`: 8 frames per window, 768 px or native resolution, frames sent as one video clip, a "second look" (more frames, thinking on) for flagged windows only, and a two-model vote. Settings are chosen by **2-fold cross-validation over videos**. Gate: CV Score up by at least 10 points, or keep the defaults.
 
+**Result (2026-09-25):** 8 frames per window (1 per second) instead of 4: Score 69% (unchanged), window AUROC 0.72 (was 0.60, level with Gemini), timed hits 4/6 (was 3/6), normal clips false-alarmed 17% (was 22%). But right crime 56% (was 61%) and box IoU ≥ 0.3 10% (was 15%). Below the +10-point gate, so **the default 4-frame pipeline stays**. A 16-frame run was rejected by the server's 8-image limit (`--limit-mm-per-prompt`); it was not rerun because 8 frames showed no Score gain. The failed file was deleted. Resolution is already native (320×240). Levers left for this phase, if needed later: video input instead of separate images, and a Thinking-model second look.
+
 ### Phase 3: Boxes via a person detector
 1. YOLO11 person detector (about 1–2 GB) on the window's key frame. Snap the VLM box to the best-overlapping person, or the nearest one if none overlap.
 2. Later: ByteTrack across frames, so a detection follows the same person through the window.
 3. Gate: M2 improves on v1. Then add it to the app's analysis path, server-side, after the VLM reply.
+
+**Result (2026-09-25):**
+- Tooling: `model/YOLO/env/Dockerfile` (`kryptonx/yolo:dev`), `model/YOLO/src/yolo_snap.py` (writes `<results>__yolo.jsonl`), `model/YOLO/src/box_review.py` (visual page `data/bakeoff/review/boxes.html`). Weights: `/srv/kryptonx-data/models/yolo/` (YOLO11n/m, SHA-256 in `weights.sha256`).
+- **GB10 gotcha:** cuDNN 9.20 in the NGC 26.03 image makes YOLO return no detections on sm_121. With `torch.backends.cudnn.enabled = False`, results match the CPU at about 10 ms/image (CPU 42 ms). Watch for the same issue in any conv model on this box.
+- **M2 (agreement with Gemini) cannot judge person-snapping.** Snapping moves local boxes only slightly (Qwen3-VL IoU ≥ 0.3: 15% → 12%), and snapping *Gemini's own* boxes drops its self-agreement from 97% to 39%. Gemini draws loose region boxes (person plus object or area), not person boxes. M2 is therefore dropped as a box-quality measure.
+- **Visual review of 12 matched moments** (Claude's read, pending the user's): YOLO-snapped Qwen3-VL boxes are usually the tightest on the acting person (robberies, tunnel fight, vandalism); Gemini's are often large regions or empty areas. Failures: a wrong-person snap in hw-Fighting0, ambiguity in a crowded fisheye view, and a different person chosen in hw-Shoplifting2. Next: the user rates the page. If confirmed, move YOLO snapping into the app's analysis route (Phase 7) early.
 
 ### Phase 4: Build the fine-tuning dataset (UCA + study labels)
 1. **Splits and leakage:**
