@@ -7,7 +7,7 @@ import { isLocalVlmModel, isScorerModel, LOCAL_VLM_PREFIX, localVlmName, SCORER_
  * `scorer` configs answer yes/no over a video clip (lib/vlm/scorer.ts) instead of the JSON analysis prompt.
  * `local` marks models served on the GB10 (scorers and local general models).
  */
-export type ServerVlmConfig = VlmConfig & { scorer?: boolean; local?: boolean };
+export type ServerVlmConfig = VlmConfig & { scorer?: boolean; local?: boolean; alias?: string };
 
 // Qwen3.x thinks by default; per-window labels need a direct answer, as OpenRouter's reasoning:false gives.
 const LOCAL_EXTRA_BODY = { chat_template_kwargs: { enable_thinking: false } };
@@ -36,6 +36,19 @@ export function localVlmModels(): string[] {
   return [...localVlmEntries().keys()].map(m => LOCAL_VLM_PREFIX + m);
 }
 
+/**
+ * Display names for OpenRouter models, from VLM_MODEL_ALIASES (`alias=provider/model,...`). The browser only
+ * sees the alias (dropdown, "Model:" lines, results); requests go to the real model.
+ */
+function modelAliases(): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const entry of (process.env.VLM_MODEL_ALIASES ?? "").split(",").map(m => m.trim()).filter(Boolean)) {
+    const [alias, model] = entry.split("=", 2).map(x => x.trim());
+    if (alias && model) out.set(alias, model);
+  }
+  return out;
+}
+
 /** Models the browser may pick from (VLM_MODEL_OPTIONS plus local models). Always includes VLM_MODEL. */
 export function modelOptions(): string[] {
   const list = (process.env.VLM_MODEL_OPTIONS ?? "").split(",").map(m => m.trim()).filter(Boolean);
@@ -62,16 +75,17 @@ export function vlmConfig(kind: "vision" | "chat" = "vision", requested?: unknow
   const choice = picked && !isScorerModel(picked) && !isLocalVlmModel(picked) ? picked : undefined;
   const model = choice ?? (kind === "chat" ? process.env.VLM_CHAT_MODEL || process.env.VLM_MODEL : process.env.VLM_MODEL);
   if (!baseUrl || !model) return null;
-  let extraBody = defaultExtraBody(baseUrl, model);
+  const real = modelAliases().get(model);
+  let extraBody = defaultExtraBody(baseUrl, real ?? model);
   if (process.env.VLM_EXTRA_BODY) {
     try { extraBody = JSON.parse(process.env.VLM_EXTRA_BODY); } catch { /* ignore malformed override */ }
   }
-  return { baseUrl, apiKey: process.env.VLM_API_KEY, model, extraBody, timeoutMs: 120_000 };
+  return { baseUrl, apiKey: process.env.VLM_API_KEY, model: real ?? model, alias: real ? model : undefined, extraBody, timeoutMs: 120_000 };
 }
 
 /** The id the browser knows a config's model by (with its local prefix), for responses and "last run used". */
 export function modelId(config: ServerVlmConfig): string {
-  return config.scorer ? SCORER_PREFIX + config.model : config.local ? LOCAL_VLM_PREFIX + config.model : config.model;
+  return config.scorer ? SCORER_PREFIX + config.model : config.local ? LOCAL_VLM_PREFIX + config.model : config.alias ?? config.model;
 }
 
 export function providerLabel(baseUrl: string, local = false) {
