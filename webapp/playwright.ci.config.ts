@@ -12,6 +12,8 @@ const alertEnv = {
   ALERT_REVIEW_BASE: base,
   // The demo recordings are hidden in the app now; the tests still drive them.
   NEXT_PUBLIC_DEMO_SAMPLES: "1",
+  // Its own build folder, so it cannot clobber the .next of a dev server running on port 3000.
+  NEXT_DIST_DIR: ".next-e2e",
 };
 export default defineConfig({
   testDir: "./tests", timeout: 60000, workers: 1,
