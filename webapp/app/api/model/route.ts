@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { modelOptions, providerLabel, vlmConfig } from "@/lib/server/vlm-config";
+import { localVlmModels, modelId, modelOptions, providerLabel, scorerModels, vlmConfig } from "@/lib/server/vlm-config";
+import { SCORER_WINDOW } from "@/lib/vlm/scorer";
 
 export const dynamic = "force-dynamic";
 
@@ -7,5 +8,18 @@ export const dynamic = "force-dynamic";
 export function GET() {
   const vision = vlmConfig("vision");
   if (!vision) return NextResponse.json({ configured: false });
-  return NextResponse.json({ configured: true, model: vision.model, chatModel: vlmConfig("chat")?.model, provider: providerLabel(vision.baseUrl), options: modelOptions() });
+  const chat = vlmConfig("chat");
+  const scorers = scorerModels();
+  const localModels = [...localVlmModels(), ...scorers];
+  return NextResponse.json({
+    configured: true,
+    model: modelId(vision),
+    chatModel: chat ? modelId(chat) : undefined,
+    provider: providerLabel(vision.baseUrl, vision.local),
+    options: modelOptions(),
+    scorers,
+    scorerWindow: scorers.length ? SCORER_WINDOW : undefined,
+    localModels,
+    localProvider: localModels.length ? providerLabel("", true) : undefined,
+  });
 }

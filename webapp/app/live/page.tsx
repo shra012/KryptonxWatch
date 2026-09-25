@@ -7,6 +7,8 @@ import { EmptyState, EventTime, PageTitle, Panel, SeverityBadge } from "@/compon
 import { analyzeWindow, grabFrame, useModelStatus } from "@/lib/detection-client";
 import { INCIDENT_THRESHOLD, mergeDetections, WINDOW, type Frame, type WindowResult } from "@/lib/vlm/analysis";
 import { timecode, type VideoRecord } from "@/lib/types";
+import { isScorerModel } from "@/lib/vlm/scorer";
+import { newId } from "@/lib/id";
 import { videoSource } from "@/components/video-source";
 
 type Source = { kind: "camera" } | { kind: "video"; id: string };
@@ -18,6 +20,7 @@ const FRAME_MS = WINDOW.frameStep * 1000;
 export default function LiveMonitor() {
   const { videos, notify, saveVideo, alerts } = useApp();
   const model = useModelStatus();
+  const scorerPicked = isScorerModel(model?.model);
   const player = useRef<HTMLVideoElement>(null);
   const [source, setSource] = useState<Source>({ kind: "camera" });
   const [running, setRunning] = useState(false);
@@ -87,6 +90,8 @@ export default function LiveMonitor() {
     abort.current = new AbortController();
     try {
       if (source.kind === "camera") {
+        // Browsers expose the camera only on HTTPS or localhost; opening the app by IP over HTTP hides it.
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error("The camera is only available on https:// or http://localhost. Open the app at http://localhost:3000 (e.g. through a VS Code port forward) or pick a recording as the source.");
         const media = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } }, audio: false });
         stream.current = media;
         el.srcObject = media;
@@ -132,7 +137,7 @@ export default function LiveMonitor() {
 
   async function saveCapture() {
     if (!recording) return;
-    const id = crypto.randomUUID();
+    const id = newId();
     const windows = [...results.current].sort((a, b) => a.start - b.start);
     const record: VideoRecord = {
       id, title: `Live capture · ${new Date().toLocaleString()}`, recordedAt: new Date().toISOString(), duration: elapsed,
@@ -150,6 +155,7 @@ export default function LiveMonitor() {
     <PageTitle eyebrow="Real-time analysis" title="Live monitor" description="Watch a webcam or replay a recording as a camera feed. Frames are analysed every 8 seconds and suspected incidents appear in the feed for review."
       action={model?.configured ? <span className="badge badge-primary badge-soft">{model.provider} · {model.model}</span> : undefined} />
     {model && !model.configured && <div role="alert" className="alert alert-warning mb-6">No analysis model is configured. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the dev server.</div>}
+    {scorerPicked && <div role="alert" className="alert alert-warning mb-6">The local shoplifting scorer works on recorded videos only. Pick another model in Preferences to use Live, or upload a recording and run AI analysis.</div>}
     <div className="grid xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,.8fr)] gap-6">
       <div className="space-y-6">
         <Panel>
@@ -162,7 +168,7 @@ export default function LiveMonitor() {
             </label>
             {running
               ? <button className="btn btn-error" onClick={stop}><CircleStop size={17} />Stop</button>
-              : <button className="btn btn-primary" onClick={start} disabled={!model?.configured}>{source.kind === "camera" ? <Camera size={17} /> : <Film size={17} />}Start monitoring</button>}
+              : <button className="btn btn-primary" onClick={start} disabled={!model?.configured || scorerPicked}>{source.kind === "camera" ? <Camera size={17} /> : <Film size={17} />}Start monitoring</button>}
           </div>
           <div className={`video-frame ${latest?.alert && running ? "ring-4 ring-error" : ""}`}>
             <div className="video-canvas" style={{ "--video-ratio": 16 / 9 } as React.CSSProperties}>

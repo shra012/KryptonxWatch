@@ -1,6 +1,6 @@
 # GLM-4.5V arm of the shoplifting study
 
-Status: started 2026-09-24 · G0 passed · G1 passed · G2 passed · G3 next · G4–G6 pending. Update this line as gates pass.
+Status: **skipped 2026-09-25** (decision: shravan). G0–G2 passed; G3–G6 not run. Local work continues with dedicated VL models in [local-vlm-quality.md](../../.plans/local-vlm-quality.md). Weights remain at `/srv/kryptonx-data/models/glm-4.5v/` until someone deletes them.
 
 ## Context
 The main study ([shoplifting-study.md](shoplifting-study.md)) uses Qwen3.8-27B, which is blocked until the user can access the `zrt` model cache. This plan adds **GLM-4.5V** (zai-org, MIT licence) as a second model under the **same protocol**. It covers downloading and running GLM-4.5V on this machine, and how its results fit into the study. `shoplifting-study.md` is not modified. Everything in it (rules, definitions, the frozen cohort from Experiment 1, endpoints and the evaluation script) applies here unchanged, unless this file says otherwise.

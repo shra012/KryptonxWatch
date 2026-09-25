@@ -5,6 +5,10 @@
 //   node scripts/vlm-benchmark.ts run   --models qwen/qwen3-vl-8b-instruct,google/gemma-4-31b-it [--sets hawkwatch,timed,normal] [--limit 1]
 //   node scripts/vlm-benchmark.ts run   --models google/gemini-2.5-flash --pipeline hawkwatch   (HawkWatch's own prompt, 1 frame / 3 s)
 //   node scripts/vlm-benchmark.ts score
+//   node scripts/vlm-benchmark.ts boxes [--ref google/gemini-2.5-flash]   (box agreement with a reference model)
+//
+// Pipeline options for `run` (defaults = the app's pipeline, so existing results stay comparable):
+//   --frames-per-window 4 --frame-step 2 --max-width 512 --tag <suffix for the results file, e.g. local-8f768>
 //
 // Reads VLM_BASE_URL / VLM_API_KEY from the environment or webapp/.env.local.
 // Data: data/bakeoff/manifest.json (model/openrouter-bakeoff/fetch_data.py). Results: model/openrouter-bakeoff/results/.
@@ -23,7 +27,7 @@ const dataDir = join(repo, "data/bakeoff");
 const outDir = join(repo, "model/openrouter-bakeoff/results");
 
 interface Item { id: string; set: "hawkwatch" | "timed" | "normal"; path: string; label: string; duration: number; events: [number, number][] | null }
-interface Row { model: string; video: string; set: string; start: number; end: number; ok: boolean; error?: string; latencyMs?: number; cost?: number; promptTokens?: number; completionTokens?: number; raw?: string; result?: WindowResult }
+interface Row { model: string; video: string; set: string; start: number; end: number; ok: boolean; pipeline?: { frameStep: number; framesPerWindow: number; maxWidth: number }; error?: string; latencyMs?: number; cost?: number; promptTokens?: number; completionTokens?: number; raw?: string; result?: WindowResult }
 
 function env(name: string): string | undefined {
   if (name in process.env) return process.env[name] || undefined; // an explicitly empty value means "unset", e.g. VLM_API_KEY= for a local server
@@ -40,13 +44,14 @@ function arg(name: string, fallback?: string) {
 
 const slug = (model: string) => model.replace(/[/:]/g, "__");
 
-async function frame(item: Item, seconds: number): Promise<string> {
-  const cache = join(dataDir, "frames", item.id, `${seconds.toFixed(2)}.jpg`);
+async function frame(item: Item, seconds: number, maxWidth = 512): Promise<string> {
+  // 512 px keeps the original cache path so earlier runs reuse their frames.
+  const cache = join(dataDir, maxWidth === 512 ? "frames" : `frames-${maxWidth}`, item.id, `${seconds.toFixed(2)}.jpg`);
   if (!existsSync(cache)) {
     mkdirSync(dirname(cache), { recursive: true });
     const tmp = `${cache}.${process.pid}.tmp.jpg`; // write then rename, so parallel runs never read a partial file
     await run("ffmpeg", ["-v", "error", "-y", "-ss", String(seconds), "-i", join(dataDir, item.path), "-frames:v", "1",
-      "-vf", "scale='min(512,iw)':-2", "-pix_fmt", "yuvj420p", "-q:v", "4", tmp]);
+      "-vf", `scale='min(${maxWidth},iw)':-2`, "-pix_fmt", "yuvj420p", "-q:v", "4", tmp]);
     renameSync(tmp, cache);
   }
   return `data:image/jpeg;base64,${readFileSync(cache).toString("base64")}`;
@@ -64,6 +69,11 @@ async function runModels() {
   const concurrency = Number(arg("concurrency", "6"));
   const baseUrl = env("VLM_BASE_URL") ?? "https://openrouter.ai/api/v1";
   const apiKey = env("VLM_API_KEY");
+  const extraJson = env("VLM_EXTRA_BODY");
+  const extraBody = extraJson ? JSON.parse(extraJson) as Record<string, unknown> : undefined; // e.g. thinking off for local reasoning models
+  const frameStep = Number(arg("frame-step", "2")), framesPerWindow = Number(arg("frames-per-window", "4")), maxWidth = Number(arg("max-width", "512"));
+  const tag = arg("tag");
+  const plan = (duration: number) => planWindows(duration, frameStep, framesPerWindow);
   const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
   const items = manifest.items.filter(i => sets.includes(i.set));
   mkdirSync(outDir, { recursive: true });
@@ -72,18 +82,18 @@ async function runModels() {
   const repeat = arg("repeat"); // e.g. --repeat 2 writes a second, independent run to measure run-to-run stability
   for (const baseModel of models) {
     const model = (hawkwatch ? baseModel + HAWKWATCH_SUFFIX : baseModel) + (repeat ? ` #${repeat}` : "");
-    const file = join(outDir, `${slug(baseModel)}${hawkwatch ? "__hawkwatch-pipeline" : ""}${repeat ? `__r${repeat}` : ""}.jsonl`);
+    const file = join(outDir, `${slug(baseModel)}${hawkwatch ? "__hawkwatch-pipeline" : ""}${repeat ? `__r${repeat}` : ""}${tag ? `__${tag}` : ""}.jsonl`);
     const done = new Set(existsSync(file) ? readFileSync(file, "utf8").split("\n").filter(Boolean).map(l => { const r: Row = JSON.parse(l); return r.ok ? `${r.video}@${r.start}` : ""; }) : []);
-    const jobs = items.flatMap(item => (hawkwatch ? hawkwatchWindows(item.duration) : planWindows(item.duration)).map(w => ({ item, w })))
+    const jobs = items.flatMap(item => (hawkwatch ? hawkwatchWindows(item.duration) : plan(item.duration)).map(w => ({ item, w })))
       .filter(j => !done.has(`${j.item.id}@${j.w.start}`))
       .slice(0, limit || undefined);
     let cost = 0, fails = 0, n = 0;
     const started = Date.now();
     await pool(jobs, concurrency, async ({ item, w }) => {
-      const frames = await Promise.all(w.times.map(async t => ({ seconds: t, image: await frame(item, t) })));
-      const row: Row = { model, video: item.id, set: item.set, start: w.start, end: w.end, ok: false };
+      const frames = await Promise.all(w.times.map(async t => ({ seconds: t, image: await frame(item, t, maxWidth) })));
+      const row: Row = { model: model + (tag ? ` [${tag}]` : ""), video: item.id, set: item.set, start: w.start, end: w.end, ok: false, pipeline: { frameStep, framesPerWindow, maxWidth } };
       try {
-        const reply = await chat({ baseUrl, apiKey, model: baseModel }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens: 600 });
+        const reply = await chat({ baseUrl, apiKey, model: baseModel, extraBody, timeoutMs: 300_000 }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens: 600 });
         Object.assign(row, { latencyMs: reply.latencyMs, cost: reply.cost, promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, raw: reply.text });
         row.result = hawkwatch ? parseHawkwatch(reply.text, frames[0].seconds, w.start, w.end) : parseWindow(reply.text, frames, w.start, w.end);
         row.ok = true;
@@ -222,7 +232,8 @@ function score() {
     const final = [...last.values()];
     const model = final[0]?.model ?? file;
     const hw = isHawkwatch(model);
-    const expected = manifest.items.reduce((n, i) => n + (hw ? hawkwatchWindows(i.duration) : planWindows(i.duration)).length, 0);
+    const pl = final[0]?.pipeline;
+    const expected = manifest.items.reduce((n, i) => n + (hw ? hawkwatchWindows(i.duration) : planWindows(i.duration, pl?.frameStep, pl?.framesPerWindow)).length, 0);
     const okRows = final.filter(r => r.ok);
     const perVideo = new Map<string, WindowResult[]>();
     for (const r of okRows) perVideo.set(r.video, [...(perVideo.get(r.video) ?? []), r.result!]);
@@ -291,6 +302,56 @@ function score() {
   for (const s of summaries) console.log(`\n${s.model}\n  misses: ${s.clips.filter(c => !c.correct).map(c => `${c.id}[${c.categories.join("/") || "none"}]`).join(", ") || "none"}\n  normal false alarms: ${s.normalFalseAlarms.map(n => `${n.id}[${n.categories.join("/")}]`).join(", ") || "none"}${s.errors.length ? `\n  errors: ${s.errors.join(" | ")}` : ""}`);
 }
 
+// ---------- box agreement with a reference model ----------
+// UCF-Crime has no box labels, so boxes are compared with a reference model's (default Gemini 2.5 Flash).
+// Matched by time, not window, so pipeline variants with other window sizes are comparable.
+
+type Box = { x: number; y: number; width: number; height: number };
+function iou(a: Box, b: Box) {
+  const ix = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
+  const iy = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+  const inter = ix * iy, union = a.width * a.height + b.width * b.height - inter;
+  return union > 0 ? inter / union : 0;
+}
+
+function incidentsOf(file: string, threshold = INCIDENT_THRESHOLD) {
+  const last = new Map<string, Row>();
+  for (const l of readFileSync(file, "utf8").split("\n").filter(Boolean)) { const r: Row = JSON.parse(l); last.set(`${r.video}@${r.start}`, r); }
+  const out = new Map<string, { seconds: number; category: string; box?: Box }[]>();
+  for (const r of last.values()) {
+    if (!r.ok) continue;
+    for (const i of r.result!.incidents) if (i.confidence >= threshold) out.set(r.video, [...(out.get(r.video) ?? []), { seconds: i.seconds, category: i.category, box: i.box }]);
+  }
+  return { model: [...last.values()][0]?.model ?? file, byVideo: out };
+}
+
+function boxes() {
+  const ref = arg("ref", "google/gemini-2.5-flash")!;
+  const refFile = join(outDir, `${slug(ref)}.jsonl`);
+  const reference = incidentsOf(refFile);
+  const files = readdir(outDir).filter(f => f.endsWith(".jsonl") && join(outDir, f) !== refFile && !f.includes("hawkwatch-pipeline"));
+  const rows = files.map(f => {
+    const cand = incidentsOf(join(outDir, f));
+    let refBoxes = 0, matched = 0, sameCat = 0; const ious: number[] = [];
+    for (const [video, refs] of reference.byVideo) {
+      for (const r of refs.filter(r => r.box)) {
+        refBoxes++;
+        const near = (cand.byVideo.get(video) ?? []).filter(c => Math.abs(c.seconds - r.seconds) <= 2);
+        if (!near.length) continue;
+        matched++;
+        const best = near.reduce((b, c) => Math.abs(c.seconds - r.seconds) < Math.abs(b.seconds - r.seconds) ? c : b);
+        if (best.category === r.category) sameCat++;
+        ious.push(best.box ? iou(r.box!, best.box) : 0); // a missing box counts as no overlap
+      }
+    }
+    return { model: cand.model, refBoxes, matched, sameCat, iou30: ious.filter(x => x >= 0.3).length, medianIou: quantile(ious, 0.5) };
+  }).sort((a, b) => b.iou30 - a.iou30);
+  const header = `| Model | ${ref} boxes matched in time (±2 s) | Same category | Box IoU ≥ 0.3 (of matched) | Median IoU |\n|---|---|---|---|---|`;
+  const lines = rows.map(r => `| ${r.model} | ${r.matched}/${r.refBoxes} | ${pct(r.matched ? r.sameCat / r.matched : NaN)} | ${pct(r.matched ? r.iou30 / r.matched : NaN)} | ${Number.isFinite(r.medianIou) ? r.medianIou.toFixed(2) : "–"} |`);
+  writeFileSync(join(outDir, "boxes.md"), [header, ...lines].join("\n") + "\n");
+  console.log([header, ...lines].join("\n"));
+}
+
 function readdir(dir: string): string[] {
   return existsSync(dir) ? readdirSync(dir) : [];
 }
@@ -306,4 +367,5 @@ const command = process.argv[2];
 if (command === "frames") await extractFrames();
 else if (command === "run") await runModels();
 else if (command === "score") score();
-else console.error("usage: node scripts/vlm-benchmark.ts run --models a,b | score");
+else if (command === "boxes") boxes();
+else console.error("usage: node scripts/vlm-benchmark.ts frames | run --models a,b | score | boxes");

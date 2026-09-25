@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { notConfigured, vlmConfig } from "@/lib/server/vlm-config";
+import { modelId, notConfigured, vlmConfig } from "@/lib/server/vlm-config";
 import { summaryMessages, type SummaryRow } from "@/lib/vlm/assistant";
 import { chat } from "@/lib/vlm/client";
 
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   const rows = Array.isArray(body.rows) ? body.rows : [];
   try {
     const reply = await chat(config, summaryMessages(rows, body.totals ?? {}), { maxTokens: 500, temperature: 0.3, signal: request.signal });
-    return NextResponse.json({ summary: reply.text.trim(), model: config.model });
+    return NextResponse.json({ summary: reply.text.trim(), model: modelId(config) });
   } catch (e) {
     return NextResponse.json({ error: `Summary request failed: ${e instanceof Error ? e.message : String(e)}` }, { status: 502 });
   }

@@ -27,8 +27,8 @@ export function videoContextText(v: VideoContext) {
 
 export function assistantMessages(v: VideoContext, history: ChatTurn[]) {
   return [
-    { role: "system", content: ASSISTANT_PROMPT },
-    { role: "system", content: videoContextText(v) },
+    // One system message: Qwen3.x chat templates (local vLLM) reject a second system message.
+    { role: "system", content: `${ASSISTANT_PROMPT}\n\n${videoContextText(v)}` },
     ...history.slice(-12).map(t => ({ role: t.role, content: t.content.slice(0, 2000) })),
   ];
 }

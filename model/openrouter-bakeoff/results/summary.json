@@ -672,6 +672,228 @@
   "errors": []
  },
  {
+  "model": "qwen3-vl-30b-a3b [local]",
+  "windows": "163/163",
+  "parseFailures": 0,
+  "clipDetect": 0.8333333333333334,
+  "clipCorrectCategory": 0.6111111111111112,
+  "normalFalseAlarmClips": 0.2222222222222222,
+  "falseAlarmsPerMin": 0.74757039621231,
+  "balancedAccuracy": 0.8055555555555556,
+  "score": 0.6944444444444444,
+  "cvScore": 0.6944444444444444,
+  "cvThresholds": [
+   0.5,
+   0.7
+  ],
+  "windowAuroc": 0.6017369727047146,
+  "windowPrecision": 0.29411764705882354,
+  "eventHit": "3/6",
+  "medianOnsetErrorS": 4.33,
+  "latencyP50s": 2.113,
+  "latencyP90s": 6.059,
+  "costUsd": 0,
+  "clips": [
+   {
+    "id": "hw-Fighting0",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Vandalism",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "hw-Fighting1",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency",
+     "Kiosk nonpayment"
+    ]
+   },
+   {
+    "id": "hw-Fighting2",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "hw-Fighting3",
+    "label": "Fighting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "hw-Robbery1",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery"
+    ]
+   },
+   {
+    "id": "hw-Robbery2",
+    "label": "Robbery",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "hw-Robbery3",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft",
+     "Gun",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "hw-Shoplifting0",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "hw-Shoplifting1",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "hw-Shoplifting2",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Theft"
+    ]
+   },
+   {
+    "id": "hw-Stealing1",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "hw-Vandalism3",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Shoplifting017_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting031_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Robbery106_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft",
+     "Suspicious activity",
+     "Robbery",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting018_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Stealing062_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Vandalism007_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Theft"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [
+   {
+    "id": "Normal_Videos_888_x264",
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_870_x264",
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Normal_Videos_907_x264",
+    "categories": [
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Normal_Videos_910_x264",
+    "categories": [
+     "Suspicious activity"
+    ]
+   }
+  ],
+  "errors": []
+ },
+ {
   "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
   "windows": "162/163",
   "parseFailures": 1,
