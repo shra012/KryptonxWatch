@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { localVlmModels, modelId, modelOptions, providerLabel, scorerModels, vlmConfig } from "@/lib/server/vlm-config";
+import { localVlmModels, modelAliases, modelId, modelOptions, providerLabel, scorerModels, vlmConfig } from "@/lib/server/vlm-config";
 import { SCORER_WINDOW } from "@/lib/vlm/scorer";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,8 @@ export function GET() {
     chatModel: chat ? modelId(chat) : undefined,
     provider: providerLabel(vision.baseUrl, vision.local),
     options: modelOptions(),
+    // Real model -> display name, so recordings saved under the real name show the alias too
+    aliases: Object.fromEntries([...modelAliases()].map(([alias, real]) => [real, alias])),
     scorers,
     scorerWindow: scorers.length ? SCORER_WINDOW : undefined,
     localModels,

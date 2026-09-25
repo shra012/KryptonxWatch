@@ -15,7 +15,12 @@ export interface ModelStatus {
   scorers?: string[]; scorerWindow?: { windowSec: number; strideSec: number; fps: number; frames: number };
   /** Models served on the GB10 (local general models and scorers) and their provider label. */
   localModels?: string[]; localProvider?: string;
+  /** Real model -> display name (VLM_MODEL_ALIASES). */
+  aliases?: Record<string, string>;
 }
+
+/** A saved model name as the UI shows it (its alias, if the server gives one). */
+export const displayModel = (name: string | undefined, status: ModelStatus | null) => name && (status?.aliases?.[name] ?? name);
 
 let statusPromise: Promise<ModelStatus> | null = null;
 export function fetchModelStatus(): Promise<ModelStatus> {

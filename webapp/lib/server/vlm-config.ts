@@ -40,7 +40,7 @@ export function localVlmModels(): string[] {
  * Display names for OpenRouter models, from VLM_MODEL_ALIASES (`alias=provider/model,...`). The browser only
  * sees the alias (dropdown, "Model:" lines, results); requests go to the real model.
  */
-function modelAliases(): Map<string, string> {
+export function modelAliases(): Map<string, string> {
   const out = new Map<string, string>();
   for (const entry of (process.env.VLM_MODEL_ALIASES ?? "").split(",").map(m => m.trim()).filter(Boolean)) {
     const [alias, model] = entry.split("=", 2).map(x => x.trim());
