@@ -76,8 +76,10 @@ export default function Dashboard(){
  const all=allDetections(videos) as Row[];
  const attention=all.filter(d=>(d.severity==="critical"||d.severity==="high")&&d.status==="new").length;
  const open=all.filter(d=>d.status==="new").sort((a,b)=>b.recordedAt.localeCompare(a.recordedAt)||b.seconds-a.seconds);
- // One tile per recording, held at that recording's most serious open moment.
- const wall=videos.map((v,i)=>({video:v,index:i,detection:[...v.detections].filter(isSecurityDetection).sort((a,b)=>(b.severity==="critical"?3:b.severity==="high"?2:1)-(a.severity==="critical"?3:a.severity==="high"?2:1))[0]??v.detections[0]}));
+ // Only recordings with a prominent crime (medium severity or above, not dismissed), each looping its most serious moment; worst first.
+ const rank=(d:Detection)=>d.severity==="critical"?3:d.severity==="high"?2:d.severity==="medium"?1:0;
+ const wall=videos.flatMap(v=>{const top=v.detections.filter(d=>isSecurityDetection(d)&&rank(d)>0).sort((a,b)=>rank(b)-rank(a)||(b.confidence??0)-(a.confidence??0))[0];return top?[{video:v,detection:top}]:[]})
+  .sort((a,b)=>rank(b.detection)-rank(a.detection)||b.video.recordedAt.localeCompare(a.video.recordedAt));
  const edge=error?"offline":snapshot?.gpu?"live":"degraded";
  const edgeDetail=error?"No answer from /api/system":snapshot?.gpu?.name?`${snapshot.gpu.name} · ${Math.round(snapshot.gpu.utilisation??0)}% busy`:snapshot?"Accelerator not visible from this host":"Connecting…";
  const figures=[{label:"Recordings",value:stats.videos,href:"/videos"},{label:"Suspected incidents",value:stats.detections,href:"/detections"},{label:"High priority",value:stats.high,href:"/detections?severity=high"},{label:"Reviewed",value:stats.reviewed,href:"/detections?status=reviewed"},{label:"Queue metrics",value:stats.measurements,href:"/detections?severity=measurement"}];
@@ -86,7 +88,7 @@ export default function Dashboard(){
  const dismiss=async(d:Row)=>{try{await setReviewStatus(d.videoId,d.id,"dismissed")}catch(e){setNote({tone:"error",text:e instanceof Error?e.message:"Could not dismiss this detection."})}};
 
  return <>
- <PageTitle eyebrow="Monitor" title="Overview" description="Every recording at the moment it flagged, and what is still waiting on a person."
+ <PageTitle eyebrow="Monitor" title="Overview" description="Every flagged crime, looping at the moment it happened, and what is still waiting on a person."
   action={<Link href="/upload" className="btn btn-primary btn-sm"><CloudUpload size={16}/>Upload video</Link>}/>
 
  <SystemBar attention={attention} figures={figures} loading={loading} edge={edge} edgeDetail={edgeDetail}
@@ -97,10 +99,11 @@ export default function Dashboard(){
  {note&&<div className="mb-6"><Notice tone={note.tone} role={note.tone==="error"?"alert":undefined}>{note.text}</Notice></div>}
 
  <Panel title="Monitor wall" action={<Link href="/videos" className="text-sm link link-primary link-hover">Library</Link>}>
-  {videos.length?<>
-   <div className="grid gap-3 grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))]">{wall.map(({video,detection,index})=><MonitorTile key={video.id} video={video} detection={detection} index={index}/>)}</div>
-   <p className="text-xs text-base-content/45 mt-3">Each tile is the frame at that recording&apos;s most serious annotation, with the box the model drew. Boxes on sample footage are simulated.</p>
-  </>:<EmptyState title="No recordings" description="Upload a video and it appears on the wall." action={<Link href="/upload" className="btn btn-primary btn-sm">Upload video</Link>}/>}
+  {wall.length?<>
+   <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(min(100%,21rem),1fr))]">{wall.map(({video,detection},index)=><MonitorTile key={video.id} video={video} detection={detection} index={index}/>)}</div>
+   <p className="text-xs text-base-content/45 mt-3">Recordings with a suspected crime of medium severity or above. Each tile loops the flagged moment with the tracked person boxed; open it to review.</p>
+  </>:videos.length?<EmptyState title="No crimes flagged" description="Run AI analysis on a recording. Anything it flags at medium severity or above loops here." action={<Link href="/videos" className="btn btn-primary btn-sm">Video library</Link>}/>
+  :<EmptyState title="No recordings" description="Upload a video and run AI analysis. Flagged crimes loop on the wall." action={<Link href="/upload" className="btn btn-primary btn-sm">Upload video</Link>}/>}
  </Panel>
 
  <div className="grid xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-x-8 gap-y-10 items-start mt-10">
