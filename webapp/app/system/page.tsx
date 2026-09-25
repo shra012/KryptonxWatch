@@ -37,7 +37,7 @@ export default function SystemPage(){
  </div>
 
  <div className="rounded-xl bg-base-200/70 px-5 py-3.5 mb-8 text-sm text-base-content/65 flex flex-wrap gap-x-3 gap-y-1">
-  <span className="font-mono text-xs uppercase tracking-[.16em] text-primary font-semibold self-center">Hardware-aware scheduling</span>
+  <span className="font-mono text-xs uppercase tracking-[.06em] text-primary font-semibold self-center">Hardware-aware scheduling</span>
   <span>{host?.memoryTotalMb?`${whole(gb(host.memoryTotalMb))} GB unified model memory`:"Unified memory unreadable"} · {gpu?.powerLimitWatts?`${Math.round(gpu.powerLimitWatts)} W SoC compute profile`:"no power profile reported"}. Capacity and model launch eligibility follow these live readings, not a configured guess.</span>
  </div>
 

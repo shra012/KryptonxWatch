@@ -37,7 +37,7 @@ test("alerting an owner from the detection log texts once and refuses the repeat
   expect(messages.length).toBe(before + 1);
   const body = messages[messages.length - 1].body;
   expect(body.length).toBeLessThanOrEqual(160);
-  expect(body).toMatch(/^\[SIMULATED\] KryptonxWatch: Suspected /);
+  expect(body).toMatch(/^\[SIMULATED\] Sentinel Machines: Suspected /);
   expect(body).toContain("/videos/");
 
   // Same detection again: the owner should not be texted twice.

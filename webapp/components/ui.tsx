@@ -2,7 +2,7 @@ import type { Detection, Severity } from "@/lib/types";
 import { dateLabel, timecode } from "@/lib/types";
 export function PageTitle({eyebrow,title,description,action,hero=false}:{eyebrow?:string;title:string;description:string;action?:React.ReactNode;hero?:boolean}){
  if(hero) return <header className="mb-8">
-  {eyebrow&&<div className="font-mono text-xs uppercase tracking-[.22em] text-primary mb-3">{eyebrow}</div>}
+  {eyebrow&&<div className="font-mono text-xs uppercase tracking-[.08em] text-primary mb-3">{eyebrow}</div>}
   <h1 className="text-4xl lg:text-[3.1rem] font-bold tracking-[-.03em] leading-[1.02]">{title}</h1>
   <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 mt-4">
    <p className="text-base text-base-content/60 max-w-xl leading-relaxed">{description}</p>{action}
@@ -10,14 +10,14 @@ export function PageTitle({eyebrow,title,description,action,hero=false}:{eyebrow
  </header>;
  return <header className="mb-8 border-b border-base-300 pb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
   <div className="min-w-0">
-   <div className="flex items-baseline gap-2.5 flex-wrap">{eyebrow&&<><span className="font-mono text-[.66rem] uppercase tracking-[.22em] text-primary">{eyebrow}</span><span className="text-base-content/25">/</span></>}<h1 className="text-2xl lg:text-[1.7rem] font-semibold tracking-tight">{title}</h1></div>
+   <div className="flex items-baseline gap-2.5 flex-wrap">{eyebrow&&<><span className="font-mono text-[.66rem] uppercase tracking-[.08em] text-primary">{eyebrow}</span><span className="text-base-content/25">/</span></>}<h1 className="text-2xl lg:text-[1.75rem] font-semibold tracking-[-.025em]">{title}</h1></div>
    <p className="text-sm text-base-content/55 mt-1.5 max-w-2xl">{description}</p>
   </div>{action}
  </header>;
 }
 
 export function Panel({title,children,action,className=""}:{title?:string;children:React.ReactNode;action?:React.ReactNode;className?:string}){
- return <section className={`min-w-0 ${className}`}>{(title||action)&&<div className="flex items-center gap-4 mb-4"><h2 className="font-mono text-[.7rem] uppercase tracking-[.17em] text-base-content/50 shrink-0">{title}</h2><span className="h-px flex-1 bg-base-300"/><div className="shrink-0">{action}</div></div>}{children}</section>;
+ return <section className={`min-w-0 ${className}`}>{(title||action)&&<div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4"><h2 className="font-mono text-[.7rem] uppercase tracking-[.06em] text-base-content/50 shrink-0">{title}</h2><span className="h-px flex-1 min-w-8 bg-base-300"/><div className="shrink-0 max-w-full">{action}</div></div>}{children}</section>;
 }
 
 /* Severity and review state are typographic, not coloured pills: a swatch from the
@@ -25,16 +25,16 @@ export function Panel({title,children,action,className=""}:{title?:string;childr
 const sevRamp: Record<Severity,string> = { critical:"var(--sev-critical)", high:"var(--sev-high)", medium:"var(--sev-medium)", low:"var(--sev-low)", measurement:"var(--sev-metric)" };
 export function SeverityBadge({severity}:{severity:Severity}){
  const label = severity==="measurement" ? "Queue metric" : severity;
- return <span className="inline-flex items-center gap-1.5 font-mono text-[.62rem] uppercase tracking-[.14em] text-base-content/70 whitespace-nowrap">
-  <span className="size-[7px] rounded-[1px] shrink-0" style={{background:sevRamp[severity]}} aria-hidden/>{label}
+ return <span className="inline-flex items-center gap-1.5 rounded-full border border-base-300 bg-base-100 px-2 py-0.5 text-[.7rem] font-medium capitalize text-base-content/75 whitespace-nowrap">
+  <span className="size-1.5 rounded-full shrink-0" style={{background:sevRamp[severity]}} aria-hidden/>{label}
  </span>;
 }
 export function StatusBadge({status}:{status:Detection["status"]}){
- return <span className={`font-mono text-[.62rem] uppercase tracking-[.14em] whitespace-nowrap ${status==="new"?"text-base-content":"text-base-content/45"}`}>{status}</span>;
+ return <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[.7rem] font-medium capitalize whitespace-nowrap ${status==="new"?"bg-base-content text-base-100":status==="reviewed"?"bg-base-200 text-base-content/75 ring-1 ring-inset ring-base-300":"text-base-content/45 ring-1 ring-inset ring-base-300"}`}>{status}</span>;
 }
 export function EventLabel({d}:{d:Detection}){return <span>{d.severity==="measurement"?d.category:`Suspected ${d.category.toLowerCase()}`}</span>}
 export function EmptyState({title,description,action}:{title:string;description:string;action?:React.ReactNode}){
- return <div className="border-l-2 border-base-300 pl-4 py-3"><div className="font-medium">{title}</div><p className="text-sm text-base-content/55 mt-1 max-w-lg">{description}</p>{action&&<div className="mt-3">{action}</div>}</div>;
+ return <div className="rounded-xl border border-dashed border-base-300 px-5 py-8 text-center"><div className="font-medium">{title}</div><p className="text-sm text-base-content/55 mt-1 max-w-lg mx-auto">{description}</p>{action&&<div className="mt-4">{action}</div>}</div>;
 }
 /** A line of consequence. A rule in the margin, not a tinted box with an icon in it. */
 export function Notice({tone="muted",children,role}:{tone?:"muted"|"info"|"warning"|"error";children:React.ReactNode;role?:string}){
@@ -78,10 +78,10 @@ export function Meter({value,max=100,tone="bg-primary",label,caption}:{value:num
   <div className="h-2 rounded-full bg-base-300 overflow-hidden" role="meter" aria-valuenow={value==null?undefined:Math.round(frac)} aria-valuemin={0} aria-valuemax={100} aria-label={label}><div className={`h-full rounded-full ${value==null?"bg-base-300":tone}`} style={{width:`${frac}%`,transition:"width .6s ease"}}/></div></div>;
 }
 export function Readout({label,value,hint,tone=""}:{label:string;value:React.ReactNode;hint?:string;tone?:string}){
- return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.16em] text-base-content/45">{label}</div><div className={`font-mono text-lg font-semibold tabular-nums mt-1.5 truncate ${tone}`}>{value}</div>{hint&&<div className="text-xs text-base-content/45 mt-0.5 truncate">{hint}</div>}</div>;
+ return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{label}</div><div className={`font-mono text-lg font-semibold tabular-nums mt-1.5 truncate ${tone}`}>{value}</div>{hint&&<div className="text-xs text-base-content/45 mt-0.5 truncate">{hint}</div>}</div>;
 }
 export function Unavailable({title,reason}:{title:string;reason:string}){
- return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.16em] text-base-content/45">{title}</div><div className="font-mono text-lg text-base-content/25 mt-1.5">not sampled</div><p className="text-xs text-base-content/45 mt-1">{reason}</p></div>;
+ return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{title}</div><div className="font-mono text-lg text-base-content/25 mt-1.5">not sampled</div><p className="text-xs text-base-content/45 mt-1">{reason}</p></div>;
 }
 
 /** A "?" that explains a reading. Keyboard reachable, so it is a button, not a title attribute. */

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { framesToMp4DataUrl } from "@/lib/server/frames-to-video";
 import { modelId, notConfigured, vlmConfig, type ServerVlmConfig } from "@/lib/server/vlm-config";
+import { groundBoxes } from "@/lib/server/yolo";
 import { INCIDENT_THRESHOLD, parseWindow, windowMessages, type Frame } from "@/lib/vlm/analysis";
 import { chat, VlmError } from "@/lib/vlm/client";
 import { parseYesNo, SCORER_WINDOW, scorerBody, scorerWindowResult } from "@/lib/vlm/scorer";
@@ -61,9 +62,10 @@ export async function POST(request: Request) {
     for (let attempt = 0; attempt < 2; attempt++) {
       const reply = await chat(config, windowMessages(frames, context), { maxTokens: 600, temperature: attempt ? 0.2 : 0, signal: request.signal });
       raw = reply.text;
-      try {
-        return NextResponse.json({ ...parseWindow(reply.text, frames, start, end), model: modelId(config), latencyMs: reply.latencyMs });
-      } catch { /* retry */ }
+      let result;
+      try { result = parseWindow(reply.text, frames, start, end); } catch { continue; /* retry */ }
+      // Snap boxes to YOLO persons and follow them across the frames (VLM boxes if YOLO is not configured).
+      return NextResponse.json({ ...(await groundBoxes(result, frames, request.signal)), model: modelId(config), latencyMs: reply.latencyMs });
     }
     return NextResponse.json({ error: "The model reply was not valid JSON twice in a row. Try again or choose another model.", raw: raw.slice(0, 500) }, { status: 502 });
   } catch (e) {

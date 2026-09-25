@@ -38,7 +38,7 @@ export async function chat(config: VlmConfig, messages: unknown[], options: { ma
         headers: {
           "Content-Type": "application/json",
           ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
-          ...(isOpenRouter(config.baseUrl) ? { "HTTP-Referer": "https://github.com/shra012/KryptonxWatch", "X-Title": "KryptonxWatch" } : {}),
+          ...(isOpenRouter(config.baseUrl) ? { "HTTP-Referer": "https://github.com/shra012/KryptonxWatch", "X-Title": "Sentinel Machines" } : {}),
         },
         body: JSON.stringify(body),
         signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,

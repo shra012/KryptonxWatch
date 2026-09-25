@@ -1,4 +1,4 @@
-# KryptonxWatch web app
+# Sentinel Machines web app
 
 Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter now, a local server on the GB10 later) analyses uploads and live feeds. Without a model configured, the app runs in demo mode. Another team builds the fine-tuned models; they integrate through [the data contract](../docs/data-contract.md). Roadmap: [webapp-roadmap.md](.plans/webapp-roadmap.md). Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
 
@@ -35,7 +35,7 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - Tailwind 4 + daisyUI 5 classes, `lucide-react` icons, Recharts for charts. Ask before adding a UI library.
 - The look is a flat instrument console, not a card grid: sections are a mono label, a hairline and content (`Panel`), figures sit in hairline-ruled grids, and consequence is a rule in the margin (`Notice`) rather than a tinted callout box. Do not reintroduce `alert alert-*` boxes or rounded shadow cards.
 - The palette is monochrome: dark is pitch black, light is paper. Amber and red are the only hues and are reserved for genuine attention and alarm — never decoration, and never to rank a severity. Do not add an accent hue.
-- Type is EB Garamond for prose and headings, JetBrains Mono for anything read as data (labels, figures, timecodes, identifiers). Never set numbers in the serif.
+- Type is Geist (sans) for prose, headings and controls, Geist Mono for anything read as data (figures, timecodes, identifiers, small uppercase labels). Both load via `next/font` in `app/layout.tsx`. Keep letter-spacing on uppercase labels at or under `.08em`; corners are soft (`rounded-lg` controls, `rounded-xl` framed groups).
 - Severity and review state are typographic (`SeverityBadge` / `StatusBadge`): a swatch from the achromatic severity ramp plus the word. No coloured pills.
 - Small live readings use the SVG primitives in `components/ui.tsx` (`Gauge`, `Sparkline`, `Meter`, `Readout`, `Unavailable`), not Recharts.
 - Light and dark themes via `data-theme`. Use daisyUI semantic colours (`base-*`, `primary`, `error`, …), not raw hex, and check both themes.
