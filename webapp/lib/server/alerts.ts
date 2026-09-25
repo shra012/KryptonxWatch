@@ -1,12 +1,12 @@
 // Server-side only: this module holds the Twilio credentials. Import it from
 // route handlers, never from a "use client" file. Secrets live in
 // webapp/.env.local (git-ignored) and are never returned to the browser.
-import type { Category, Severity } from "@/lib/types";
+import type { AlertChannel, AlertRecipient, Category, Severity } from "@/lib/types";
 
 export type AlertOutcome = "sent" | "duplicate" | "below_threshold" | "rate_limited" | "not_configured" | "failed";
-export interface AlertRequest { detectionId: string; category: Category; severity: Severity; videoTitle: string; seconds: number; simulated: boolean; reviewPath?: string; test?: boolean }
+export interface AlertRequest { detectionId: string; category: Category; severity: Severity; videoTitle: string; seconds: number; simulated: boolean; reviewPath?: string; test?: boolean; recipient?: AlertRecipient }
 export interface AlertResult { outcome: AlertOutcome; message: string; body?: string; sid?: string; retryAfterMinutes?: number }
-export interface AlertStatus { configured: boolean; missing: string[]; ownerMasked: string | null; sentLastHour: number; maxPerHour: number; minimumSeverity: Severity; sandbox: boolean }
+export interface AlertStatus { configured: boolean; missing: string[]; ownerMasked: string | null; sentLastHour: number; maxPerHour: number; minimumSeverity: Severity; sandbox: boolean; channels: Record<AlertChannel, boolean>; acceptsRecipient: boolean }
 
 const MAX_BODY = 160;                       // one GSM-7 segment, so one billed message
 const WINDOW_MS = 60 * 60 * 1000;
@@ -25,8 +25,23 @@ const neverAlert: Category[] = ["Queue tracking"];
 export function shouldAlert(category: Category, severity: Severity) { if (severity === "measurement" || neverAlert.includes(category)) return false; return alwaysAlert.includes(category) || rank[severity] >= rank[minimumSeverity()]; }
 
 // A phone number Twilio will accept: E.164, 8-15 digits after the +.
-export function normaliseNumber(raw: string) { const t = raw.trim().replace(/[\s()\-.]/g, ""); return /^\+[1-9]\d{7,14}$/.test(t) ? t : null; }
-function mask(number: string | null) { return number ? `${number.slice(0, 3)}${"•".repeat(Math.max(0, number.length - 7))}${number.slice(-4)}` : null; }
+export function normaliseNumber(raw: string) { const t = raw.trim().replace(/^whatsapp:/i, "").replace(/[\s()\-.]/g, ""); return /^\+[1-9]\d{7,14}$/.test(t) ? t : null; }
+function normaliseEmail(raw: string) { const t = raw.trim(); return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t) ? t : null; }
+
+/** Returns the recipient in the form its channel needs, or why it cannot be used. */
+export function checkRecipient(r: AlertRecipient): { to: string } | { error: string } {
+  if (r.channel === "email") { const to = normaliseEmail(r.to); return to ? { to } : { error: "That does not look like an email address." }; }
+  const number = normaliseNumber(r.to);
+  if (!number) return { error: "Enter the number in international form, for example +14085551234." };
+  return { to: r.channel === "whatsapp" ? `whatsapp:${number}` : number };
+}
+function maskAny(value: string | null) {
+  if (!value) return null;
+  const bare = value.replace(/^whatsapp:/, "");
+  if (bare.includes("@")) { const [user, domain] = bare.split("@"); return `${user.slice(0, 2)}${"\u2022".repeat(Math.max(1, user.length - 2))}@${domain}`; }
+  return `${bare.slice(0, 3)}${"\u2022".repeat(Math.max(0, bare.length - 7))}${bare.slice(-4)}`;
+}
+const mask = maskAny;
 
 function credentials() {
   const sid = env("TWILIO_ACCOUNT_SID"), token = env("TWILIO_AUTH_TOKEN");
@@ -37,7 +52,11 @@ function credentials() {
   if (!token) missing.push("TWILIO_AUTH_TOKEN");
   if (!from && !service) missing.push("TWILIO_FROM_NUMBER or TWILIO_MESSAGING_SERVICE_SID");
   if (!owner) missing.push(env("ALERT_OWNER_NUMBER") ? "ALERT_OWNER_NUMBER (must be E.164, e.g. +14085551234)" : "ALERT_OWNER_NUMBER");
-  return { sid, token, from, service, owner, missing, base: env("TWILIO_API_BASE") || "https://api.twilio.com" };
+  const whatsappFrom = env("TWILIO_WHATSAPP_FROM") || (from.startsWith("whatsapp:") ? from : "");
+  return { sid, token, from, service, owner, missing, whatsappFrom,
+    sendgridKey: env("SENDGRID_API_KEY"), emailFrom: env("ALERT_EMAIL_FROM"),
+    base: env("TWILIO_API_BASE") || "https://api.twilio.com",
+    emailBase: env("SENDGRID_API_BASE") || "https://api.sendgrid.com" };
 }
 
 // Both caps are per process. A single Next.js server owns the alerting, and
@@ -72,38 +91,89 @@ async function postToTwilio(base: string, sid: string, token: string, form: URLS
   return { ok: res.ok, status: res.status, payload: payload as { sid?: string; message?: string; code?: number } };
 }
 
+async function postToSendGrid(base: string, key: string, from: string, to: string, subject: string, body: string) {
+  const res = await fetch(`${base.replace(/\/$/, "")}/v3/mail/send`, {
+    method: "POST", cache: "no-store",
+    headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+    body: JSON.stringify({ personalizations: [{ to: [{ email: to }] }], from: { email: from }, subject, content: [{ type: "text/plain", value: body }] }),
+    signal: AbortSignal.timeout(10000),
+  });
+  if (res.ok) return { ok: true, status: res.status, detail: "" };
+  const text = await res.text().catch(() => "");
+  return { ok: false, status: res.status, detail: text.slice(0, 300) };
+}
+
 export function alertStatus(): AlertStatus {
-  const { missing, owner } = credentials(); const now = Date.now(); prune(now);
-  return { configured: missing.length === 0, missing, ownerMasked: mask(owner), sentLastHour: sentAt.length, maxPerHour: maxPerHour(), minimumSeverity: minimumSeverity(), sandbox: Boolean(env("TWILIO_API_BASE")) };
+  const c = credentials(); const now = Date.now(); prune(now);
+  const twilioReady = Boolean(c.sid && c.token && (c.from || c.service));
+  return { configured: c.missing.length === 0, missing: c.missing, ownerMasked: mask(c.owner), sentLastHour: sentAt.length, maxPerHour: maxPerHour(), minimumSeverity: minimumSeverity(), sandbox: Boolean(env("TWILIO_API_BASE")),
+    channels: { sms: twilioReady, whatsapp: twilioReady && Boolean(c.whatsappFrom), email: Boolean(c.sendgridKey && c.emailFrom) },
+    // Letting the browser name a recipient turns this into an open relay if the app
+    // is ever reachable beyond localhost. On by default for the local workspace;
+    // set ALERT_ALLOW_CLIENT_RECIPIENT=false before exposing it.
+    acceptsRecipient: env("ALERT_ALLOW_CLIENT_RECIPIENT").toLowerCase() !== "false" };
 }
 
 export async function sendAlert(request: AlertRequest, origin: string): Promise<AlertResult> {
-  const { sid, token, from, service, owner, missing, base } = credentials();
-  if (missing.length) return { outcome: "not_configured", message: `Twilio is not configured. Set ${missing.join(", ")} in webapp/.env.local and restart the server.` };
-  if (!request.test && !shouldAlert(request.category, request.severity)) return { outcome: "below_threshold", message: `${request.severity} ${request.category} is below the ${minimumSeverity()} alert threshold, so no text was sent.` };
+  const c = credentials();
+  // Where this goes: the recipient the recording opted in with, else the owner in the environment.
+  const wanted: AlertRecipient | null = request.recipient && alertStatus().acceptsRecipient ? request.recipient
+    : c.owner ? { channel: "sms", to: c.owner } : null;
+  if (!wanted) return { outcome: "not_configured", message: `No recipient. Either opt a recording in to alerts, or set ALERT_OWNER_NUMBER in webapp/.env.local and restart the server.` };
+
+  const checked = checkRecipient(wanted);
+  if ("error" in checked) return { outcome: "failed", message: checked.error };
+  const to = checked.to, channel = wanted.channel;
+
+  const needed = channel === "email"
+    ? [!c.sendgridKey && "SENDGRID_API_KEY", !c.emailFrom && "ALERT_EMAIL_FROM"].filter(Boolean)
+    : [!c.sid && "TWILIO_ACCOUNT_SID", !c.token && "TWILIO_AUTH_TOKEN",
+       !c.from && !c.service && "TWILIO_FROM_NUMBER or TWILIO_MESSAGING_SERVICE_SID",
+       channel === "whatsapp" && !c.whatsappFrom && "TWILIO_WHATSAPP_FROM"].filter(Boolean);
+  if (needed.length) return { outcome: "not_configured", message: `${channel === "email" ? "Email" : channel === "whatsapp" ? "WhatsApp" : "SMS"} is not configured. Set ${needed.join(", ")} in webapp/.env.local and restart the server.` };
+
+  if (!request.test && !shouldAlert(request.category, request.severity)) return { outcome: "below_threshold", message: `${request.severity} ${request.category} is below the ${minimumSeverity()} alert threshold, so nothing was sent.` };
 
   const now = Date.now(); prune(now);
-  if (!request.test && sentDetections.has(request.detectionId)) return { outcome: "duplicate", message: "The owner has already been texted about this detection." };
+  const key = `${request.detectionId}:${to}`;
+  if (!request.test && sentDetections.has(key)) return { outcome: "duplicate", message: "This recipient has already been told about this detection." };
   const cap = maxPerHour();
-  if (sentAt.length >= cap) return { outcome: "rate_limited", message: `The hourly cap of ${cap} alerts is reached. The next text can go out in ${Math.ceil((WINDOW_MS - (now - sentAt[0])) / 60000)} minutes.`, retryAfterMinutes: Math.ceil((WINDOW_MS - (now - sentAt[0])) / 60000) };
+  if (sentAt.length >= cap) { const mins = Math.ceil((WINDOW_MS - (now - sentAt[0])) / 60000); return { outcome: "rate_limited", message: `The hourly cap of ${cap} alerts is reached. The next one can go out in ${mins} minutes.`, retryAfterMinutes: mins }; }
 
   const reviewBase = env("ALERT_REVIEW_BASE") || origin;
-  const body = composeBody(request, request.reviewPath && reviewBase ? `${reviewBase.replace(/\/$/, "")}${request.reviewPath}` : "");
-  const form = new URLSearchParams({ To: owner!, Body: body });
-  if (service) form.set("MessagingServiceSid", service); else form.set("From", from);
+  const link = request.reviewPath && reviewBase ? `${reviewBase.replace(/\/$/, "")}${request.reviewPath}` : "";
+  // Email is not billed by the segment, so it carries the full description.
+  const body = channel === "email"
+    ? `${request.simulated ? "[SIMULATED] " : ""}Sentinel Machines flagged ${request.severity === "measurement" ? request.category : `a suspected ${request.category.toLowerCase()}`} at ${Math.floor(request.seconds / 60)}:${String(Math.floor(request.seconds % 60)).padStart(2, "0")} in "${request.videoTitle}".\n\nThis is a suspected incident and needs a person to confirm it.${link ? `\n\nReview: ${link}` : ""}`
+    : composeBody(request, link);
 
   try {
-    const { ok, status, payload } = await postToTwilio(base, sid, token, form);
-    if (!ok) {
-      // 21608 is the trial-account "unverified number" error; it is the one people hit first.
-      const hint = payload.code === 21608 ? " On a Twilio trial the destination must be a verified number." : payload.code === 21610 ? " That number replied STOP and is unsubscribed." : "";
-      return { outcome: "failed", message: `Twilio refused the message (HTTP ${status}${payload.code ? `, code ${payload.code}` : ""}): ${payload.message ?? "no detail returned"}.${hint}`, body };
+    if (channel === "email") {
+      const subject = `${request.simulated ? "[SIMULATED] " : ""}Sentinel Machines: suspected ${request.category.toLowerCase()}`;
+      const { ok, status, detail } = await postToSendGrid(c.emailBase, c.sendgridKey, c.emailFrom, to, subject, body);
+      if (!ok) return { outcome: "failed", message: `SendGrid refused the message (HTTP ${status}). ${detail || "No detail returned."}`, body };
+    } else {
+      const form = new URLSearchParams({ To: to, Body: body });
+      if (channel === "whatsapp") form.set("From", c.whatsappFrom.startsWith("whatsapp:") ? c.whatsappFrom : `whatsapp:${c.whatsappFrom}`);
+      else if (c.service) form.set("MessagingServiceSid", c.service);
+      else form.set("From", c.from);
+      const { ok, status, payload } = await postToTwilio(c.base, c.sid, c.token, form);
+      if (!ok) {
+        // 21608 is the trial "unverified number" error; 63007 is a WhatsApp sender that is not joined.
+        const hint = payload.code === 21608 ? " On a Twilio trial the destination must be a verified number."
+          : payload.code === 21610 ? " That number replied STOP and is unsubscribed."
+          : payload.code === 63007 ? " Join the WhatsApp sandbox from that number first."
+          : "";
+        return { outcome: "failed", message: `Twilio refused the message (HTTP ${status}${payload.code ? `, code ${payload.code}` : ""}): ${payload.message ?? "no detail returned"}.${hint}`, body };
+      }
+      sentAt.push(now); sentDetections.set(key, now);
+      return { outcome: "sent", message: `Sent by ${channel === "whatsapp" ? "WhatsApp" : "SMS"} to ${mask(to)}.`, body, sid: payload.sid };
     }
-    sentAt.push(now); sentDetections.set(request.detectionId, now);
-    return { outcome: "sent", message: `Texted the owner at ${mask(owner)}.`, body, sid: payload.sid };
+    sentAt.push(now); sentDetections.set(key, now);
+    return { outcome: "sent", message: `Emailed ${mask(to)}.`, body };
   } catch (e) {
-    const reason = (e as Error)?.name === "TimeoutError" ? "Twilio did not answer within 10 seconds." : (e as Error)?.message ?? "unknown error";
-    return { outcome: "failed", message: `Could not reach Twilio: ${reason}`, body };
+    const reason = (e as Error)?.name === "TimeoutError" ? "the service did not answer within 10 seconds" : (e as Error)?.message ?? "unknown error";
+    return { outcome: "failed", message: `Could not reach the ${channel === "email" ? "email" : "messaging"} service: ${reason}.`, body };
   }
 }
 

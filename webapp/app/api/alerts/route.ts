@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { alertStatus, sendAlert, type AlertRequest } from "@/lib/server/alerts";
-import { categories, severityOrder } from "@/lib/types";
+import { categories, severityOrder, type AlertRecipient } from "@/lib/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,9 @@ function parse(value: unknown): { request: AlertRequest } | { error: string } {
   const severity = b.severity as AlertRequest["severity"];
   if (!test && !severityOrder.includes(severity)) return { error: `severity must be one of: ${severityOrder.join(", ")}.` };
   const seconds = Number(b.seconds);
+  const raw = b.recipient as { channel?: unknown; to?: unknown } | undefined;
+  const channel = typeof raw?.channel === "string" && ["sms","whatsapp","email"].includes(raw.channel) ? raw.channel as AlertRecipient["channel"] : null;
+  const recipient = channel && typeof raw?.to === "string" && raw.to.trim() ? { channel, to: raw.to.trim().slice(0, 120) } : undefined;
   return { request: {
     detectionId, test,
     category: category ?? "Suspicious activity",
@@ -36,6 +39,7 @@ function parse(value: unknown): { request: AlertRequest } | { error: string } {
     seconds: Number.isFinite(seconds) ? Math.max(0, seconds) : 0,
     simulated: b.simulated !== false,       // default to the honest label
     reviewPath: typeof b.reviewPath === "string" && b.reviewPath.startsWith("/") ? b.reviewPath : undefined,
+    recipient,
   } };
 }
 

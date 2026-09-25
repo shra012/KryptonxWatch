@@ -14,7 +14,7 @@ test("preferences reports Twilio state and sends a test text through the fake", 
   await expect(page.getByText("Fake", { exact: true })).toBeVisible();   // the local stand-in, not Twilio
 
   await page.getByRole("button", { name: "Send a test text" }).click();
-  await expect(page.getByText(/Texted the owner at/)).toBeVisible();
+  await expect(page.getByText(/Sent by SMS to/)).toBeVisible();
 
   const messages = await sentMessages(request);
   expect(messages.length).toBe(before + 1);
@@ -32,7 +32,7 @@ test("alerting an owner from the detection log texts once and refuses the repeat
 
   const before = (await sentMessages(request)).length;
   await row.getByRole("button", { name: "Alert owner" }).click();
-  await expect(page.getByText(/Texted the owner at/)).toBeVisible();
+  await expect(page.getByText(/Sent by SMS to/)).toBeVisible();
   const messages = await sentMessages(request);
   expect(messages.length).toBe(before + 1);
   const body = messages[messages.length - 1].body;
@@ -42,7 +42,7 @@ test("alerting an owner from the detection log texts once and refuses the repeat
 
   // Same detection again: the owner should not be texted twice.
   await row.getByRole("button", { name: "Alert owner" }).click();
-  await expect(page.getByText("The owner has already been texted about this detection.")).toBeVisible();
+  await expect(page.getByText("This recipient has already been told about this detection.")).toBeVisible();
   expect((await sentMessages(request)).length).toBe(messages.length);
 });
 
