@@ -8,7 +8,7 @@ import { useTelemetry } from "@/components/use-telemetry";
 import { EmptyState, EventLabel, EventTime, Notice, PageTitle, Panel, SeverityBadge, Sparkline } from "@/components/ui";
 import { alertForDetection, fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
 import { allDetections, counts } from "@/lib/analytics";
-import { dateLabel, isSecurityDetection, type Detection } from "@/lib/types";
+import { dateLabel, isSecurityDetection, type Detection , type AlertRecipient } from "@/lib/types";
 
 /** One strip: what is waiting on a person, what the workspace holds, and whether
  *  the two machines behind it (the node, the SMS gateway) are actually up. */
@@ -44,7 +44,7 @@ function SystemBar({attention,figures,loading,edge,edgeDetail,alerts,alertDetail
  </section>;
 }
 
-type Row = Detection & { videoTitle: string; recordedAt: string; source: "sample" | "upload" };
+type Row = Detection & { videoTitle: string; recordedAt: string; source: "sample" | "upload"; alertTo?: AlertRecipient };
 
 /** An incident the owner can act on without leaving the page. */
 function IncidentCard({d,onDismiss,onAlert,alerting}:{d:Row;onDismiss:()=>void;onAlert:()=>void;alerting:boolean}){
@@ -82,7 +82,7 @@ export default function Dashboard(){
  const edgeDetail=error?"No answer from /api/system":snapshot?.gpu?.name?`${snapshot.gpu.name} · ${Math.round(snapshot.gpu.utilisation??0)}% busy`:snapshot?"Accelerator not visible from this host":"Connecting…";
  const figures=[{label:"Recordings",value:stats.videos,href:"/videos"},{label:"Suspected incidents",value:stats.detections,href:"/detections"},{label:"High priority",value:stats.high,href:"/detections?severity=high"},{label:"Reviewed",value:stats.reviewed,href:"/detections?status=reviewed"},{label:"Queue metrics",value:stats.measurements,href:"/detections?severity=measurement"}];
 
- const alertOwner=async(d:Row)=>{setAlerting(d.id);const r=await alertForDetection(d,d.videoTitle,d.source==="sample");setAlerting("");setNote({tone:r.outcome==="sent"?"info":"error",text:r.message});fetchAlertStatus().then(setAlertState).catch(()=>{});};
+ const alertOwner=async(d:Row)=>{setAlerting(d.id);const r=await alertForDetection(d,d.videoTitle,d.source==="sample",d.alertTo);setAlerting("");setNote({tone:r.outcome==="sent"?"info":"error",text:r.message});fetchAlertStatus().then(setAlertState).catch(()=>{});};
  const dismiss=async(d:Row)=>{try{await setReviewStatus(d.videoId,d.id,"dismissed")}catch(e){setNote({tone:"error",text:e instanceof Error?e.message:"Could not dismiss this detection."})}};
 
  return <>
