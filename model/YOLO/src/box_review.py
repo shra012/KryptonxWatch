@@ -70,13 +70,13 @@ def main() -> int:
             pairs.append((video, r, c, y))
             break  # one moment per video keeps the page varied
     cards = []
-    for video, r, c, y in pairs[: args.limit]:
+    for n, (video, r, c, y) in enumerate(pairs[: args.limit], 1):
         frame = FRAMES / video / f"{float(r['seconds']):.2f}.jpg"
         if not frame.exists():
             continue
         img = draw(Image.open(frame).convert("RGB"), [("ref", r.get("box")), ("raw", c.get("box")), ("yolo", y.get("box") if y else None)])
         cards.append(f"""<figure><img src="data:image/png;base64,{img}" alt="{html.escape(video)} at {r['seconds']:.1f} s">
-<figcaption><b>{html.escape(video)}</b> · {r['seconds']:.1f} s<br>
+<figcaption><b>#{n} · {html.escape(video)}</b> · {r['seconds']:.1f} s<br>
 <span class="ref">■ Reference</span> {html.escape(r['category'])} ({r['confidence']:.2f}): {html.escape(r['description'])}<br>
 <span class="raw">■ Candidate</span> / <span class="yolo">■ +YOLO</span> {html.escape(c['category'])} ({c['confidence']:.2f}): {html.escape(c['description'])}</figcaption></figure>""")
     args.out.parent.mkdir(parents=True, exist_ok=True)
