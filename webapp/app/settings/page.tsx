@@ -87,7 +87,7 @@ function ModelPanel(){
  const model=useModelStatus();
  if(!model) return <Panel title="Analysis model"><p className="text-sm text-base-content/50">Asking the server which model is configured…</p></Panel>;
  if(!model.configured) return <Panel title="Analysis model"><Notice tone="warning" role="alert">No model is configured. Set <span className="font-mono text-xs">VLM_BASE_URL</span> and <span className="font-mono text-xs">VLM_MODEL</span> in <span className="font-mono text-xs">webapp/.env.local</span> and restart the server.</Notice></Panel>;
- return <Panel title="Analysis model" action={<span className="font-mono text-[.62rem] uppercase tracking-[.14em] text-base-content/45">{model.provider}</span>}>
+ return <Panel title="Analysis model" action={<span className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{model.provider}</span>}>
   {(model.options?.length??0)>1
    ? <label className="block"><span className="block text-sm text-base-content/60 mb-1.5">Model for analysis, assistant and summary</span>
       <select className="select select-sm w-full" value={model.model} onChange={e=>setSelectedModel(e.target.value)} aria-label="Analysis model">

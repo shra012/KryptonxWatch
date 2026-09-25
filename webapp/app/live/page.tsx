@@ -153,7 +153,7 @@ export default function LiveMonitor() {
 
   return <>
     <PageTitle eyebrow="Real-time analysis" title="Live monitor" description="Watch a webcam or replay a recording as a camera feed. Frames are analysed every 8 seconds and suspected incidents appear in the feed for review."
-      action={model?.configured ? <span className="font-mono text-[.62rem] uppercase tracking-[.14em] text-base-content/45">{model.provider} · {model.model}</span> : undefined} />
+      action={model?.configured ? <span className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{model.provider} · {model.model}</span> : undefined} />
     {model && !model.configured && <div className="mb-6"><Notice tone="warning" role="alert">No analysis model is configured. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the dev server.</Notice></div>}
     {scorerPicked && <div className="mb-6"><Notice tone="warning" role="alert">The local shoplifting scorer works on recorded videos only. Pick another model in Preferences to use Live, or upload a recording and run AI analysis.</Notice></div>}
     <div className="grid xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,.8fr)] gap-6">
@@ -173,8 +173,8 @@ export default function LiveMonitor() {
           <div className={`video-frame ${latest?.alert && running ? "ring-4 ring-error" : ""}`}>
             <div className="video-canvas" style={{ "--video-ratio": 16 / 9 } as React.CSSProperties}>
               <video ref={player} muted playsInline aria-label="Live feed" />
-              {running && <span className="absolute top-3 left-3 flex items-center gap-1.5 bg-error text-error-content font-mono text-[.6rem] uppercase tracking-[.14em] px-2 py-1 rounded-[2px]"><Radio size={11} />live · {timecode(elapsed)}</span>}
-              {running && pending > 0 && <span className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/70 text-white font-mono text-[.6rem] uppercase tracking-[.14em] px-2 py-1 rounded-[2px]"><span className="loading loading-spinner loading-xs" />analysing</span>}
+              {running && <span className="absolute top-3 left-3 flex items-center gap-1.5 bg-error text-error-content font-mono text-[.6rem] uppercase tracking-[.06em] px-2 py-1 rounded-md"><Radio size={11} />live · {timecode(elapsed)}</span>}
+              {running && pending > 0 && <span className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/70 text-white font-mono text-[.6rem] uppercase tracking-[.06em] px-2 py-1 rounded-md"><span className="loading loading-spinner loading-xs" />analysing</span>}
             </div>
           </div>
           {latest && <p className="text-sm mt-4"><span className="font-semibold">Latest scene:</span> <span className="text-base-content/70">{latest.result.summary}</span></p>}
@@ -183,7 +183,7 @@ export default function LiveMonitor() {
         </Panel>
         <p className="text-xs text-base-content/55">Only sampled frames are sent to the analysis server. Detections are suspected until a person reviews them; no one is contacted automatically.</p>
       </div>
-      <Panel title="Incident feed" action={<span className={`font-mono text-[.62rem] uppercase tracking-[.14em] ${alertsCount ? "text-error" : "text-base-content/45"}`}>{alertsCount} suspected</span>}>
+      <Panel title="Incident feed" action={<span className={`font-mono text-[.62rem] uppercase tracking-[.06em] ${alertsCount ? "text-error" : "text-base-content/45"}`}>{alertsCount} suspected</span>}>
         {!feed.length ? <EmptyState title={running ? "Waiting for the first window" : "Feed is idle"} description={running ? "The first analysis arrives about 8 seconds after start." : "Start monitoring to see each analysed window here."} action={!recordings.length && !running ? <Link href="/upload" className="btn btn-sm btn-outline">Upload a recording to replay</Link> : undefined} />
           : <ol className="max-h-[40rem] overflow-y-auto scroll-quiet border-t border-base-300" aria-live="polite">{feed.map(f => <li key={f.id} className={`border-b border-l-2 border-base-300 pl-3.5 pr-2 py-3 text-sm ${f.alert ? "border-l-error bg-error/5" : "border-l-transparent"}`}>
             <div className="flex justify-between gap-2 items-center"><span className="font-mono text-primary"><EventTime seconds={f.result.start} />–<EventTime seconds={f.result.end} /></span>{f.alert ? <ShieldAlert size={16} className="text-error" aria-label="Suspected incident" /> : <span className="text-xs text-base-content/50">clear</span>}</div>

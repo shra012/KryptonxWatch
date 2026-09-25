@@ -54,7 +54,7 @@ export function composeBody(r: AlertRequest, reviewUrl: string) {
   const ascii = (v: string) => v.replace(/[^\x20-\x7E]/g, "").trim();
   const prefix = r.simulated ? "[SIMULATED] " : "";
   const what = r.severity === "measurement" ? ascii(r.category) : `Suspected ${ascii(r.category).toLowerCase()}`;
-  const head = `${prefix}KryptonxWatch: ${what} (${r.severity}) at ${timecode(r.seconds)}`;
+  const head = `${prefix}Sentinel Machines: ${what} (${r.severity}) at ${timecode(r.seconds)}`;
   const tail = reviewUrl ? ` ${reviewUrl}` : "";
   let title = ascii(r.videoTitle);
   let body = `${head} in ${title}.${tail}`;

@@ -19,14 +19,14 @@ function SystemBar({attention,figures,loading,edge,edgeDetail,alerts,alertDetail
   <div className={`flex items-center gap-4 px-6 py-5 border-r border-base-300 grow sm:grow-0 ${clear?"bg-base-200":"bg-warning/[.08]"}`}>
    <span className={`font-mono text-[2.6rem] leading-none font-bold tabular-nums ${clear?"text-base-content":"text-warning"}`}>{loading?"—":attention}</span>
    <span className="leading-tight">
-    <span className="block font-mono text-[.58rem] uppercase tracking-[.2em] text-base-content/45">awaiting review</span>
+    <span className="block font-mono text-[.58rem] uppercase tracking-[.08em] text-base-content/45">awaiting review</span>
     <span className="block text-sm font-medium mt-1.5">{clear?"All clear":"High priority"}</span>
    </span>
   </div>
 
   <div className="flex flex-1 flex-wrap min-w-0">
    {figures.map(({label,value,href})=><Link key={label} href={href} className="flex-1 min-w-[7.25rem] px-4 py-5 border-r border-base-300 last:border-r-0 hover:bg-base-200/60 transition-colors">
-    <span className="block font-mono text-[.57rem] uppercase tracking-[.14em] text-base-content/45 truncate">{label}</span>
+    <span className="block font-mono text-[.57rem] uppercase tracking-[.06em] text-base-content/45 truncate">{label}</span>
     <span className="block font-mono text-2xl font-semibold tabular-nums mt-1.5">{loading?<span className="text-base-content/25">—</span>:value}</span>
    </Link>)}
   </div>

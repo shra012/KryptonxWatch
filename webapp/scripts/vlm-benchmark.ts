@@ -1,4 +1,4 @@
-// Bake-off of vision-language models on the KryptonxWatch analysis pipeline.
+// Bake-off of vision-language models on the Sentinel Machines analysis pipeline.
 // Uses the app's own prompt, parser and merge logic (lib/vlm), so a score here is what the app would do.
 //
 //   node scripts/vlm-benchmark.ts frames   (once; extracts JPEG frames with ffmpeg)
@@ -6,9 +6,12 @@
 //   node scripts/vlm-benchmark.ts run   --models google/gemini-2.5-flash --pipeline hawkwatch   (HawkWatch's own prompt, 1 frame / 3 s)
 //   node scripts/vlm-benchmark.ts score
 //   node scripts/vlm-benchmark.ts boxes [--ref google/gemini-2.5-flash]   (box agreement with a reference model)
+//   add --dataset v2 (fresh test set) or --dataset full (every in-scope UCF test video) to any command; build with fetch_data.py --version v2/full
 //
 // Pipeline options for `run` (defaults = the app's pipeline, so existing results stay comparable):
 //   --frames-per-window 4 --frame-step 2 --max-width 512 --tag <suffix for the results file, e.g. local-8f768>
+//   --max-tokens 600 (raise for models whose reasoning cannot be disabled)
+//   --reverse (work from the last window, so a second endpoint can split the remaining windows with a forward run)
 //
 // Reads VLM_BASE_URL / VLM_API_KEY from the environment or webapp/.env.local.
 // Data: data/bakeoff/manifest.json (model/openrouter-bakeoff/fetch_data.py). Results: model/openrouter-bakeoff/results/.
@@ -23,8 +26,10 @@ import { chat } from "../lib/vlm/client.ts";
 const run = promisify(execFile);
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, "../..");
-const dataDir = join(repo, "data/bakeoff");
-const outDir = join(repo, "model/openrouter-bakeoff/results");
+// --dataset v2 uses the fresh test set (data/bakeoff-v2) and writes to results-v2/.
+const dataset = process.argv.includes("--dataset") ? process.argv[process.argv.indexOf("--dataset") + 1] : "v1";
+const dataDir = join(repo, dataset === "v1" ? "data/bakeoff" : `data/bakeoff-${dataset}`);
+const outDir = join(repo, "model/openrouter-bakeoff", dataset === "v1" ? "results" : `results-${dataset}`);
 
 interface Item { id: string; set: "hawkwatch" | "timed" | "normal"; path: string; label: string; duration: number; events: [number, number][] | null }
 interface Row { model: string; video: string; set: string; start: number; end: number; ok: boolean; pipeline?: { frameStep: number; framesPerWindow: number; maxWidth: number }; error?: string; latencyMs?: number; cost?: number; promptTokens?: number; completionTokens?: number; raw?: string; result?: WindowResult }
@@ -72,6 +77,7 @@ async function runModels() {
   const extraJson = env("VLM_EXTRA_BODY");
   const extraBody = extraJson ? JSON.parse(extraJson) as Record<string, unknown> : undefined; // e.g. thinking off for local reasoning models
   const frameStep = Number(arg("frame-step", "2")), framesPerWindow = Number(arg("frames-per-window", "4")), maxWidth = Number(arg("max-width", "512"));
+  const maxTokens = Number(arg("max-tokens", "600"));
   const tag = arg("tag");
   const plan = (duration: number) => planWindows(duration, frameStep, framesPerWindow);
   const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
@@ -85,15 +91,16 @@ async function runModels() {
     const file = join(outDir, `${slug(baseModel)}${hawkwatch ? "__hawkwatch-pipeline" : ""}${repeat ? `__r${repeat}` : ""}${tag ? `__${tag}` : ""}.jsonl`);
     const done = new Set(existsSync(file) ? readFileSync(file, "utf8").split("\n").filter(Boolean).map(l => { const r: Row = JSON.parse(l); return r.ok ? `${r.video}@${r.start}` : ""; }) : []);
     const jobs = items.flatMap(item => (hawkwatch ? hawkwatchWindows(item.duration) : plan(item.duration)).map(w => ({ item, w })))
-      .filter(j => !done.has(`${j.item.id}@${j.w.start}`))
-      .slice(0, limit || undefined);
+      .filter(j => !done.has(`${j.item.id}@${j.w.start}`));
+    if (process.argv.includes("--reverse")) jobs.reverse();
+    jobs.splice(limit || jobs.length);
     let cost = 0, fails = 0, n = 0;
     const started = Date.now();
     await pool(jobs, concurrency, async ({ item, w }) => {
       const frames = await Promise.all(w.times.map(async t => ({ seconds: t, image: await frame(item, t, maxWidth) })));
       const row: Row = { model: model + (tag ? ` [${tag}]` : ""), video: item.id, set: item.set, start: w.start, end: w.end, ok: false, pipeline: { frameStep, framesPerWindow, maxWidth } };
       try {
-        const reply = await chat({ baseUrl, apiKey, model: baseModel, extraBody, timeoutMs: 300_000 }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens: 600 });
+        const reply = await chat({ baseUrl, apiKey, model: baseModel, extraBody, timeoutMs: 300_000 }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens });
         Object.assign(row, { latencyMs: reply.latencyMs, cost: reply.cost, promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, raw: reply.text });
         row.result = hawkwatch ? parseHawkwatch(reply.text, frames[0].seconds, w.start, w.end) : parseWindow(reply.text, frames, w.start, w.end);
         row.ok = true;
@@ -180,6 +187,11 @@ const accepted: Record<string, string[]> = {
   Robbery: ["Robbery", "Gun"],
   Fighting: ["Fighting"],
   Vandalism: ["Vandalism"],
+  // --dataset full adds the other UCF classes the app can name
+  Burglary: ["Theft", "Robbery", "Vandalism"],
+  Shooting: ["Gun"],
+  Assault: ["Fighting"],
+  Abuse: ["Fighting"],
 };
 
 function auroc(pos: number[], neg: number[]) {

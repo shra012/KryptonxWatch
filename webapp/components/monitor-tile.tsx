@@ -20,14 +20,14 @@ export function MonitorTile({video,detection,index}:{video:VideoRecord;detection
  },[video.source,video.mediaPath,video.blob]);
 
  const box=detection?.box;
- return <Link href={`/videos/${video.id}${detection?`?t=${Math.floor(detection.seconds)}`:""}`} className="group block relative overflow-hidden rounded-[3px] border border-base-300 bg-black hover:border-base-content transition-colors focus-visible:outline-2 focus-visible:outline-primary">
+ return <Link href={`/videos/${video.id}${detection?`?t=${Math.floor(detection.seconds)}`:""}`} className="group block relative overflow-hidden rounded-lg border border-base-300 bg-black hover:border-base-content transition-colors focus-visible:outline-2 focus-visible:outline-primary">
   <div className="relative aspect-video bg-black">
    {src&&!failed?<video ref={player} src={src} muted playsInline preload="metadata" className="absolute inset-0 size-full object-cover"
      onLoadedMetadata={e=>{const v=e.currentTarget; v.currentTime=Math.min(at,Math.max(0,v.duration-.1));}}
      onError={()=>setFailed(true)}/>
    :<div className="absolute inset-0 grid place-items-center text-xs text-base-content/40">{failed?"no stored frame":"loading frame"}</div>}
 
-   {box&&<div className="absolute border-[1.5px] border-white rounded-[2px] shadow-[0_0_0_1px_rgba(0,0,0,.65)]" style={{left:`${box.x*100}%`,top:`${box.y*100}%`,width:`${box.width*100}%`,height:`${box.height*100}%`}}>
+   {box&&<div className="absolute border-[1.5px] border-white rounded-md shadow-[0_0_0_1px_rgba(0,0,0,.65)]" style={{left:`${box.x*100}%`,top:`${box.y*100}%`,width:`${box.width*100}%`,height:`${box.height*100}%`}}>
     <span className="absolute left-0 bottom-full whitespace-nowrap bg-white text-black font-mono text-[.55rem] uppercase tracking-[.08em] px-1.5 py-[2px] rounded-t-[2px]">{box.label}</span>
    </div>}
 

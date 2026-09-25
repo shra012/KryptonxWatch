@@ -38,7 +38,7 @@ test("sample playback, review, analytics, theme and CSV", async ({page})=>{
  const download=page.waitForEvent("download");
  await page.getByRole("button",{name:"Export filtered CSV"}).click();
  const saved=await download;
- expect(saved.suggestedFilename()).toContain("kryptonxwatch");
+ expect(saved.suggestedFilename()).toContain("sentinel-machines");
  const csv=await readFile(await saved.path(),"utf8");
  expect(csv).toContain("Shoplifting");
  expect(csv).not.toContain("Kiosk nonpayment");
@@ -93,7 +93,9 @@ test("AI analysis of an upload with a mocked model: progress, detections, scene 
  let calls=0;
  await page.route("**/api/analyze",async r=>{const body=r.request().postDataJSON();calls++;const hit=body.start>=8&&body.start<16;
   await r.fulfill({json:{start:body.start,end:body.end,summary:hit?"A person conceals an item in a jacket.":"People browse the aisle.",score:hit?0.9:0,model:"mock/vlm",
-   incidents:hit?[{category:"Shoplifting",severity:"medium",confidence:0.9,seconds:body.frames[1].seconds,description:"Person conceals an item in a jacket",box:{x:.2,y:.2,width:.3,height:.5,label:"Shoplifting"}}]:[]}});});
+   incidents:hit?[{category:"Shoplifting",severity:"medium",confidence:0.9,seconds:body.frames[1].seconds,description:"Person conceals an item in a jacket",box:{x:.2,y:.2,width:.3,height:.5,label:"Shoplifting"},
+    // tracked person moving right across the window's frames (as app/api/analyze returns with YOLO)
+    keyframes:body.frames.map((f:{seconds:number},i:number)=>({seconds:f.seconds,box:{x:.1+.1*i,y:.2,width:.3,height:.5,label:"Shoplifting"},trackId:"t1"}))}]:[]}});});
  await page.route("**/api/chat",r=>r.fulfill({json:{text:"Suspected shoplifting at [00:09]. Review the footage before acting.",references:[{seconds:9,label:"00:09"}],model:"mock/vlm"}}));
  await page.goto("/upload");
  await page.locator('input[type="file"]').setInputFiles(path.resolve("public/samples/market-entrance.webm"));
@@ -110,6 +112,13 @@ test("AI analysis of an upload with a mocked model: progress, detections, scene 
  await page.getByLabel("Send question").click();
  await expect(page.getByText("Review the footage before acting.")).toBeVisible();
  await page.getByRole("button",{name:"00:09",exact:true}).click();
+ // The box follows the tracked person: keyframes at 9, 11, 13, 15 s with x = 10%, 20%, 30%, 40%.
+ const boxLeft=()=>page.locator(".video-box").first().evaluate(e=>parseFloat((e as HTMLElement).style.left));
+ const at=(t:number)=>page.locator("video").evaluate((v:HTMLVideoElement,s)=>{v.pause();v.currentTime=s},t);
+ await at(9); await expect.poll(boxLeft).toBeCloseTo(10,0);
+ await at(12); await expect.poll(boxLeft).toBeCloseTo(25,0);
+ await at(15); await expect.poll(boxLeft).toBeCloseTo(40,0);
+ await at(20); await expect(page.locator(".video-box")).toHaveCount(0);
  await page.reload();
  await expect(page.getByText("Suspected shoplifting").first()).toBeVisible();
  await page.getByRole("link",{name:"Detection log"}).first().click();

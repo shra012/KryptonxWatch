@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download } from "lucide-react";
 import { useApp } from "@/components/app-provider";
-import { EmptyState, EventLabel, Notice, PageTitle, Panel, SeverityBadge } from "@/components/ui";
+import { EmptyState, EventLabel, Notice, PageTitle, Panel, SeverityBadge, StatusBadge } from "@/components/ui";
 import { allDetections, categoryChart, counts, downloadCsv, severityChart, trendChart, videoChart } from "@/lib/analytics";
 import { Sparkles } from "lucide-react";
 import { requestSummary, useModelStatus } from "@/lib/detection-client";
@@ -31,7 +31,7 @@ function AiSummary({videos,fallback}:{videos:VideoRecord[];fallback:string}){
  }
  return <Panel title={text?"Model summary":"Summary"} action={model?.configured&&<button className="btn btn-outline btn-xs" onClick={generate} disabled={busy}>{busy?<span className="loading loading-spinner loading-xs"/>:<Sparkles size={13}/>}{text?"Regenerate":"Generate"}</button>}>
   {text?<><p className="whitespace-pre-wrap text-base-content/80 leading-relaxed">{text}</p>
-   <p className="font-mono text-[.62rem] uppercase tracking-[.14em] text-base-content/40 mt-3">{model?.chatModel??model?.model} · analysed uploads only</p></>
+   <p className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/40 mt-3">{model?.chatModel??model?.model} · analysed uploads only</p></>
   :<p className="text-base-content/70 leading-relaxed">{fallback}</p>}
   {error&&<div className="mt-3"><Notice tone="error" role="alert">{error}</Notice></div>}
  </Panel>;
@@ -40,7 +40,7 @@ function AiSummary({videos,fallback}:{videos:VideoRecord[];fallback:string}){
 /** Recharts' default tooltip is a white box; this one wears the theme. */
 function ChartTip({active,payload,label,unit="incidents"}:{active?:boolean;payload?:{value?:number}[];label?:string|number;unit?:string}){
  if(!active||!payload?.length) return null;
- return <div className="bg-base-100 border border-base-300 rounded-lg px-3 py-2 text-xs shadow-lg">
+ return <div className="bg-base-100/95 backdrop-blur border border-base-300 rounded-xl px-3 py-2 text-xs shadow-xl">
   <div className="font-medium">{label}</div>
   <div className="font-mono tabular-nums text-base-content/70 mt-0.5">{payload[0]?.value} {unit}</div>
  </div>;
@@ -51,17 +51,15 @@ function SeverityMix({data,total}:{data:{name:string;value:number}[];total:numbe
  const ordered=severityOrder.map(s=>({severity:s,value:data.find(d=>d.name===s)?.value??0})).filter(d=>d.value>0);
  if(!total) return <EmptyState title="No annotations" description="Severity appears once a recording carries annotations."/>;
  return <div>
-  <div className="flex gap-[2px] h-11 rounded-md overflow-hidden" role="img" aria-label={ordered.map(d=>`${d.severity}: ${d.value}`).join(", ")}>
-   {ordered.map(d=><div key={d.severity} className="grid place-items-center min-w-[2px]" style={{flexGrow:d.value,background:sevColor[d.severity]}}
-     title={`${d.severity}: ${d.value}`}>
-    {d.value/total>=.12&&<span className="font-mono text-xs font-semibold" style={{color:d.severity==="measurement"?"var(--color-base-content)":d.severity==="low"?"var(--color-base-100)":"var(--color-base-100)"}}>{d.value}</span>}
-   </div>)}
+  <div className="flex gap-1 h-2.5" role="img" aria-label={ordered.map(d=>`${d.severity}: ${d.value}`).join(", ")}>
+   {ordered.map(d=><div key={d.severity} className="rounded-full min-w-1.5" style={{flexGrow:d.value,background:sevColor[d.severity]}} title={`${d.severity}: ${d.value}`}/>)}
   </div>
-  <ul className="flex flex-wrap gap-x-5 gap-y-1.5 mt-4">
-   {ordered.map(d=><li key={d.severity} className="flex items-center gap-2 text-sm">
-    <span className="size-2.5 rounded-[3px] shrink-0" style={{background:sevColor[d.severity]}}/>
-    <span className="capitalize text-base-content/70">{d.severity==="measurement"?"Queue metric":d.severity}</span>
-    <span className="font-mono tabular-nums text-base-content/50">{Math.round(d.value/total*100)}%</span>
+  <ul className="mt-5 divide-y divide-base-300/70">
+   {ordered.map(d=><li key={d.severity} className="flex items-center gap-3 py-2.5 text-sm">
+    <span className="size-2 rounded-full shrink-0" style={{background:sevColor[d.severity]}}/>
+    <span className="capitalize text-base-content/75 flex-1">{d.severity==="measurement"?"Queue metric":d.severity}</span>
+    <span className="font-mono tabular-nums font-medium">{d.value}</span>
+    <span className="font-mono tabular-nums text-xs text-base-content/45 w-10 text-right">{Math.round(d.value/total*100)}%</span>
    </li>)}
   </ul>
  </div>;
@@ -92,8 +90,8 @@ export default function Analytics(){
  {!videos.length?<EmptyState title="No recordings" description="Add a recording to start building your workspace." action={<Link href="/upload" className="btn btn-primary btn-sm">Upload video</Link>}/>
  :<>
   <div className="flex flex-wrap border border-base-300 rounded-xl overflow-hidden mb-10">
-   {figures.map(({label,value})=><div key={label} className="flex-1 min-w-[8.5rem] px-5 py-4 border-r border-base-300 last:border-r-0">
-    <span className="block font-mono text-[.57rem] uppercase tracking-[.14em] text-base-content/45">{label}</span>
+   {figures.map(({label,value})=><div key={label} className="flex-1 min-w-[8.5rem] px-5 py-4 bg-base-100 hover:bg-base-200/60 transition-colors border-r border-base-300 last:border-r-0">
+    <span className="block font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{label}</span>
     <span className="block font-mono text-2xl font-semibold tabular-nums mt-1.5">{value}</span>
    </div>)}
   </div>
@@ -106,12 +104,11 @@ export default function Analytics(){
    <Panel title="By category">
     {byCategory.length?<div style={{height:Math.max(160,byCategory.length*30+20)}}>
      <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={byCategory} layout="vertical" margin={{left:0,right:16,top:4,bottom:4}}>
-       <CartesianGrid stroke="var(--color-base-300)" horizontal={false}/>
-       <XAxis type="number" allowDecimals={false} tick={axis} axisLine={false} tickLine={false}/>
+      <BarChart data={byCategory} layout="vertical" margin={{left:0,right:28,top:4,bottom:4}}>
+       <XAxis type="number" allowDecimals={false} hide/>
        <YAxis type="category" dataKey="name" width={124} tick={axis} axisLine={false} tickLine={false}/>
        <Tooltip cursor={{fill:"var(--color-base-200)"}} content={<ChartTip/>}/>
-       <Bar dataKey="value" fill="var(--color-primary)" radius={[0,4,4,0]} barSize={14} isAnimationActive={false}/>
+       <Bar dataKey="value" fill="var(--color-primary)" radius={5} barSize={10} background={{fill:"var(--color-base-200)",radius:5}} label={{position:"right",fill:"var(--color-base-content)",fillOpacity:.6,fontSize:11}}/>
       </BarChart>
      </ResponsiveContainer>
     </div>:<EmptyState title="No annotations" description="Charts appear when annotated recordings are available."/>}
@@ -120,12 +117,11 @@ export default function Analytics(){
    <Panel title="By recording">
     {byVideo.length?<div style={{height:Math.max(160,byVideo.length*34+20)}}>
      <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={byVideo} layout="vertical" margin={{left:0,right:16,top:4,bottom:4}}>
-       <CartesianGrid stroke="var(--color-base-300)" horizontal={false}/>
-       <XAxis type="number" allowDecimals={false} tick={axis} axisLine={false} tickLine={false}/>
+      <BarChart data={byVideo} layout="vertical" margin={{left:0,right:28,top:4,bottom:4}}>
+       <XAxis type="number" allowDecimals={false} hide/>
        <YAxis type="category" dataKey="name" width={124} tick={axis} axisLine={false} tickLine={false}/>
        <Tooltip cursor={{fill:"var(--color-base-200)"}} content={<ChartTip/>}/>
-       <Bar dataKey="value" fill="var(--color-secondary)" radius={[0,4,4,0]} barSize={14} isAnimationActive={false}/>
+       <Bar dataKey="value" fill="var(--color-primary)" fillOpacity={.7} radius={5} barSize={10} background={{fill:"var(--color-base-200)",radius:5}} label={{position:"right",fill:"var(--color-base-content)",fillOpacity:.6,fontSize:11}}/>
       </BarChart>
      </ResponsiveContainer>
     </div>:<EmptyState title="No recordings" description="Nothing to chart yet."/>}
@@ -134,30 +130,31 @@ export default function Analytics(){
    <Panel title="By recording date">
     {trend.length>1?<div className="chart-wrap">
      <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={trend} margin={{left:0,right:16,top:8,bottom:4}}>
-       <CartesianGrid stroke="var(--color-base-300)" vertical={false}/>
-       <XAxis dataKey="date" tick={axis} axisLine={false} tickLine={false}/>
+      <AreaChart data={trend.map(t=>({...t,label:new Date(`${t.date}T00:00:00`).toLocaleDateString(undefined,{month:"short",day:"numeric"})}))} margin={{left:0,right:16,top:8,bottom:4}}>
+       <defs><linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--color-primary)" stopOpacity={.18}/><stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0}/></linearGradient></defs>
+       <CartesianGrid stroke="var(--color-base-300)" strokeOpacity={.6} vertical={false}/>
+       <XAxis dataKey="label" tick={axis} axisLine={false} tickLine={false} tickMargin={8}/>
        <YAxis allowDecimals={false} tick={axis} axisLine={false} tickLine={false} width={28}/>
-       <Tooltip cursor={{stroke:"var(--color-base-300)"}} content={<ChartTip/>}/>
-       <Line dataKey="value" stroke="var(--color-primary)" strokeWidth={2} dot={{r:4,fill:"var(--color-primary)",strokeWidth:0}} activeDot={{r:6}} isAnimationActive={false}/>
-      </LineChart>
+       <Tooltip cursor={{stroke:"var(--color-base-content)",strokeOpacity:.2}} content={<ChartTip/>}/>
+       <Area type="monotone" dataKey="value" stroke="var(--color-primary)" strokeWidth={2} fill="url(#trendFill)" dot={{r:3.5,fill:"var(--color-base-100)",stroke:"var(--color-primary)",strokeWidth:2}} activeDot={{r:5,fill:"var(--color-primary)",stroke:"var(--color-base-100)",strokeWidth:2}}/>
+      </AreaChart>
      </ResponsiveContainer>
     </div>:<EmptyState title="Not enough dates" description="A trend needs recordings from more than one day."/>}
    </Panel>
   </div>
 
   <Panel title="Annotation details" action={<div className="flex gap-2">
-    <select className="select select-sm" value={category} onChange={e=>setCategory(e.target.value)} aria-label="Filter analytics category"><option value="all">All categories</option>{byCategory.map(x=><option key={x.name}>{x.name}</option>)}</select>
-    <select className="select select-sm" value={sort} onChange={e=>setSort(e.target.value)} aria-label="Sort analytics rows"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="severity">Severity</option></select>
+    <select className="select select-sm w-40" value={category} onChange={e=>setCategory(e.target.value)} aria-label="Filter analytics category"><option value="all">All categories</option>{byCategory.map(x=><option key={x.name}>{x.name}</option>)}</select>
+    <select className="select select-sm w-28" value={sort} onChange={e=>setSort(e.target.value)} aria-label="Sort analytics rows"><option value="newest">Newest</option><option value="oldest">Oldest</option><option value="severity">Severity</option></select>
    </div>}>
    {rows.length?<div className="overflow-x-auto"><table className="table table-sm">
     <thead><tr><th>Recording</th><th>Recorded</th><th>Event</th><th>Severity</th><th>Review</th></tr></thead>
     <tbody>{rows.map(d=><tr key={d.id}>
-     <td><Link href={`/videos/${d.videoId}?t=${d.seconds}`} className="link link-primary link-hover">{d.videoTitle}</Link></td>
+     <td><Link href={`/videos/${d.videoId}?t=${d.seconds}`} className="font-medium hover:underline underline-offset-4">{d.videoTitle}</Link></td>
      <td className="whitespace-nowrap">{dateLabel(d.recordedAt)}</td>
      <td><EventLabel d={d}/></td>
      <td><SeverityBadge severity={d.severity}/></td>
-     <td className="capitalize text-base-content/60">{d.status}</td>
+     <td><StatusBadge status={d.status}/></td>
     </tr>)}</tbody>
    </table></div>:<EmptyState title="No matching annotations" description="Try another category."/>}
   </Panel>

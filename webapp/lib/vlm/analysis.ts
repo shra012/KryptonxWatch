@@ -1,7 +1,7 @@
 // Prompt, parsing and merging for vision-language-model video analysis.
 // Pure functions with no runtime imports, so the web app (API routes, browser) and
 // scripts/vlm-benchmark.ts run exactly the same logic.
-import type { BoundingBox, Category, Detection, Severity } from "../types";
+import type { BoundingBox, Category, Detection, Keyframe, Severity } from "../types";
 
 /** Frames sampled every `frameStep` seconds, grouped into windows of `framesPerWindow`. */
 export const WINDOW = { frameStep: 2, framesPerWindow: 4 } as const;
@@ -28,6 +28,8 @@ export interface Incident {
   seconds: number;
   description: string;
   box?: BoundingBox;
+  /** Boxes over the window's frames; the VLM box alone, or the tracked YOLO person (app/api/analyze). */
+  keyframes?: Keyframe[];
 }
 export interface WindowResult { start: number; end: number; summary: string; incidents: Incident[]; score: number }
 
@@ -136,11 +138,12 @@ export function parseWindow(text: string, frames: { seconds: number }[], start: 
     const confidence = Math.min(1, Math.max(0, Number(i.confidence ?? 0.5) || 0));
     const frameIndex = Math.min(frames.length, Math.max(1, Math.round(Number(i.frame) || 1))) - 1;
     const severity = severities.includes(i.severity as Severity) ? (i.severity as Severity) : defaultSeverity[category];
+    const seconds = frames[frameIndex]?.seconds ?? start;
+    const box = toBox(i.box, category);
     return [{
-      category, severity, confidence,
-      seconds: frames[frameIndex]?.seconds ?? start,
+      category, severity, confidence, seconds,
       description: String(i.description ?? "").slice(0, 300) || category,
-      box: toBox(i.box, category),
+      box, keyframes: box ? [{ seconds, box }] : [],
     }];
   });
   return {
@@ -167,6 +170,8 @@ export function mergeDetections(videoId: string, windows: WindowResult[], model:
       const current = open.get(inc.category);
       if (current && (current.endSeconds ?? current.seconds) >= w.start - 0.01) {
         current.endSeconds = w.end;
+        // Keep every window's boxes so the overlay follows the person through the whole detection.
+        current.keyframes = [...(current.keyframes ?? []), ...(inc.keyframes ?? [])];
         if ((inc.confidence ?? 0) > (current.confidence ?? 0)) {
           Object.assign(current, { confidence: inc.confidence, description: inc.description, box: inc.box ?? current.box, severity: inc.severity });
         }
@@ -176,6 +181,7 @@ export function mergeDetections(videoId: string, windows: WindowResult[], model:
         id: `${videoId}-m${out.length + 1}`, videoId, seconds: inc.seconds, endSeconds: w.end,
         category: inc.category, severity: inc.severity, status: "new", description: inc.description,
         box: inc.box, confidence: inc.confidence, model,
+        keyframes: [...(inc.keyframes ?? [])],
       };
       out.push(d);
       open.set(inc.category, d);

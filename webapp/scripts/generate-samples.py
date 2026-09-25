@@ -26,7 +26,7 @@ def frames(kind):
         im=Image.new("RGB",(W,H),"#112038")
         d=ImageDraw.Draw(im)
         d.rectangle((0,0,W,43),fill="#0b172b")
-        d.text((18,14),"KRYPTONXWATCH  /  SYNTHETIC DEMO FOOTAGE",font=FONT,fill="#e5efff")
+        d.text((18,14),"SENTINEL MACHINES  /  SYNTHETIC DEMO FOOTAGE",font=FONT,fill="#e5efff")
         d.text((520,15),f"{int(t//60):02d}:{int(t%60):02d}",font=FONT,fill="#b1c5df")
         for x in range(0,W,40): d.line((x,44,x,H),fill="#172a44",width=1)
         for y in range(44,H,40): d.line((0,y,W,y),fill="#172a44",width=1)

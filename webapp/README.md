@@ -1,4 +1,4 @@
-# KryptonxWatch web app
+# Sentinel Machines web app
 
 Security video review dashboard: upload recordings or monitor a live feed, and a vision-language model flags suspected incidents with timestamps. It also has a contextual assistant and an AI summary.
 

@@ -57,6 +57,27 @@ All from UCF-Crime. Build it with `fetch_data.py` (videos are git-ignored under 
   - **Too loud:** Mistral and GLM at the 0.5 cut-off flag most of the normal footage. GLM becomes competitive at a 0.9 cut-off.
 - **Timing:** where a model hits a timed event, its onset is typically within about 4 s (one window is 8 s).
 
+## Second benchmark on fresh videos (v2)
+
+To check the ranking on videos no model had been scored on, and to compare Qwen3.8-27B head-to-head, we built a fresh set with `fetch_data.py --version v2`:
+- **35 crime clips:** every other annotated UCF test video of the five classes (19 of them shoplifting), each a 64 s cut starting 16 s before the crime, with official times.
+- **30 normal clips:** first 64 s of each.
+
+That's 52 minutes in total, run with the same prompt and pipeline. Results are in `results-v2/`.
+
+| Model | Score | CV score | Balanced acc. | Crime clips alarmed | Right crime named | Shoplifting right | Normal clips false-alarmed | Timed events hit | Window AUROC |
+|---|---|---|---|---|---|---|---|---|---|
+| **nemotron-3-nano-omni-30b-a3b** | **81%** | 81% | 87% | 94% | 83% | 16/19 | 20% | 32/42 | 0.81 |
+| **qwen3-vl-30b-a3b-instruct** | **80%** | 77% | 87% | 94% | 80% | 15/19 | 20% | 28/42 | 0.75 |
+| gemma-4-31b-it | 73% | 73% | 81% | 63% | 46% | 6/19 | 0% | 21/42 | 0.72 |
+| *gemini-2.5-flash (reference)* | 69% | 83% (cut-off 0.9) | 73% | 100% | 91% | 19/19 | 53% | 38/42 | 0.78 |
+| qwen3.8-27b | 65% | 55% | 77% | 60% | 37% | 5/19 | 7% | 15/42 | 0.66 |
+
+- **Same ranking as v1:** Nemotron and Qwen3-VL-30B-A3B are the best local options and are tied.
+- **v2 is easier:** every crime clip is cut around the crime, so all models score higher than on v1.
+- **Qwen3.8-27B is the weakest here:** it is too cautious. It notices clues such as a masked person at the counter but calls them normal, and finds only 5 of 19 shoplifting clips.
+- **Gemini is the most sensitive but the noisiest:** it names the right crime 91% of the time but false-alarms on half the normal clips at a 0.5 cut-off.
+
 ## Recommendation for the GB10
 
 Download **Nemotron-3-Nano-Omni-30B-A3B** (primary) and **Qwen3-VL-30B-A3B-Instruct** (backup). Both fit in memory at the same time (about 20–35 GB each), so run the local benchmark on both and keep the winner.

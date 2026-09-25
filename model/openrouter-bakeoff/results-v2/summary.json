@@ -1,0 +1,1944 @@
+[
+ {
+  "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+  "windows": "402/407",
+  "parseFailures": 5,
+  "clipDetect": 0.9428571428571428,
+  "clipCorrectCategory": 0.8285714285714286,
+  "normalFalseAlarmClips": 0.2,
+  "falseAlarmsPerMin": 0.3866976024748647,
+  "balancedAccuracy": 0.8714285714285714,
+  "score": 0.8142857142857143,
+  "cvScore": 0.8142857142857143,
+  "cvThresholds": [
+   0.7,
+   0.5
+  ],
+  "windowAuroc": 0.8050651181525241,
+  "windowPrecision": 0.6,
+  "eventHit": "32/42",
+  "medianOnsetErrorS": 4,
+  "latencyP50s": 1.38,
+  "latencyP90s": 3.025,
+  "costUsd": 0,
+  "clips": [
+   {
+    "id": "Fighting003_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Pickpocketing",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting033_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting042_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting",
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting047_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery048_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Robbery050_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery102_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery137_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting001_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting004_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Kiosk nonpayment",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Shoplifting005_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting007_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Shoplifting010_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting015_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting016_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting020_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Medical emergency",
+     "Shoplifting",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting021_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Shoplifting022_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting027_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting028_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting029_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting033_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting034_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Shoplifting037_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting039_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting044_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting049_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Stealing019_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing036_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing058_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Theft",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Stealing079_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Vandalism",
+     "Suspicious activity",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Vandalism015_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Vandalism",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Vandalism017_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism028_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Vandalism036_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Shoplifting"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [
+   {
+    "id": "Normal_Videos_903_x264",
+    "categories": [
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Normal_Videos_041_x264",
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Normal_Videos_360_x264",
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_717_x264",
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_873_x264",
+    "categories": [
+     "Fighting",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_014_x264",
+    "categories": [
+     "Kiosk nonpayment"
+    ]
+   }
+  ],
+  "errors": [
+   "Expected ',' or ']' after array element in JSON at position 299 (line 1 column 300)",
+   "Expected ',' or ']' after array element in JSON at position 286 (line 1 column 287)",
+   "Expected ',' or ']' after array element in JSON at position 307 (line 1 column 308)"
+  ]
+ },
+ {
+  "model": "qwen/qwen3-vl-30b-a3b-instruct",
+  "windows": "407/407",
+  "parseFailures": 0,
+  "clipDetect": 0.9428571428571428,
+  "clipCorrectCategory": 0.8,
+  "normalFalseAlarmClips": 0.2,
+  "falseAlarmsPerMin": 0.441940117114131,
+  "balancedAccuracy": 0.8714285714285714,
+  "score": 0.8,
+  "cvScore": 0.7738095238095238,
+  "cvThresholds": [
+   0.5,
+   0.8
+  ],
+  "windowAuroc": 0.7544327962207985,
+  "windowPrecision": 0.5943396226415094,
+  "eventHit": "28/42",
+  "medianOnsetErrorS": 4,
+  "latencyP50s": 1.344,
+  "latencyP90s": 3.818,
+  "costUsd": 0.07005972000000005,
+  "clips": [
+   {
+    "id": "Fighting003_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Kiosk nonpayment",
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting033_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting042_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Fighting047_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Robbery048_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Theft",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery050_x264",
+    "label": "Robbery",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Robbery102_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Fighting",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery137_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting",
+     "Theft",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Shoplifting001_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Theft",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting004_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Shoplifting005_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting007_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting010_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting015_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting016_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting020_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting021_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting022_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting027_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting028_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting029_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting033_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting034_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting037_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting039_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting044_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting049_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Stealing019_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing036_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing058_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Stealing079_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Vandalism",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Vandalism015_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism017_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism028_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Vandalism036_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [
+   {
+    "id": "Normal_Videos_879_x264",
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Normal_Videos_901_x264",
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Normal_Videos_401_x264",
+    "categories": [
+     "Medical emergency",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_873_x264",
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_014_x264",
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_932_x264",
+    "categories": [
+     "Suspicious activity",
+     "Shoplifting"
+    ]
+   }
+  ],
+  "errors": []
+ },
+ {
+  "model": "google/gemma-4-31b-it",
+  "windows": "407/407",
+  "parseFailures": 0,
+  "clipDetect": 0.6285714285714286,
+  "clipCorrectCategory": 0.45714285714285713,
+  "normalFalseAlarmClips": 0,
+  "falseAlarmsPerMin": 0,
+  "balancedAccuracy": 0.8142857142857143,
+  "score": 0.7285714285714285,
+  "cvScore": 0.7285714285714285,
+  "cvThresholds": [
+   0.5,
+   0.5
+  ],
+  "windowAuroc": 0.7165922474600401,
+  "windowPrecision": 0.7538461538461538,
+  "eventHit": "21/42",
+  "medianOnsetErrorS": 3,
+  "latencyP50s": 1.843,
+  "latencyP90s": 4.053,
+  "costUsd": 0.05669064000000009,
+  "clips": [
+   {
+    "id": "Fighting003_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting033_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting042_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Gun"
+    ]
+   },
+   {
+    "id": "Fighting047_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency",
+     "Suspicious activity",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Robbery048_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery050_x264",
+    "label": "Robbery",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Robbery102_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery137_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting",
+     "Suspicious activity",
+     "Gun"
+    ]
+   },
+   {
+    "id": "Shoplifting001_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting004_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting005_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting007_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting010_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting015_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting016_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Shoplifting020_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Shoplifting",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting021_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Shoplifting022_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting027_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting028_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting029_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting033_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting034_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting037_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting039_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting044_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting049_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Stealing019_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Stealing036_x264",
+    "label": "Stealing",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Stealing058_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Stealing079_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism015_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism017_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism028_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism036_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [],
+  "errors": []
+ },
+ {
+  "model": "google/gemini-2.5-flash",
+  "windows": "407/407",
+  "parseFailures": 0,
+  "clipDetect": 1,
+  "clipCorrectCategory": 0.9142857142857143,
+  "normalFalseAlarmClips": 0.5333333333333333,
+  "falseAlarmsPerMin": 1.4915478952601922,
+  "balancedAccuracy": 0.7333333333333334,
+  "score": 0.6904761904761905,
+  "cvScore": 0.830952380952381,
+  "cvThresholds": [
+   0.9,
+   0.9
+  ],
+  "windowAuroc": 0.7761437908496732,
+  "windowPrecision": 0.39800995024875624,
+  "eventHit": "38/42",
+  "medianOnsetErrorS": 5,
+  "latencyP50s": 1.391,
+  "latencyP90s": 1.887,
+  "costUsd": 0.26284959999999996,
+  "clips": [
+   {
+    "id": "Fighting003_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Medical emergency",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting033_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting042_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Suspicious activity",
+     "Robbery",
+     "Gun",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting047_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency",
+     "Robbery",
+     "Gun"
+    ]
+   },
+   {
+    "id": "Robbery048_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Gun",
+     "Robbery",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery050_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Fighting",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Robbery102_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Fighting",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery137_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Gun",
+     "Robbery",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting001_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting004_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft",
+     "Shoplifting",
+     "Gun"
+    ]
+   },
+   {
+    "id": "Shoplifting005_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting007_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Shoplifting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Shoplifting010_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting015_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting016_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting020_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Shoplifting021_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Shoplifting022_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting027_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting028_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting029_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting033_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting034_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Pickpocketing",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting037_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting039_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting044_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting049_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Stealing019_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing036_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Theft",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Stealing058_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing079_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism015_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism017_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism028_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Theft"
+    ]
+   },
+   {
+    "id": "Vandalism036_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism",
+     "Shoplifting"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [
+   {
+    "id": "Normal_Videos_876_x264",
+    "categories": [
+     "Kiosk nonpayment"
+    ]
+   },
+   {
+    "id": "Normal_Videos_929_x264",
+    "categories": [
+     "Shoplifting",
+     "Kiosk nonpayment"
+    ]
+   },
+   {
+    "id": "Normal_Videos_897_x264",
+    "categories": [
+     "Theft",
+     "Medical emergency",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_909_x264",
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_041_x264",
+    "categories": [
+     "Kiosk nonpayment",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Normal_Videos_150_x264",
+    "categories": [
+     "Kiosk nonpayment",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_898_x264",
+    "categories": [
+     "Pickpocketing"
+    ]
+   },
+   {
+    "id": "Normal_Videos_360_x264",
+    "categories": [
+     "Shoplifting",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_943_x264",
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Normal_Videos_778_x264",
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Normal_Videos_401_x264",
+    "categories": [
+     "Shoplifting",
+     "Shoplifting",
+     "Kiosk nonpayment"
+    ]
+   },
+   {
+    "id": "Normal_Videos_936_x264",
+    "categories": [
+     "Suspicious activity",
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_873_x264",
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_899_x264",
+    "categories": [
+     "Pickpocketing",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_312_x264",
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Normal_Videos_932_x264",
+    "categories": [
+     "Shoplifting",
+     "Shoplifting"
+    ]
+   }
+  ],
+  "errors": []
+ },
+ {
+  "model": "qwen/qwen3.8-27b",
+  "windows": "407/407",
+  "parseFailures": 0,
+  "clipDetect": 0.6,
+  "clipCorrectCategory": 0.37142857142857144,
+  "normalFalseAlarmClips": 0.06666666666666667,
+  "falseAlarmsPerMin": 0.11048502927853275,
+  "balancedAccuracy": 0.7666666666666666,
+  "score": 0.6523809523809524,
+  "cvScore": 0.5523809523809524,
+  "cvThresholds": [
+   0.95,
+   0.5
+  ],
+  "windowAuroc": 0.6551964019931404,
+  "windowPrecision": 0.7,
+  "eventHit": "15/42",
+  "medianOnsetErrorS": 4,
+  "latencyP50s": 1.103,
+  "latencyP90s": 2.686,
+  "costUsd": 0.10780232519999994,
+  "clips": [
+   {
+    "id": "Fighting003_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting033_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting",
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Fighting042_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Fighting047_x264",
+    "label": "Fighting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery048_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Robbery050_x264",
+    "label": "Robbery",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Robbery102_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Robbery137_x264",
+    "label": "Robbery",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Gun",
+     "Robbery",
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Shoplifting001_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting004_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting005_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting007_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting010_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting015_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting016_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting020_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Fighting"
+    ]
+   },
+   {
+    "id": "Shoplifting021_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery",
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting022_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting027_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting028_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting029_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting033_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting034_x264",
+    "label": "Shoplifting",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Shoplifting"
+    ]
+   },
+   {
+    "id": "Shoplifting037_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting039_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting044_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Shoplifting049_x264",
+    "label": "Shoplifting",
+    "detected": false,
+    "correct": false,
+    "categories": []
+   },
+   {
+    "id": "Stealing019_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Stealing036_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Robbery"
+    ]
+   },
+   {
+    "id": "Stealing058_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Suspicious activity",
+     "Theft"
+    ]
+   },
+   {
+    "id": "Stealing079_x264",
+    "label": "Stealing",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism015_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism017_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   },
+   {
+    "id": "Vandalism028_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": false,
+    "categories": [
+     "Suspicious activity"
+    ]
+   },
+   {
+    "id": "Vandalism036_x264",
+    "label": "Vandalism",
+    "detected": true,
+    "correct": true,
+    "categories": [
+     "Vandalism"
+    ]
+   }
+  ],
+  "normalFalseAlarms": [
+   {
+    "id": "Normal_Videos_897_x264",
+    "categories": [
+     "Medical emergency"
+    ]
+   },
+   {
+    "id": "Normal_Videos_717_x264",
+    "categories": [
+     "Medical emergency"
+    ]
+   }
+  ],
+  "errors": []
+ }
+]

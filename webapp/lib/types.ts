@@ -3,7 +3,9 @@ export type Severity = "critical" | "high" | "medium" | "low" | "measurement";
 export type ReviewStatus = "new" | "reviewed" | "dismissed";
 export type AnalysisStatus = "demo" | "not_analyzed" | "processing" | "complete" | "failed";
 export interface BoundingBox { x: number; y: number; width: number; height: number; label: string }
-export interface Detection { id: string; videoId: string; seconds: number; category: Category; severity: Severity; status: ReviewStatus; description: string; box?: BoundingBox; endSeconds?: number; confidence?: number; model?: string }
+/** A box at one moment of video time; the video page interpolates between keyframes (docs/data-contract.md). */
+export interface Keyframe { seconds: number; box: BoundingBox; trackId?: string }
+export interface Detection { id: string; videoId: string; seconds: number; category: Category; severity: Severity; status: ReviewStatus; description: string; box?: BoundingBox; endSeconds?: number; confidence?: number; model?: string; keyframes?: Keyframe[] }
 export interface VideoRecord { id: string; title: string; recordedAt: string; duration: number; source: "sample" | "upload"; analysis: AnalysisStatus; mediaPath?: string; blob?: Blob; size?: number; detections: Detection[]; analysisModel?: string; analysisError?: string; moments?: Moment[] }
 export interface Moment { start: number; end: number; summary: string }
 export interface AssistantReply { text: string; references: { seconds: number; label: string }[] }
