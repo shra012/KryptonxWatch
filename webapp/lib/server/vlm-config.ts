@@ -18,12 +18,23 @@ export function scorerModels(): string[] {
   return (process.env.LOCAL_SCORER_MODELS ?? "").split(",").map(m => m.trim()).filter(Boolean).map(m => SCORER_PREFIX + m);
 }
 
-/** Local general models (LOCAL_VLM_MODELS at LOCAL_VLM_BASE_URL, default the scorer URL), as `local-vlm:<name>` ids. */
-export function localVlmModels(): string[] {
-  if (!localVlmBaseUrl()) return [];
-  return (process.env.LOCAL_VLM_MODELS ?? "").split(",").map(m => m.trim()).filter(Boolean).map(m => LOCAL_VLM_PREFIX + m);
+/**
+ * Local general models from LOCAL_VLM_MODELS, as `local-vlm:<name>` ids. Each entry is `name` (served at
+ * LOCAL_VLM_BASE_URL, default the scorer URL) or `name=url` for a model on its own server, e.g. zrt on 8080
+ * and a separate vLLM container on 8000.
+ */
+function localVlmEntries(): Map<string, string> {
+  const fallback = process.env.LOCAL_VLM_BASE_URL || process.env.LOCAL_SCORER_BASE_URL;
+  const out = new Map<string, string>();
+  for (const entry of (process.env.LOCAL_VLM_MODELS ?? "").split(",").map(m => m.trim()).filter(Boolean)) {
+    const [name, url] = entry.split("=", 2).map(x => x.trim());
+    if (name && (url || fallback)) out.set(name, url || fallback!);
+  }
+  return out;
 }
-const localVlmBaseUrl = () => process.env.LOCAL_VLM_BASE_URL || process.env.LOCAL_SCORER_BASE_URL;
+export function localVlmModels(): string[] {
+  return [...localVlmEntries().keys()].map(m => LOCAL_VLM_PREFIX + m);
+}
 
 /** Models the browser may pick from (VLM_MODEL_OPTIONS plus local models). Always includes VLM_MODEL. */
 export function modelOptions(): string[] {
@@ -44,7 +55,8 @@ export function vlmConfig(kind: "vision" | "chat" = "vision", requested?: unknow
     return { baseUrl: process.env.LOCAL_SCORER_BASE_URL!, apiKey: process.env.LOCAL_SCORER_API_KEY, model: servedName(model), timeoutMs: 300_000, scorer: true, local: true };
   }
   if (isLocalVlmModel(picked)) {
-    return { baseUrl: localVlmBaseUrl()!, apiKey: process.env.LOCAL_SCORER_API_KEY, model: localVlmName(picked!), extraBody: LOCAL_EXTRA_BODY, timeoutMs: 300_000, local: true };
+    const name = localVlmName(picked!);
+    return { baseUrl: localVlmEntries().get(name)!, apiKey: process.env.LOCAL_SCORER_API_KEY, model: name, extraBody: LOCAL_EXTRA_BODY, timeoutMs: 300_000, local: true };
   }
   const baseUrl = process.env.VLM_BASE_URL;
   const choice = picked && !isScorerModel(picked) && !isLocalVlmModel(picked) ? picked : undefined;
@@ -63,7 +75,7 @@ export function modelId(config: ServerVlmConfig): string {
 }
 
 export function providerLabel(baseUrl: string, local = false) {
-  if (local) return "Local GB10 (zrt)";
+  if (local) return "Local GB10";
   try {
     const host = new URL(baseUrl).hostname;
     return host.endsWith("openrouter.ai") ? "OpenRouter" : host === "localhost" || host === "127.0.0.1" ? "Local server" : host;

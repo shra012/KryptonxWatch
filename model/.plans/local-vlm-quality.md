@@ -73,6 +73,19 @@ Options, each run on v1 with its own `--tag`: 8 frames per window, 768 px or nat
 - **Visual review of 12 matched moments** (Claude's read, pending the user's): YOLO-snapped Qwen3-VL boxes are usually the tightest on the acting person (robberies, tunnel fight, vandalism); Gemini's are often large regions or empty areas. Failures: a wrong-person snap in hw-Fighting0, ambiguity in a crowded fisheye view, and a different person chosen in hw-Shoplifting2. Next: the user rates the page. If confirmed, move YOLO snapping into the app's analysis route (Phase 7) early.
 - **In the app (2026-09-25):** snapping plus frame-to-frame person tracking now runs server-side in `app/api/analyze` via `model/YOLO/src/yolo_server.py` (`YOLO_BASE_URL`), and the video page interpolates the tracked boxes. See [webapp/.plans/yolo-boxes-in-app.md](../../webapp/.plans/yolo-boxes-in-app.md).
 
+### Nemotron-3-Nano-Omni arm (2026-09-25, running)
+Nemotron led the team's OpenRouter runs on the larger sets (**full**, 1,489 windows: Score 63% vs Qwen3-VL 59% vs Gemini 57%; **v2**: 81% vs 80% vs 69%). Gemini still names crimes best (full: 71% vs 52% vs 49%) but false-alarms on 57% of normal clips. So Phases 1–3 are repeated locally for Nemotron (`nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-NVFP4@16993199e436`, 22.4 GB, zrt label `nemotron-omni`, thinking off, NVIDIA Open Model License).
+
+Detached pipeline `~/kryptonx-logs/nemotron-pipeline.sh` (log `nemotron-pipeline.log`):
+1. Serve Nemotron.
+2. v1 base run and 8-frame run.
+3. YOLO snap and box review page (`data/bakeoff/review/boxes-nemotron.html`).
+4. v2 base and 8-frame runs, and the full base run (v2 and full built with `fetch_data.py --version v2|full`).
+5. Stop Nemotron, serve local **Qwen3-VL**, run it on v2 and full for a like-for-like comparison, then stop it.
+6. Score all sets (`~/kryptonx-logs/score-{v1,v2,full}.md`, `boxes-v1.md`).
+
+The base model for Phase 5 is chosen from these local results (primary: full-set Score; secondary: right crime, false alarms, box review).
+
 ### Phase 4: Build the fine-tuning dataset (UCA + study labels)
 1. **Splits and leakage:**
    - Training uses only videos in **UCA train and the UCF training split**.
