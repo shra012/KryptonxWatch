@@ -1,22 +1,107 @@
 @import "tailwindcss";
-@plugin "daisyui" { themes: light --default, dark --prefersdark; }
-:root { font-family: Arial, Helvetica, sans-serif; }
-body { min-height: 100vh; background: var(--color-base-200); }
+@plugin "daisyui";
+
+/* Monochrome. Dark is pitch black, light is paper; the only colour in the system
+   is a restrained red and amber, reserved for an actual alarm and never used for
+   decoration or to rank a severity. Theme names stay `light` and `dark` because
+   `data-theme` is set to those and the e2e test asserts them. */
+@plugin "daisyui/theme" {
+  name: "light"; default: true; prefersdark: false; color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f6f6f5;
+  --color-base-300: #e3e3e1;
+  --color-base-content: #101010;
+  --color-primary: #101010;
+  --color-primary-content: #ffffff;
+  --color-secondary: #52504c;
+  --color-secondary-content: #ffffff;
+  --color-accent: #101010;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1c1c1b;
+  --color-neutral-content: #f6f6f5;
+  --color-info: #3f3f3d;
+  --color-info-content: #ffffff;
+  --color-success: #2f2f2e;
+  --color-success-content: #ffffff;
+  --color-warning: #8a5a00;
+  --color-warning-content: #ffffff;
+  --color-error: #9b2117;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.25rem; --radius-field: 0.1875rem; --radius-box: 0.25rem;
+  --size-selector: 0.25rem; --size-field: 0.25rem; --border: 1px; --depth: 0; --noise: 0;
+}
+@plugin "daisyui/theme" {
+  name: "dark"; default: false; prefersdark: true; color-scheme: dark;
+  --color-base-100: #000000;
+  --color-base-200: #090909;
+  --color-base-300: #242422;
+  --color-base-content: #f2f1ee;
+  --color-primary: #f2f1ee;
+  --color-primary-content: #000000;
+  --color-secondary: #9d9a94;
+  --color-secondary-content: #000000;
+  --color-accent: #ffffff;
+  --color-accent-content: #000000;
+  --color-neutral: #171716;
+  --color-neutral-content: #f2f1ee;
+  --color-info: #b8b5ae;
+  --color-info-content: #000000;
+  --color-success: #cfccc5;
+  --color-success-content: #000000;
+  --color-warning: #c99a3c;
+  --color-warning-content: #000000;
+  --color-error: #d2564a;
+  --color-error-content: #000000;
+  --radius-selector: 0.25rem; --radius-field: 0.1875rem; --radius-box: 0.25rem;
+  --size-selector: 0.25rem; --size-field: 0.25rem; --border: 1px; --depth: 0; --noise: 0;
+}
+
+/* Severity is ordered, so it is one achromatic ramp stepped by lightness: no hue
+   ranks anything. Each set is checked on its own surface for monotone lightness,
+   step gaps and contrast. */
+:root, [data-theme="light"] {
+  --sev-critical: #0a0a0a; --sev-high: #4a4a4a; --sev-medium: #7d7d7d; --sev-low: #b0b0b0;
+  --sev-metric: #d8d8d6;
+}
+[data-theme="dark"] {
+  --sev-critical: #ffffff; --sev-high: #c9c9c9; --sev-medium: #8f8f8f; --sev-low: #5c5c5c;
+  --sev-metric: #3a3a38;
+}
+
+:root { font-family: var(--font-serif, Georgia, "Times New Roman", serif); }
+h1, h2, h3 { font-family: var(--font-serif, Georgia, "Times New Roman", serif); font-weight: 600; }
+/* Labels, figures and anything read as data stay monospaced: a serif's old-style
+   numerals are lovely in prose and unreadable in a column. */
+.font-mono, code, kbd { font-family: var(--font-mono, ui-monospace, monospace); }
+body { min-height: 100vh; background: var(--color-base-100); }
 button, a, input, select { touch-action: manipulation; }
+.font-mono, .tabular-nums { font-variant-numeric: tabular-nums; }
 .chart-wrap { width: 100%; height: 260px; }
-.video-frame { position: relative; background: #0c1528; overflow: hidden; border-radius: 1rem; }
+
+/* Hairlines carry the layout instead of card borders, so they have to survive
+   being drawn at sub-pixel widths on a scaled display. */
+.rule-y { background-image: linear-gradient(to bottom, transparent, var(--color-base-300) 12%, var(--color-base-300) 88%, transparent); width: 1px; }
+
+/* A scroll area inside a panel should not put a chrome-grey slab down the middle
+   of the page. Thin, themed, and only while there is something to scroll. */
+.scroll-quiet { scrollbar-width: thin; scrollbar-color: var(--color-base-300) transparent; }
+.scroll-quiet::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-quiet::-webkit-scrollbar-track { background: transparent; }
+.scroll-quiet::-webkit-scrollbar-thumb { background: var(--color-base-300); border-radius: 999px; }
+.scroll-quiet:hover::-webkit-scrollbar-thumb { background: color-mix(in oklch, var(--color-base-content) 22%, transparent); }
+
+.video-frame { position: relative; background: #000; overflow: hidden; border-radius: 3px; }
 .video-frame video { width: 100%; display: block; }
-.video-box { position: absolute; border: 2px solid #17e5b2; border-radius: .35rem; box-shadow: 0 0 0 1px #052e2b, 0 0 15px #12a88666; pointer-events: none; }
-.video-box-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; background: #052e2b; color: white; font-size: .68rem; padding: .2rem .45rem; border-radius: .3rem .3rem 0 0; }
+.video-box { position: absolute; border: 1.5px solid #ffffff; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.65); pointer-events: none; }
+.video-box-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; background: #ffffff; color: #000; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; padding: .15rem .4rem; border-radius: 2px 2px 0 0; }
 .timeline-track { position: relative; height: 1.1rem; border-radius: 999px; background: var(--color-base-300); }
-.timeline-marker { position: absolute; top: 0; width: .65rem; height: 1.1rem; border-radius: .25rem; transform: translateX(-50%); background: var(--color-error); cursor: pointer; }
-.timeline-marker.queue { background: var(--color-info); }
+.timeline-marker { position: absolute; top: 0; width: .3rem; height: 1.1rem; border-radius: 1px; transform: translateX(-50%); background: var(--color-base-content); cursor: pointer; }
+.timeline-marker.queue { background: var(--color-base-content); opacity: .35; }
 
 .video-canvas { position: relative; width: 100%; aspect-ratio: var(--video-ratio); }
 .video-canvas video { width: 100%; height: 100%; object-fit: contain; }
 .video-frame:fullscreen { display: flex; align-items: center; justify-content: center; background: #000; }
 .video-frame:fullscreen .video-canvas { width: min(100vw, calc(100vh * var(--video-ratio))); }
 
-html:not([data-theme]), html[data-theme="light"] { --color-primary: #2563eb; --color-primary-content: #ffffff; --color-info: #0284c7; }
-html[data-theme="dark"] { --color-primary: #60a5fa; --color-primary-content: #07182d; --color-info: #38bdf8; }
-.timeline-marker.range { transform: none; min-width: .65rem; }
+/* A detection with a duration draws as a span, not a tick. */
+.timeline-marker.range { transform: none; min-width: .3rem; }
