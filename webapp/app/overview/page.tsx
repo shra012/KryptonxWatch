@@ -1,14 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { CloudUpload, MessageSquare, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, CloudUpload, MessageSquare, Phone, X } from "lucide-react";
 import { useApp } from "@/components/app-provider";
 import { MonitorTile } from "@/components/monitor-tile";
+import { ResponseDialog } from "@/components/response-dialog";
 import { useTelemetry } from "@/components/use-telemetry";
 import { EmptyState, EventLabel, EventTime, Notice, PageTitle, Panel, SeverityBadge, Sparkline } from "@/components/ui";
-import { alertForDetection, fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
-import { allDetections, counts } from "@/lib/analytics";
-import { dateLabel, isSecurityDetection, type Detection , type AlertRecipient } from "@/lib/types";
+import { fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
+import { responseFor, responsePriority } from "@/lib/response";
+import { sameFootage, useFingerprints } from "@/lib/fingerprint";
+import { allDetections, counts, uniqueFootage } from "@/lib/analytics";
+import { dateLabel, isSecurityDetection, timeLabel, type Detection , type AlertRecipient, type ResponseRecord } from "@/lib/types";
 
 /** One strip: what is waiting on a person, what the workspace holds, and whether
  *  the two machines behind it (the node, the SMS gateway) are actually up. */
@@ -47,7 +50,8 @@ function SystemBar({attention,figures,loading,edge,edgeDetail,alerts,alertDetail
 type Row = Detection & { videoTitle: string; recordedAt: string; source: "sample" | "upload"; alertTo?: AlertRecipient };
 
 /** An incident the owner can act on without leaving the page. */
-function IncidentCard({d,onDismiss,onAlert,alerting}:{d:Row;onDismiss:()=>void;onAlert:()=>void;alerting:boolean}){
+function IncidentCard({d,onDismiss,onRespond}:{d:Row;onDismiss:()=>void;onRespond:()=>void}){
+ const kind=responseFor(d.category);
  return <li className="border-l-2 border-base-300 hover:border-primary transition-colors pl-3.5 py-3">
   <div className="flex items-start justify-between gap-3">
    <Link href={`/videos/${d.videoId}?t=${Math.floor(d.seconds)}`} className="min-w-0 group">
@@ -59,16 +63,20 @@ function IncidentCard({d,onDismiss,onAlert,alerting}:{d:Row;onDismiss:()=>void;o
   <p className="text-xs text-base-content/55 mt-1.5 line-clamp-2">{d.description}</p>
   <div className="flex gap-1.5 mt-2.5">
    <button className="btn btn-xs btn-ghost gap-1" onClick={onDismiss}><X size={12}/>Dismiss</button>
-   {d.severity!=="measurement"&&<button className="btn btn-xs btn-outline btn-primary gap-1" disabled={alerting} onClick={onAlert}><MessageSquare size={12}/>{alerting?"Sending…":"Alert owner"}</button>}
+   {d.response?<span className="inline-flex items-center gap-1 text-xs text-base-content/60 px-1"><Check size={12}/>{d.response.kind==="911"?"911 called":"Owner notified"} · {timeLabel(d.response.at)} · <span className="font-mono">{d.response.reference}</span></span>
+    :kind==="911"?<button className="btn btn-xs btn-outline btn-error gap-1" onClick={onRespond}><Phone size={12}/>Call 911</button>
+    :kind==="owner"&&<button className="btn btn-xs btn-outline btn-primary gap-1" onClick={onRespond}><MessageSquare size={12}/>Notify owner</button>}
   </div>
  </li>;
 }
 
 export default function Dashboard(){
- const {videos,loading,setReviewStatus}=useApp();
+ const {videos,loading,setReviewStatus,saveVideo}=useApp();
  const {snapshot,history,error}=useTelemetry(10000);
+ const prints=useFingerprints(videos);
  const [alertState,setAlertState]=useState<AlertStatus|null>(null);
- const [alerting,setAlerting]=useState("");
+ const [responding,setResponding]=useState<Row|null>(null);
+ const autoShown=useRef(false);
  const [note,setNote]=useState<{tone:"info"|"error";text:string}|null>(null);
  useEffect(()=>{const c=new AbortController();fetchAlertStatus(c.signal).then(setAlertState).catch(()=>{});return()=>c.abort();},[]);
 
@@ -78,13 +86,29 @@ export default function Dashboard(){
  const open=all.filter(d=>d.status==="new").sort((a,b)=>b.recordedAt.localeCompare(a.recordedAt)||b.seconds-a.seconds);
  // Only recordings with a prominent crime (medium severity or above, not dismissed), each looping its most serious moment; worst first.
  const rank=(d:Detection)=>d.severity==="critical"?3:d.severity==="high"?2:d.severity==="medium"?1:0;
- const wall=videos.flatMap(v=>{const top=v.detections.filter(d=>isSecurityDetection(d)&&rank(d)>0).sort((a,b)=>rank(b)-rank(a)||(b.confidence??0)-(a.confidence??0))[0];return top?[{video:v,detection:top}]:[]})
+ const wall=uniqueFootage(videos,(a,b)=>sameFootage(prints[a.id],prints[b.id])).flatMap(v=>{const top=v.detections.filter(d=>isSecurityDetection(d)&&rank(d)>0).sort((a,b)=>rank(b)-rank(a)||(b.confidence??0)-(a.confidence??0))[0];return top?[{video:v,detection:top}]:[]})
   .sort((a,b)=>rank(b.detection)-rank(a.detection)||b.video.recordedAt.localeCompare(a.video.recordedAt));
  const edge=error?"offline":snapshot?.gpu?"live":"degraded";
  const edgeDetail=error?"No answer from /api/system":snapshot?.gpu?.name?`${snapshot.gpu.name} · ${Math.round(snapshot.gpu.utilisation??0)}% busy`:snapshot?"Accelerator not visible from this host":"Connecting…";
  const figures=[{label:"Recordings",value:stats.videos,href:"/videos"},{label:"Suspected incidents",value:stats.detections,href:"/detections"},{label:"High priority",value:stats.high,href:"/detections?severity=high"},{label:"Reviewed",value:stats.reviewed,href:"/detections?status=reviewed"},{label:"Queue metrics",value:stats.measurements,href:"/detections?severity=measurement"}];
 
- const alertOwner=async(d:Row)=>{setAlerting(d.id);const r=await alertForDetection(d,d.videoTitle,d.source==="sample",d.alertTo);setAlerting("");setNote({tone:r.outcome==="sent"?"info":"error",text:r.message});fetchAlertStatus().then(setAlertState).catch(()=>{});};
+ // Incidents still waiting for someone to call 911 or tell the owner, most urgent first. Low-severity "suspicious activity" never pops up.
+ const pending=open.filter(d=>isSecurityDetection(d)&&!d.response&&responseFor(d.category)&&rank(d)>0).sort((a,b)=>responsePriority(b)-responsePriority(a));
+ // Pop up only for incidents that are new since the last visit (e.g. an analysis just found a robbery), the most
+ // urgent of them, once. The backlog never pops up; it waits in the open incidents list with Call 911 / Notify owner.
+ // The first visit in a browser only records what is already there.
+ useEffect(()=>{
+  if(loading||autoShown.current)return;
+  autoShown.current=true;
+  let seen:string[]|null=null;try{seen=JSON.parse(localStorage.getItem("sm-response-seen")??"null")}catch{}
+  const fresh=seen?pending.filter(d=>!seen.includes(d.id)):[];
+  try{localStorage.setItem("sm-response-seen",JSON.stringify([...new Set([...(seen??[]),...pending.map(d=>d.id)])].slice(-1000)))}catch{}
+  if(fresh[0])setResponding(fresh[0]);
+ },[loading,pending]);
+ const recordResponse=async(d:Row,record:ResponseRecord)=>{const v=videos.find(x=>x.id===d.videoId);if(!v)return;
+  try{await saveVideo({...v,detections:v.detections.map(x=>x.id===d.id?{...x,response:record}:x)});fetchAlertStatus().then(setAlertState).catch(()=>{});}
+  catch(e){setNote({tone:"error",text:e instanceof Error?e.message:"Could not save the response."})}};
+ const closeResponse=()=>setResponding(null);
  const dismiss=async(d:Row)=>{try{await setReviewStatus(d.videoId,d.id,"dismissed")}catch(e){setNote({tone:"error",text:e instanceof Error?e.message:"Could not dismiss this detection."})}};
 
  return <>
@@ -109,7 +133,7 @@ export default function Dashboard(){
  <div className="grid xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] gap-x-8 gap-y-10 items-start mt-10">
   <Panel title="Open incidents" action={<Link href="/detections" className="text-sm link link-primary link-hover">Full log</Link>}>
     {open.length?<ul className="space-y-1">{open.slice(0,6).map(d=>
-     <IncidentCard key={d.id} d={d} alerting={alerting===d.id} onAlert={()=>alertOwner(d)} onDismiss={()=>dismiss(d)}/>)}</ul>
+     <IncidentCard key={d.id} d={d} onRespond={()=>setResponding(d)} onDismiss={()=>dismiss(d)}/>)}</ul>
     :<EmptyState title="Nothing open" description="Every annotation has been reviewed or dismissed."/>}
     {open.length>6&&<Link href="/detections" className="block text-xs text-base-content/50 hover:text-primary mt-3 pl-3.5">{open.length-6} more in the log →</Link>}
    </Panel>
@@ -128,5 +152,7 @@ export default function Dashboard(){
  </div>
 
  <div className="mt-10"><Notice tone="muted">Bundled recordings and their detection annotations are simulated. Uploaded videos stay in this browser and receive no automated analysis until a detection service is connected.</Notice></div>
+ {responding&&<ResponseDialog incident={{detection:responding,place:responding.videoTitle,sample:responding.source==="sample",recipient:responding.alertTo}} alertStatus={alertState}
+  more={pending.filter(d=>d.id!==responding.id).length} onDone={r=>recordResponse(responding,r)} onClose={closeResponse}/>}
  </>;
 }

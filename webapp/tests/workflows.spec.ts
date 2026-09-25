@@ -6,8 +6,11 @@ import { readFile } from "node:fs/promises";
 test.beforeEach(async({page})=>{ await page.route("**/api/model",r=>r.fulfill({json:{configured:false}})); });
 
 test("sample playback, review, analytics, theme and CSV", async ({page})=>{
- await page.goto("/");
+ await page.goto("/overview");
  await expect(page.getByRole("heading",{name:"Overview"})).toBeVisible();
+ // Incidents already there on the first visit do not pop up; they wait in the list with their response button.
+ await expect(page.getByRole("button",{name:/Call 911|Notify owner/}).first()).toBeVisible();
+ await expect(page.getByRole("alertdialog")).toHaveCount(0);
  await expect(page.getByText("Suspected incidents",{exact:true}).first()).toBeVisible();
  await page.getByRole("link",{name:"Video library"}).first().click();
  await expect(page.getByRole("heading",{name:"Video library"})).toBeVisible();

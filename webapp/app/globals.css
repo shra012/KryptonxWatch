@@ -125,3 +125,15 @@ button, a, input, select { touch-action: manipulation; }
 
 /* A detection with a duration draws as a span, not a tick. */
 .timeline-marker.range { transform: none; min-width: .3rem; }
+
+/* Landing page (app/page.tsx). Motion is decoration only and switches off under reduced motion. */
+.landing-grid { background-image: linear-gradient(var(--color-base-300) 1px, transparent 1px), linear-gradient(90deg, var(--color-base-300) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%); opacity: .55; }
+.landing-scan { position: absolute; inset-inline: 0; height: 18%; background: linear-gradient(to bottom, transparent, rgb(255 255 255 / .07), transparent); animation: landing-scan 4.5s linear infinite; pointer-events: none; }
+@keyframes landing-scan { from { top: -18%; } to { top: 100%; } }
+.landing-spot { background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / .09), transparent 60%); pointer-events: none; }
+.landing-reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.landing-reveal.is-in { opacity: 1; transform: none; }
+.landing-pulse { animation: landing-pulse 3.5s linear forwards; }
+@keyframes landing-pulse { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.landing-ticker { animation: fade-in .4s cubic-bezier(.2,.7,.2,1) both; }
+@media (prefers-reduced-motion: reduce) { .landing-scan, .landing-pulse { animation: none; } .landing-pulse { transform: scaleX(1); } .landing-reveal { opacity: 1; transform: none; transition: none; } }

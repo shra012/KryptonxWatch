@@ -35,9 +35,9 @@ export function matchPerson(box: Rect, people: Rect[], maxDistance = Infinity): 
 }
 
 /** The same person on the next frame: best overlap, else nearest centre, among people of similar height. */
-function followPerson(previous: Rect, people: Rect[]): Rect | undefined {
+function followPerson(previous: Rect, people: Rect[], maxStep = MAX_STEP): Rect | undefined {
   const similar = people.filter(p => Math.max(p.height / previous.height, previous.height / p.height) <= MAX_HEIGHT_RATIO);
-  return matchPerson(previous, similar, MAX_STEP);
+  return matchPerson(previous, similar, maxStep);
 }
 
 const labelled = (r: Rect, label: string): BoundingBox => ({ x: r.x, y: r.y, width: r.width, height: r.height, label });
@@ -81,15 +81,88 @@ const MAX_GAP = 4.5;
 export function boxAt(d: Pick<Detection, "seconds" | "endSeconds" | "box" | "keyframes">, t: number): BoundingBox | undefined {
   const kfs = d.keyframes;
   if (!kfs?.length) return d.box && t >= d.seconds - 1.5 && t <= (d.endSeconds ?? d.seconds) + 1.5 ? d.box : undefined;
-  if (t < kfs[0].seconds - KEYFRAME_HOLD || t > kfs[kfs.length - 1].seconds + KEYFRAME_HOLD) return undefined;
+  // Hold a box for half the keyframe spacing: 1 s for the analysis's 2 s frames, 0.25 s for a whole-video track
+  // (0.5 s samples), so a box does not linger where the person has already left or not yet arrived.
+  const gaps = kfs.slice(1).map((k, i) => k.seconds - kfs[i].seconds).sort((a, b) => a - b);
+  const hold = gaps.length ? Math.min(KEYFRAME_HOLD, Math.max(0.25, gaps[Math.floor(gaps.length / 2)] / 2)) : KEYFRAME_HOLD;
+  if (t < kfs[0].seconds - hold || t > kfs[kfs.length - 1].seconds + hold) return undefined;
   const after = kfs.findIndex(k => k.seconds >= t);
   if (after <= 0) return (after === 0 ? kfs[0] : kfs[kfs.length - 1]).box;
   const a = kfs[after - 1], b = kfs[after];
   const gap = b.seconds - a.seconds;
-  if (gap > MAX_GAP) return t - a.seconds <= KEYFRAME_HOLD ? a.box : b.seconds - t <= KEYFRAME_HOLD ? b.box : undefined;
+  // A long gap, or two far-apart boxes that are not one track (the person left and came back elsewhere):
+  // hold each box briefly, and show nothing in between rather than sliding a box across the frame.
+  const split = !(a.trackId && a.trackId === b.trackId) && distance(a.box, b.box) > SWITCH_DISTANCE;
+  if (gap > MAX_GAP || (split && gap > 2 * hold)) return t - a.seconds <= hold ? a.box : b.seconds - t <= hold ? b.box : undefined;
   const f = gap > 0 ? (t - a.seconds) / gap : 0;
-  // Different people (no shared track and far apart): switch at the midpoint instead of sliding across the frame.
-  if (!(a.trackId && a.trackId === b.trackId) && distance(a.box, b.box) > SWITCH_DISTANCE) return f < 0.5 ? a.box : b.box;
+  if (split) return f < 0.5 ? a.box : b.box;
   const mix = (p: number, q: number) => p + (q - p) * f;
   return { x: mix(a.box.x, b.box.x), y: mix(a.box.y, b.box.y), width: mix(a.box.width, b.box.width), height: mix(a.box.height, b.box.height), label: a.box.label };
+}
+
+/** People found on one frame of the whole-video pass (every ~0.5 s). */
+export interface PersonSample { seconds: number; persons: Rect[] }
+/** Between dense samples (~0.5 s) the same person overlaps their last box strongly, or barely moves and keeps their size. */
+const DENSE_MIN_IOU = 0.3;
+const DENSE_MAX_MOVE = 0.08;
+const DENSE_MAX_SIZE_RATIO = 1.4;
+/** A followed person counts as gone once unseen this long (they left the frame or are hidden). */
+const LOST_AFTER = 2;
+/** How close (seconds) a sample must be to an analysis keyframe to re-anchor on it. */
+const ANCHOR_WINDOW = 0.6;
+
+/** The same person on the next dense sample, strictly: anyone else walking past or overlapping is rejected. */
+function followDense(previous: Rect, people: Rect[]): Rect | undefined {
+  const ratio = (a: number, b: number) => Math.max(a / b, b / a);
+  const similar = people.filter(p => ratio(p.height, previous.height) <= DENSE_MAX_SIZE_RATIO && ratio(p.width, previous.width) <= DENSE_MAX_SIZE_RATIO * 1.3);
+  if (!similar.length) return undefined;
+  const best = similar.reduce((a, b) => (iou(previous, b) > iou(previous, a) ? b : a));
+  if (iou(previous, best) >= DENSE_MIN_IOU) return best;
+  const nearest = similar.reduce((a, b) => (distance(previous, b) < distance(previous, a) ? b : a));
+  return distance(previous, nearest) <= DENSE_MAX_MOVE ? nearest : undefined;
+}
+
+/**
+ * Follow a detection's suspect through the whole video: from the analysed keyframes, forwards to the end and
+ * backwards to the start, one keyframe per sample while they stay in view. Keyframes from the analysis
+ * re-anchor the track, so a mix-up between two people is corrected at the next analysed frame.
+ * Returns undefined when there is nothing to follow (no box, or no samples).
+ */
+export function trackThroughVideo(d: Pick<Detection, "seconds" | "box" | "keyframes" | "category">, samples: PersonSample[]): Keyframe[] | undefined {
+  const anchors = (d.keyframes?.length ? d.keyframes : d.box ? [{ seconds: d.seconds, box: d.box }] : []).slice().sort((a, b) => a.seconds - b.seconds);
+  if (!anchors.length || !samples.length) return undefined;
+  const label = anchors[0].box.label;
+  const trackId = `${d.category}@${anchors[0].seconds}`;
+  const nearest = (t: number) => samples.reduce((best, s, i) => (Math.abs(s.seconds - t) < Math.abs(samples[best].seconds - t) ? i : best), 0);
+  const anchorAt = (t: number) => anchors.find(a => Math.abs(a.seconds - t) <= ANCHOR_WINDOW);
+  const found = new Map<number, Rect>();
+  const start = nearest(anchors[0].seconds);
+  const lastAnchor = anchors[anchors.length - 1].seconds;
+
+  for (const dir of [1, -1]) {
+    let current: Rect | undefined = matchPerson(anchors[0].box, samples[start].persons, 0.15);
+    let lastSeen = samples[start].seconds;
+    if (current && dir === 1) found.set(start, current);
+    for (let i = start + dir; i >= 0 && i < samples.length; i += dir) {
+      const t = samples[i].seconds;
+      const anchor = anchorAt(t);
+      // While briefly hidden (someone walks in front), `current` keeps their last box, so they are picked up there again.
+      const next = (anchor && matchPerson(anchor.box, samples[i].persons, 0.15)) || (current && followDense(current, samples[i].persons));
+      if (next) { found.set(i, next); current = next; lastSeen = t; continue; }
+      // Lost: stop, unless the analysis saw them again later (then pick them up at that keyframe).
+      if (Math.abs(t - lastSeen) > LOST_AFTER) { if (dir === -1 || t >= lastAnchor) break; current = undefined; }
+    }
+  }
+  return [...found.entries()].sort((a, b) => a[0] - b[0]).map(([i, r]) => ({ seconds: samples[i].seconds, box: labelled(r, label), trackId }));
+}
+
+/** Boxes that cover the same person (IoU above 0.6) drawn once, with their labels joined, e.g. "Robbery · Gun". */
+export function mergeOverlapping<T extends { box: BoundingBox }>(items: T[]): T[] {
+  const out: T[] = [];
+  for (const item of items) {
+    const same = out.find(o => iou(o.box, item.box) > 0.6);
+    if (!same) { out.push(item); continue; }
+    if (!same.box.label.split(" · ").includes(item.box.label)) same.box = { ...same.box, label: `${same.box.label} · ${item.box.label}` };
+  }
+  return out;
 }

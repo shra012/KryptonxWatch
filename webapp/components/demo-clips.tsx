@@ -59,7 +59,7 @@ export function DemoClips(){
      const src=URL.createObjectURL(blob);
      try{
       const out=await analyzeRecording(video,src,p=>setStatus(`Analysing ${video.title} (${i+1} of ${queue.length}) · window ${Math.min(p.done+1,p.total)} of ${p.total}`),ctrl.signal);
-      await saveVideo({...video,analysis:"complete",analysisModel:out.model,analysisError:out.failed?`${out.failed} window(s) could not be analysed.`:undefined,detections:out.detections,moments:out.moments});
+      await saveVideo({...video,analysis:"complete",analysisModel:out.model,analysisError:out.failed?`${out.failed} window(s) could not be analysed.`:undefined,curatedAnalysis:out.curated,detections:out.detections,moments:out.moments});
      }catch(e){ if(!ctrl.signal.aborted) failed.push(`${video.title}: ${e instanceof Error?e.message:String(e)}`); }
      finally{ URL.revokeObjectURL(src); }
     }

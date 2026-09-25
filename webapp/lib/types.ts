@@ -14,8 +14,10 @@ export const alertChannels: { value: AlertChannel; label: string; hint: string; 
 export interface BoundingBox { x: number; y: number; width: number; height: number; label: string }
 /** A box at one moment of video time; the video page interpolates between keyframes (docs/data-contract.md). */
 export interface Keyframe { seconds: number; box: BoundingBox; trackId?: string }
-export interface Detection { id: string; videoId: string; seconds: number; category: Category; severity: Severity; status: ReviewStatus; description: string; box?: BoundingBox; endSeconds?: number; confidence?: number; model?: string; keyframes?: Keyframe[] }
-export interface VideoRecord { alertTo?: AlertRecipient; id: string; title: string; recordedAt: string; duration: number; source: "sample" | "upload"; analysis: AnalysisStatus; mediaPath?: string; blob?: Blob; size?: number; detections: Detection[]; analysisModel?: string; analysisError?: string; moments?: Moment[] }
+/** What a person did about a detection from the response pop-up (lib/response.ts). The 911 call is simulated in this demo. */
+export interface ResponseRecord { kind: "911" | "owner"; at: string; reference: string; outcome: string }
+export interface Detection { response?: ResponseRecord; id: string; videoId: string; seconds: number; category: Category; severity: Severity; status: ReviewStatus; description: string; box?: BoundingBox; endSeconds?: number; confidence?: number; model?: string; keyframes?: Keyframe[] }
+export interface VideoRecord { curatedAnalysis?: boolean; alertTo?: AlertRecipient; id: string; title: string; recordedAt: string; duration: number; source: "sample" | "upload"; analysis: AnalysisStatus; mediaPath?: string; blob?: Blob; size?: number; detections: Detection[]; analysisModel?: string; analysisError?: string; moments?: Moment[] }
 
 export interface Moment { start: number; end: number; summary: string }
 export interface AssistantReply { text: string; references: { seconds: number; label: string }[] }
@@ -26,4 +28,5 @@ export const categories: Category[] = ["Robbery","Theft","Shoplifting","Pickpock
 export const severityOrder: Severity[] = ["critical","high","medium","low","measurement"];
 export function timecode(seconds: number) { const s=Math.max(0,Math.floor(seconds)); return `${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`; }
 export function dateLabel(value: string) { return new Date(value).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}); }
+export function timeLabel(value: string) { return new Date(value).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
 export function isSecurityDetection(d: Detection) { return d.severity !== "measurement" && d.status !== "dismissed"; }

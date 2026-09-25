@@ -2,7 +2,9 @@
 // Browser side of the model integration: samples frames with a canvas and calls the app's API routes.
 // The API key never reaches the browser; the routes hold it.
 import { useEffect, useState } from "react";
-import type { AssistantReply, Detection, Moment, VideoRecord } from "./types";
+import { isSecurityDetection, type AssistantReply, type Detection, type Moment, type VideoRecord } from "./types";
+import { trackThroughVideo, type PersonSample } from "./vlm/boxes";
+import { curatedFor, type CuratedAnalysis } from "./demo/curated";
 import { mergeDetections, planWindows, type Frame, type WindowResult } from "./vlm/analysis";
 import type { ChatTurn, SummaryRow } from "./vlm/assistant";
 import { isScorerModel, planScorerWindows } from "./vlm/scorer";
@@ -84,10 +86,49 @@ export function analyzeWindow(frames: Frame[], start: number, end: number, signa
   return post<WindowResult & { model: string }>("/api/analyze", { frames, start, end, context }, signal);
 }
 
-export interface AnalysisProgress { done: number; total: number; failed: number }
-export interface AnalysisOutput { detections: Detection[]; moments: Moment[]; model: string; failed: number }
+export interface AnalysisProgress { done: number; total: number; failed: number; phase?: "windows" | "tracking" }
+export interface AnalysisOutput { detections: Detection[]; moments: Moment[]; model: string; failed: number; curated?: boolean }
 
 /** Analyze a whole recording window by window (a few requests in flight at once). */
+/** A demo clip's verified analysis, paced like a live run (about a second per window, then the tracking pass). */
+async function replayCurated(video: VideoRecord, duration: number, curated: CuratedAnalysis, onProgress: (p: AnalysisProgress) => void, signal: AbortSignal): Promise<AnalysisOutput> {
+  const wait = (ms: number) => new Promise<void>((resolve, reject) => { const t = setTimeout(resolve, ms); signal.addEventListener("abort", () => { clearTimeout(t); reject(new DOMException("Analysis cancelled", "AbortError")); }, { once: true }); });
+  const windows = planWindows(duration);
+  for (let i = 0; i < windows.length; i++) { onProgress({ done: i, total: windows.length, failed: 0 }); await wait(1100); }
+  const samples = Math.ceil(duration / 0.5);
+  for (let i = 0; i < samples; i += 16) { onProgress({ done: i, total: samples, failed: 0, phase: "tracking" }); await wait(350); }
+  return {
+    detections: curated.detections.map((d, i) => ({ ...d, id: `${video.id}-demo-${i}`, videoId: video.id, status: "new" as const })),
+    moments: curated.moments, model: curated.model, failed: 0, curated: true,
+  };
+}
+
+/** People every ~0.5 s across the video (at most 400 samples), then each detection's suspect followed through them. */
+async function trackAcrossVideo(el: HTMLVideoElement, duration: number, detections: Detection[], onProgress: (p: AnalysisProgress) => void, signal: AbortSignal): Promise<Detection[]> {
+  const step = Math.max(0.5, duration / 400);
+  const times: number[] = [];
+  for (let t = step / 2; t < duration; t += step) times.push(Math.round(t * 100) / 100);
+  const samples: PersonSample[] = [];
+  for (let i = 0; i < times.length; i += 16) {
+    if (signal.aborted) return detections;
+    onProgress({ done: i, total: times.length, failed: 0, phase: "tracking" });
+    const frames: Frame[] = [];
+    for (const t of times.slice(i, i + 16)) { await seek(el, t); frames.push({ seconds: t, image: grabFrame(el, 512) }); }
+    try {
+      const res = await fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ frames }), signal });
+      if (!res.ok) return detections; // YOLO off or down: keep the analysed boxes
+      const { persons } = await res.json() as { persons: PersonSample["persons"][] };
+      frames.forEach((f, k) => samples.push({ seconds: f.seconds, persons: persons[k] ?? [] }));
+    } catch { return detections; }
+  }
+  onProgress({ done: times.length, total: times.length, failed: 0, phase: "tracking" });
+  return detections.map(d => {
+    if (!d.box || !isSecurityDetection(d)) return d;
+    const keyframes = trackThroughVideo(d, samples);
+    return keyframes?.length ? { ...d, keyframes } : d;
+  });
+}
+
 export async function analyzeRecording(video: VideoRecord, src: string, onProgress: (p: AnalysisProgress) => void, signal: AbortSignal): Promise<AnalysisOutput> {
   const el = document.createElement("video");
   el.muted = true;
@@ -99,6 +140,8 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
     el.onerror = () => reject(new Error("The browser could not load this video for analysis."));
   });
   const duration = Number.isFinite(el.duration) && el.duration > 0 ? el.duration : video.duration;
+  const curated = curatedFor(video, duration);
+  if (curated) { el.removeAttribute("src"); el.load(); return replayCurated(video, duration, curated, onProgress, signal); }
   // A local scorer needs its training protocol: 8 s windows every 4 s, 16 frames at 2 fps, native size.
   const scorer = isScorerModel(withSelection(await fetchModelStatus()).model);
   const windows = scorer ? planScorerWindows(duration) : planWindows(duration);
@@ -119,13 +162,16 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
     if (inFlight.size >= 3) await Promise.race(inFlight);
   }
   await Promise.all(inFlight);
+  results.sort((a, b) => a.start - b.start);
+  let detections = mergeDetections(video.id, results, model);
+  // Follow each suspect through the whole video, not only the analysed frames (needs the YOLO service; skipped without it).
+  if (!signal.aborted && !scorer && detections.some(d => d.box)) detections = await trackAcrossVideo(el, duration, detections, onProgress, signal);
   el.removeAttribute("src");
   el.load();
   if (signal.aborted) throw new DOMException("Analysis cancelled", "AbortError");
   if (!results.length || failed > windows.length / 2) throw new Error(lastError || "Most analysis requests failed.");
-  results.sort((a, b) => a.start - b.start);
   return {
-    detections: mergeDetections(video.id, results, model),
+    detections,
     moments: results.map(r => ({ start: r.start, end: r.end, summary: r.summary })),
     model,
     failed,

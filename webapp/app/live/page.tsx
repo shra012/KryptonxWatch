@@ -1,15 +1,19 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Camera, CircleStop, Film, Radio, Save, ShieldAlert } from "lucide-react";
+import { Camera, Check, CircleStop, Film, PersonStanding, Radio, Save, ShieldAlert } from "lucide-react";
 import { useApp } from "@/components/app-provider";
 import { EmptyState, EventTime, Notice, PageTitle, Panel, SeverityBadge } from "@/components/ui";
 import { analyzeWindow, grabFrame, useModelStatus } from "@/lib/detection-client";
 import { INCIDENT_THRESHOLD, mergeDetections, WINDOW, type Frame, type WindowResult } from "@/lib/vlm/analysis";
-import { timecode, type VideoRecord } from "@/lib/types";
+import { timecode, type ResponseRecord, type VideoRecord } from "@/lib/types";
 import { isScorerModel } from "@/lib/vlm/scorer";
 import { newId } from "@/lib/id";
 import { videoSource } from "@/components/video-source";
+import { PoseOverlay, type Pose } from "@/components/pose-overlay";
+import { ResponseDialog, type ResponseIncident } from "@/components/response-dialog";
+import { fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
+import { responseFor, responsePriority } from "@/lib/response";
 
 type Source = { kind: "camera" } | { kind: "video"; id: string };
 interface FeedItem { id: string; at: number; result: WindowResult; alert: boolean }
@@ -38,6 +42,19 @@ export default function LiveMonitor() {
   const startedAt = useRef(0);
   const abort = useRef<AbortController | null>(null);
   const objectUrl = useRef<string | null>(null);
+  // Body joints: a separate, faster loop than the 8 s analysis windows, drawn over the feed.
+  const [showPose, setShowPose] = useState(true);
+  const [jointNames, setJointNames] = useState(true);
+  const [pose, setPose] = useState<Pose | null>(null);
+  const [poseMs, setPoseMs] = useState(0);
+  const [poseError, setPoseError] = useState("");
+  const [ratio, setRatio] = useState(16 / 9);
+  // Response pop-ups: one at a time, queued; the same kind of incident is not asked again within a minute of feed time.
+  const [prompts, setPrompts] = useState<(ResponseIncident & { feedId: string })[]>([]);
+  const [responses, setResponses] = useState<Record<string, ResponseRecord>>({});
+  const [alertStatus, setAlertStatus] = useState<AlertStatus | null>(null);
+  const lastPrompt = useRef<Record<string, number>>({});
+  useEffect(() => { fetchAlertStatus().then(setAlertStatus).catch(() => {}); }, []);
 
   const recordings = videos.filter(v => v.source === "upload" && v.blob);
 
@@ -52,6 +69,12 @@ export default function LiveMonitor() {
         results.current.push(result);
         const alert = result.incidents.some(i => i.confidence >= INCIDENT_THRESHOLD);
         setFeed(f => [{ id: `${start}`, at: Date.now(), result, alert }, ...f].slice(0, 50));
+        const top = result.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD && responseFor(i.category)).sort((a, b) => responsePriority(b) - responsePriority(a))[0];
+        if (top && !(top.seconds - (lastPrompt.current[top.category] ?? -Infinity) < 60)) {
+          lastPrompt.current[top.category] = top.seconds;
+          const place = source.kind === "camera" ? "Webcam feed" : `Replay: ${videos.find(v => v.id === source.id)?.title ?? "recording"}`;
+          setPrompts(q => [...q, { feedId: `${start}`, place, detection: { id: `live-${start}-${top.category}`, videoId: "live", seconds: top.seconds, category: top.category, severity: top.severity, description: top.description, confidence: top.confidence } }]);
+        }
         if (alert && alerts) {
           const top = [...result.incidents].sort((a, b) => b.confidence - a.confidence)[0];
           notify(`Suspected ${top.category.toLowerCase()} at ${timecode(top.seconds)} — review now`);
@@ -59,7 +82,7 @@ export default function LiveMonitor() {
       })
       .catch(e => { if (!signal?.aborted) setError(e instanceof Error ? e.message : "Analysis request failed."); })
       .finally(() => setPending(p => p - 1));
-  }, [alerts, notify, source.kind]);
+  }, [alerts, notify, source, videos]);
 
   const tick = useCallback(() => {
     const el = player.current;
@@ -83,6 +106,30 @@ export default function LiveMonitor() {
   }, []);
 
   useEffect(() => () => { abort.current?.abort(); cleanup(); }, [cleanup]);
+
+  // Ask the edge node for body joints on the current frame, then again as soon as it answers (a few per second).
+  useEffect(() => {
+    if (!running || !showPose) { setPose(null); return; }
+    let stopped = false;
+    const ctrl = new AbortController();
+    const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+    (async () => {
+      while (!stopped) {
+        const el = player.current;
+        if (el && el.readyState >= 2 && !el.paused) {
+          const t0 = performance.now();
+          try {
+            const res = await fetch("/api/pose", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: grabFrame(el, 480) }), signal: ctrl.signal });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) { setPose(null); setPoseError(data.error ?? "Body joints are unavailable."); await wait(3000); continue; }
+            setPoseError(""); setPose({ names: data.names, persons: data.persons }); setPoseMs(Math.round(performance.now() - t0));
+          } catch { if (stopped) break; }
+        }
+        await wait(100);
+      }
+    })();
+    return () => { stopped = true; ctrl.abort(); };
+  }, [running, showPose]);
 
   async function start() {
     setError(""); setFeed([]); setRecording(null); results.current = []; buffer.current = []; chunks.current = [];
@@ -171,12 +218,19 @@ export default function LiveMonitor() {
               : <button className="btn btn-primary" onClick={start} disabled={!model?.configured || scorerPicked}>{source.kind === "camera" ? <Camera size={17} /> : <Film size={17} />}Start monitoring</button>}
           </div>
           <div className={`video-frame ${latest?.alert && running ? "ring-4 ring-error" : ""}`}>
-            <div className="video-canvas" style={{ "--video-ratio": 16 / 9 } as React.CSSProperties}>
-              <video ref={player} muted playsInline aria-label="Live feed" />
+            <div className="video-canvas" style={{ "--video-ratio": ratio } as React.CSSProperties}>
+              <video ref={player} muted playsInline aria-label="Live feed" onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setRatio(v.videoWidth / v.videoHeight); }} />
+              {running && showPose && pose && <PoseOverlay pose={pose} labels={jointNames} />}
               {running && <span className="absolute top-3 left-3 flex items-center gap-1.5 bg-error text-error-content font-mono text-[.6rem] uppercase tracking-[.06em] px-2 py-1 rounded-md"><Radio size={11} />live · {timecode(elapsed)}</span>}
               {running && pending > 0 && <span className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/70 text-white font-mono text-[.6rem] uppercase tracking-[.06em] px-2 py-1 rounded-md"><span className="loading loading-spinner loading-xs" />analysing</span>}
             </div>
           </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4 text-sm">
+            <label className="flex items-center gap-2"><input type="checkbox" className="checkbox checkbox-sm" checked={showPose} onChange={e => setShowPose(e.target.checked)} /><PersonStanding size={15} />Body joints</label>
+            <label className={`flex items-center gap-2 ${showPose ? "" : "opacity-50"}`}><input type="checkbox" className="checkbox checkbox-sm" checked={jointNames} disabled={!showPose} onChange={e => setJointNames(e.target.checked)} />Joint names</label>
+            {running && showPose && !poseError && pose && <span className="font-mono text-xs text-base-content/50">{pose.persons.length} {pose.persons.length === 1 ? "person" : "people"} · {poseMs} ms · YOLO11 pose on the edge node</span>}
+          </div>
+          {running && showPose && poseError && <div className="mt-3"><Notice tone="warning">{poseError}</Notice></div>}
           {latest && <p className="text-sm mt-4"><span className="font-semibold">Latest scene:</span> <span className="text-base-content/70">{latest.result.summary}</span></p>}
           {error && <div className="mt-4"><Notice tone="error" role="alert">{error}</Notice></div>}
           {recording && !running && <div className="mt-4 border-l-2 border-primary pl-3.5 py-1 flex flex-wrap items-center gap-3 text-sm"><span>Webcam capture ready ({(recording.size / 1024 / 1024).toFixed(1)} MB, {results.current.length} analysed windows).</span><button className="btn btn-sm btn-primary" onClick={saveCapture}><Save size={15} />Save to library</button></div>}
@@ -189,8 +243,11 @@ export default function LiveMonitor() {
             <div className="flex justify-between gap-2 items-center"><span className="font-mono text-primary"><EventTime seconds={f.result.start} />–<EventTime seconds={f.result.end} /></span>{f.alert ? <ShieldAlert size={16} className="text-error" aria-label="Suspected incident" /> : <span className="text-xs text-base-content/50">clear</span>}</div>
             {f.result.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD).map((i, k) => <div key={k} className="mt-2"><div className="flex gap-2 items-center"><span className="font-semibold">Suspected {i.category.toLowerCase()}</span><SeverityBadge severity={i.severity} /><span className="text-xs text-base-content/50">{Math.round(i.confidence * 100)}%</span></div><p className="text-base-content/70">{i.description}</p></div>)}
             {!f.alert && <p className="text-base-content/60 mt-1">{f.result.summary}</p>}
+            {responses[f.id] && <p className="flex items-center gap-1.5 text-xs text-base-content/60 mt-2"><Check size={12} />{responses[f.id].kind === "911" ? "911 called" : "Owner notified"} · <span className="font-mono">{responses[f.id].reference}</span></p>}
           </li>)}</ol>}
       </Panel>
     </div>
+    {prompts[0] && <ResponseDialog key={prompts[0].detection.id} incident={prompts[0]} alertStatus={alertStatus} more={prompts.length - 1}
+      onDone={r => setResponses(m => ({ ...m, [prompts[0].feedId]: r }))} onClose={() => setPrompts(q => q.slice(1))} />}
   </>;
 }

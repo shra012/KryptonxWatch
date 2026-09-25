@@ -9,17 +9,17 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - `npm run dev`: http://localhost:3000. Model config lives in `.env.local` (see `.env.example`); restart after changing it.
 - `npm run lint` / `npm run typecheck` / `npm run build`
 - `npm run test:e2e`: Playwright against port 3000, reusing whatever already answers
-- `npm run test:e2e:ci`: owns its servers on port 3100 and points Twilio at `tests/fake-twilio.mjs`, so alert tests never spend credit. Use this where port 3000 belongs to something else (the ZGX). Set `PW_CHROMIUM_PATH` if Chromium lives outside Playwright's cache.
+- `npm run test:e2e:ci`: owns its servers on port 3100 (building into `.next-e2e/`, so a dev server on 3000 keeps working) and points Twilio at `tests/fake-twilio.mjs`, so alert tests never spend credit. It repoints the generated `next-env.d.ts` at `.next-e2e`; restore it with `git checkout next-env.d.ts`. Use this where port 3000 belongs to something else (the ZGX). Set `PW_CHROMIUM_PATH` if Chromium lives outside Playwright's cache.
 - `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
 
 ## Where things live
-- `app/`: pages: `/` overview, `/upload`, `/videos`, `/videos/[id]` (player, timeline, boxes, assistant), `/detections`, `/analytics`, `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
+- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/videos`, `/videos/[id]` (player, timeline, boxes, assistant), `/detections`, `/analytics`, `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
 - `npm run test:e2e`: Playwright; first run `npx playwright install chromium`
 - `node scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`)
 - `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
 
 ## Where things live
-- `app/`: pages: `/` overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics`, `/settings`. Pages are client components because state lives in the browser.
+- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics`, `/settings`. Pages are client components because state lives in the browser.
 - `app/api/`: server routes `model`, `analyze` (one window of frames), `chat`, `summary`. They are the only code that reads `VLM_*` env vars (via `lib/server/vlm-config.ts`).
 - `lib/vlm/`: prompt, parsing and merging (`analysis.ts`), assistant/summary prompts (`assistant.ts`), OpenAI-compatible client (`client.ts`). No runtime imports, so the benchmark script shares them.
 - `lib/detection-client.ts`: browser side: frame capture, windowed analysis, assistant and summary calls, `useModelStatus()`.

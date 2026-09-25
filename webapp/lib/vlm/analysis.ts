@@ -12,7 +12,7 @@ export const detectableCategories = [
   "Medical emergency", "Kiosk nonpayment", "Suspicious activity",
 ] as const satisfies readonly Category[];
 
-const defaultSeverity: Record<(typeof detectableCategories)[number], Severity> = {
+export const defaultSeverity: Record<(typeof detectableCategories)[number], Severity> = {
   Shoplifting: "medium", Theft: "medium", Robbery: "critical", Pickpocketing: "medium", Fighting: "high",
   Vandalism: "medium", Gun: "critical", "Medical emergency": "critical", "Kiosk nonpayment": "medium",
   "Suspicious activity": "low",

@@ -8,7 +8,7 @@ const TIMEOUT_MS = 15_000;
 export const yoloConfigured = () => Boolean(process.env.YOLO_BASE_URL);
 
 /** Person boxes per frame, or null when the service is not configured or does not answer. */
-async function detectPersons(frames: Frame[], signal?: AbortSignal): Promise<Rect[][] | null> {
+export async function detectPersons(frames: Frame[], signal?: AbortSignal): Promise<Rect[][] | null> {
   const base = process.env.YOLO_BASE_URL;
   if (!base) return null;
   try {
@@ -35,4 +35,24 @@ export async function groundBoxes<T extends WindowResult>(result: T, frames: Fra
   if (!persons) return { ...result, boxes: "vlm" };
   const incidents = result.incidents.map(inc => ({ ...inc, ...trackIncident(inc.box, inc.seconds, frames, persons) }));
   return { ...result, incidents, boxes: "yolo" };
+}
+
+export interface PosePerson { x: number; y: number; width: number; height: number; score: number; keypoints: [number, number, number][] }
+
+/** People with their 17 COCO joints for one frame (the Live monitor's body joints), or null when YOLO is off or does not answer. */
+export async function detectPose(image: string, signal?: AbortSignal): Promise<{ names: string[]; persons: PosePerson[] } | null> {
+  const base = process.env.YOLO_BASE_URL;
+  if (!base) return null;
+  try {
+    const res = await fetch(`${base.replace(/\/$/, "")}/pose`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ images: [image] }),
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(TIMEOUT_MS)]) : AbortSignal.timeout(TIMEOUT_MS),
+    });
+    const payload = await res.json().catch(() => ({}));
+    return res.ok && Array.isArray(payload.persons?.[0]) && Array.isArray(payload.names) ? { names: payload.names, persons: payload.persons[0] } : null;
+  } catch {
+    return null;
+  }
 }
