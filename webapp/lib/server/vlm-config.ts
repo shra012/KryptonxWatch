@@ -50,7 +50,7 @@ export function vlmConfig(kind: "vision" | "chat" = "vision", requested?: unknow
   const choice = picked && !isScorerModel(picked) && !isLocalVlmModel(picked) ? picked : undefined;
   const model = choice ?? (kind === "chat" ? process.env.VLM_CHAT_MODEL || process.env.VLM_MODEL : process.env.VLM_MODEL);
   if (!baseUrl || !model) return null;
-  let extraBody = defaultExtraBody(baseUrl);
+  let extraBody = defaultExtraBody(baseUrl, model);
   if (process.env.VLM_EXTRA_BODY) {
     try { extraBody = JSON.parse(process.env.VLM_EXTRA_BODY); } catch { /* ignore malformed override */ }
   }

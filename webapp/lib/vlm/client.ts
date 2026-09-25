@@ -20,14 +20,22 @@ export class VlmError extends Error {
 
 const isOpenRouter = (url: string) => /openrouter\.ai/.test(url);
 
-export function defaultExtraBody(baseUrl: string): Record<string, unknown> {
-  // Disable hidden reasoning (slow, costly, not needed for per-window labels) and return cost.
-  return isOpenRouter(baseUrl) ? { reasoning: { enabled: false }, usage: { include: true } } : {};
+/**
+ * Models that keep a little reasoning. OpenAI's GPT-5+ miss clear incidents with it off (hw-Robbery2, 8-16 s: nothing
+ * with it off, robbery and gun at 0.8+ with effort "low"); Gemini 3.x refuses requests with it off. Reasoning tokens count against max_tokens.
+ */
+export const needsReasoning = (model: string) => /^(openai\/(gpt-[5-9]|o\d)|google\/gemini-3)/.test(model);
+const REASONING_HEADROOM = 2000;
+
+export function defaultExtraBody(baseUrl: string, model = ""): Record<string, unknown> {
+  // Disable hidden reasoning where the model does not need it (slow, costly for per-window labels) and return cost.
+  if (!isOpenRouter(baseUrl)) return {};
+  return { reasoning: needsReasoning(model) ? { effort: "low" } : { enabled: false }, usage: { include: true } };
 }
 
 export async function chat(config: VlmConfig, messages: unknown[], options: { maxTokens?: number; temperature?: number; retries?: number; signal?: AbortSignal } = {}): Promise<ChatResult> {
   const { maxTokens = 500, temperature = 0, retries = 3 } = options;
-  const body = { model: config.model, messages, max_tokens: maxTokens, temperature, ...(config.extraBody ?? defaultExtraBody(config.baseUrl)) };
+  const body = { model: config.model, messages, max_tokens: needsReasoning(config.model) ? maxTokens + REASONING_HEADROOM : maxTokens, temperature, ...(config.extraBody ?? defaultExtraBody(config.baseUrl, config.model)) };
   let lastError: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
     const started = Date.now();
