@@ -8,6 +8,12 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 ## Commands
 - `npm run dev`: http://localhost:3000. Model config lives in `.env.local` (see `.env.example`); restart after changing it.
 - `npm run lint` / `npm run typecheck` / `npm run build`
+- `npm run test:e2e`: Playwright against port 3000, reusing whatever already answers
+- `npm run test:e2e:ci`: owns its servers on port 3100 and points Twilio at `tests/fake-twilio.mjs`, so alert tests never spend credit. Use this where port 3000 belongs to something else (the ZGX). Set `PW_CHROMIUM_PATH` if Chromium lives outside Playwright's cache.
+- `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
+
+## Where things live
+- `app/`: pages: `/` overview, `/upload`, `/videos`, `/videos/[id]` (player, timeline, boxes, assistant), `/detections`, `/analytics`, `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
 - `npm run test:e2e`: Playwright; first run `npx playwright install chromium`
 - `node scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`)
 - `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
@@ -22,9 +28,16 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - `components/shell.tsx`: sidebar and mobile nav. Register new pages in `nav`.
 - `lib/types.ts`: domain types and the `DetectionService` / `AssistantService` integration points.
 - `lib/analytics.ts`: all counts, chart data and CSV. `lib/storage.ts`: IndexedDB. `lib/demo.ts`: simulated samples.
+- `lib/server/`: server-only modules. `telemetry.ts` reads nvidia-smi and `/proc`; `alerts.ts` holds the Twilio call and the alert policy. Never import these from a `"use client"` file — the browser talks to `/api/system` and `/api/alerts` instead, through `components/use-telemetry.ts` and `lib/alert-client.ts`.
+- Secrets live in `webapp/.env.local` (git-ignored). `.env.local.example` lists every variable and what it does.
 
 ## UI rules
 - Tailwind 4 + daisyUI 5 classes, `lucide-react` icons, Recharts for charts. Ask before adding a UI library.
+- The look is a flat instrument console, not a card grid: sections are a mono label, a hairline and content (`Panel`), figures sit in hairline-ruled grids, and consequence is a rule in the margin (`Notice`) rather than a tinted callout box. Do not reintroduce `alert alert-*` boxes or rounded shadow cards.
+- The palette is monochrome: dark is pitch black, light is paper. Amber and red are the only hues and are reserved for genuine attention and alarm — never decoration, and never to rank a severity. Do not add an accent hue.
+- Type is EB Garamond for prose and headings, JetBrains Mono for anything read as data (labels, figures, timecodes, identifiers). Never set numbers in the serif.
+- Severity and review state are typographic (`SeverityBadge` / `StatusBadge`): a swatch from the achromatic severity ramp plus the word. No coloured pills.
+- Small live readings use the SVG primitives in `components/ui.tsx` (`Gauge`, `Sparkline`, `Meter`, `Readout`, `Unavailable`), not Recharts.
 - Light and dark themes via `data-theme`. Use daisyUI semantic colours (`base-*`, `primary`, `error`, …), not raw hex, and check both themes.
 - Page structure: `PageTitle`, then content in `Panel`s. Works at 375px wide with no horizontal scroll; wrap tables in `overflow-x-auto`.
 - Every list or chart handles loading, empty (`EmptyState`) and error states. Errors use `role="alert"` and say how to fix the problem.
@@ -33,6 +46,9 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - Link to an event moment as `/videos/{id}?t={seconds}`.
 
 ## Product guardrails
+- Samples and their annotations are always labelled simulated. Uploads never get invented detections.
+- A reading we cannot take is shown as unavailable with the reason, never as a zero. This holds for telemetry as much as for detections.
+- Owner SMS is opt-in, capped, deduplicated per detection, and prefixed `[SIMULATED]` when it comes from sample footage.
 - Samples and their annotations are always labelled simulated. Uploads only get detections from a real model run, labelled AI-suspected with model name and confidence. The AI summary excludes simulated samples.
 - Incidents are "suspected" until a human reviews them. Queue tracking is a measurement, not an incident.
 - Totals, charts and CSV all derive from provider state via `lib/analytics.ts`.

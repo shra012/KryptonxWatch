@@ -1,5 +1,5 @@
 import { type Detection, type VideoRecord, categories, severityOrder, isSecurityDetection } from "./types";
-export function allDetections(videos: VideoRecord[]) { return videos.flatMap(v=>v.detections.map(d=>({...d,videoTitle:v.title,recordedAt:v.recordedAt}))); }
+export function allDetections(videos: VideoRecord[]) { return videos.flatMap(v=>v.detections.map(d=>({...d,videoTitle:v.title,recordedAt:v.recordedAt,source:v.source}))); }
 export function counts(videos: VideoRecord[]) { const all=allDetections(videos); const active=all.filter(isSecurityDetection); return {videos:videos.length,detections:active.length,high:active.filter(d=>d.severity==="critical" || d.severity==="high").length,reviewed:active.filter(d=>d.status==="reviewed").length,measurements:all.filter(d=>d.severity==="measurement" && d.status!=="dismissed").length}; }
 export function categoryChart(videos: VideoRecord[]) {const all=allDetections(videos).filter(d=>d.status!=="dismissed"); return categories.map(name=>({name,value:all.filter(d=>d.category===name).length})).filter(x=>x.value>0);}
 export function severityChart(videos: VideoRecord[]) {const all=allDetections(videos).filter(d=>d.status!=="dismissed"); return severityOrder.map(name=>({name,value:all.filter(d=>d.severity===name).length})).filter(x=>x.value>0);}

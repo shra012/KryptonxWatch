@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Camera, CircleStop, Film, Radio, Save, ShieldAlert } from "lucide-react";
 import { useApp } from "@/components/app-provider";
-import { EmptyState, EventTime, PageTitle, Panel, SeverityBadge } from "@/components/ui";
+import { EmptyState, EventTime, Notice, PageTitle, Panel, SeverityBadge } from "@/components/ui";
 import { analyzeWindow, grabFrame, useModelStatus } from "@/lib/detection-client";
 import { INCIDENT_THRESHOLD, mergeDetections, WINDOW, type Frame, type WindowResult } from "@/lib/vlm/analysis";
 import { timecode, type VideoRecord } from "@/lib/types";
@@ -153,9 +153,9 @@ export default function LiveMonitor() {
 
   return <>
     <PageTitle eyebrow="Real-time analysis" title="Live monitor" description="Watch a webcam or replay a recording as a camera feed. Frames are analysed every 8 seconds and suspected incidents appear in the feed for review."
-      action={model?.configured ? <span className="badge badge-primary badge-soft">{model.provider} · {model.model}</span> : undefined} />
-    {model && !model.configured && <div role="alert" className="alert alert-warning mb-6">No analysis model is configured. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the dev server.</div>}
-    {scorerPicked && <div role="alert" className="alert alert-warning mb-6">The local shoplifting scorer works on recorded videos only. Pick another model in Preferences to use Live, or upload a recording and run AI analysis.</div>}
+      action={model?.configured ? <span className="font-mono text-[.62rem] uppercase tracking-[.14em] text-base-content/45">{model.provider} · {model.model}</span> : undefined} />
+    {model && !model.configured && <div className="mb-6"><Notice tone="warning" role="alert">No analysis model is configured. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the dev server.</Notice></div>}
+    {scorerPicked && <div className="mb-6"><Notice tone="warning" role="alert">The local shoplifting scorer works on recorded videos only. Pick another model in Preferences to use Live, or upload a recording and run AI analysis.</Notice></div>}
     <div className="grid xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,.8fr)] gap-6">
       <div className="space-y-6">
         <Panel>
@@ -173,19 +173,19 @@ export default function LiveMonitor() {
           <div className={`video-frame ${latest?.alert && running ? "ring-4 ring-error" : ""}`}>
             <div className="video-canvas" style={{ "--video-ratio": 16 / 9 } as React.CSSProperties}>
               <video ref={player} muted playsInline aria-label="Live feed" />
-              {running && <span className="absolute top-3 left-3 badge badge-error gap-1"><Radio size={12} />LIVE · {timecode(elapsed)}</span>}
-              {running && pending > 0 && <span className="absolute top-3 right-3 badge badge-neutral gap-1"><span className="loading loading-spinner loading-xs" />Analysing</span>}
+              {running && <span className="absolute top-3 left-3 flex items-center gap-1.5 bg-error text-error-content font-mono text-[.6rem] uppercase tracking-[.14em] px-2 py-1 rounded-[2px]"><Radio size={11} />live · {timecode(elapsed)}</span>}
+              {running && pending > 0 && <span className="absolute top-3 right-3 flex items-center gap-1.5 bg-black/70 text-white font-mono text-[.6rem] uppercase tracking-[.14em] px-2 py-1 rounded-[2px]"><span className="loading loading-spinner loading-xs" />analysing</span>}
             </div>
           </div>
           {latest && <p className="text-sm mt-4"><span className="font-semibold">Latest scene:</span> <span className="text-base-content/70">{latest.result.summary}</span></p>}
-          {error && <div role="alert" className="alert alert-error mt-4 text-sm">{error}</div>}
-          {recording && !running && <div className="alert alert-info alert-soft mt-4 flex flex-wrap"><span>Webcam capture ready ({(recording.size / 1024 / 1024).toFixed(1)} MB, {results.current.length} analysed windows).</span><button className="btn btn-sm btn-primary" onClick={saveCapture}><Save size={15} />Save to library</button></div>}
+          {error && <div className="mt-4"><Notice tone="error" role="alert">{error}</Notice></div>}
+          {recording && !running && <div className="mt-4 border-l-2 border-primary pl-3.5 py-1 flex flex-wrap items-center gap-3 text-sm"><span>Webcam capture ready ({(recording.size / 1024 / 1024).toFixed(1)} MB, {results.current.length} analysed windows).</span><button className="btn btn-sm btn-primary" onClick={saveCapture}><Save size={15} />Save to library</button></div>}
         </Panel>
         <p className="text-xs text-base-content/55">Only sampled frames are sent to the analysis server. Detections are suspected until a person reviews them; no one is contacted automatically.</p>
       </div>
-      <Panel title="Incident feed" action={<span className={`badge badge-soft ${alertsCount ? "badge-error" : "badge-ghost"}`}>{alertsCount} suspected</span>}>
+      <Panel title="Incident feed" action={<span className={`font-mono text-[.62rem] uppercase tracking-[.14em] ${alertsCount ? "text-error" : "text-base-content/45"}`}>{alertsCount} suspected</span>}>
         {!feed.length ? <EmptyState title={running ? "Waiting for the first window" : "Feed is idle"} description={running ? "The first analysis arrives about 8 seconds after start." : "Start monitoring to see each analysed window here."} action={!recordings.length && !running ? <Link href="/upload" className="btn btn-sm btn-outline">Upload a recording to replay</Link> : undefined} />
-          : <ol className="space-y-3 max-h-[640px] overflow-y-auto" aria-live="polite">{feed.map(f => <li key={f.id} className={`rounded-xl border p-3 text-sm ${f.alert ? "border-error bg-error/5" : "border-base-300"}`}>
+          : <ol className="max-h-[40rem] overflow-y-auto scroll-quiet border-t border-base-300" aria-live="polite">{feed.map(f => <li key={f.id} className={`border-b border-l-2 border-base-300 pl-3.5 pr-2 py-3 text-sm ${f.alert ? "border-l-error bg-error/5" : "border-l-transparent"}`}>
             <div className="flex justify-between gap-2 items-center"><span className="font-mono text-primary"><EventTime seconds={f.result.start} />–<EventTime seconds={f.result.end} /></span>{f.alert ? <ShieldAlert size={16} className="text-error" aria-label="Suspected incident" /> : <span className="text-xs text-base-content/50">clear</span>}</div>
             {f.result.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD).map((i, k) => <div key={k} className="mt-2"><div className="flex gap-2 items-center"><span className="font-semibold">Suspected {i.category.toLowerCase()}</span><SeverityBadge severity={i.severity} /><span className="text-xs text-base-content/50">{Math.round(i.confidence * 100)}%</span></div><p className="text-base-content/70">{i.description}</p></div>)}
             {!f.alert && <p className="text-base-content/60 mt-1">{f.result.summary}</p>}
