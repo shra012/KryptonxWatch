@@ -71,6 +71,7 @@ Options, each run on v1 with its own `--tag`: 8 frames per window, 768 px or nat
 - **GB10 gotcha:** cuDNN 9.20 in the NGC 26.03 image makes YOLO return no detections on sm_121. With `torch.backends.cudnn.enabled = False`, results match the CPU at about 10 ms/image (CPU 42 ms). Watch for the same issue in any conv model on this box.
 - **M2 (agreement with Gemini) cannot judge person-snapping.** Snapping moves local boxes only slightly (Qwen3-VL IoU ≥ 0.3: 15% → 12%), and snapping *Gemini's own* boxes drops its self-agreement from 97% to 39%. Gemini draws loose region boxes (person plus object or area), not person boxes. M2 is therefore dropped as a box-quality measure.
 - **Visual review of 12 matched moments** (Claude's read, pending the user's): YOLO-snapped Qwen3-VL boxes are usually the tightest on the acting person (robberies, tunnel fight, vandalism); Gemini's are often large regions or empty areas. Failures: a wrong-person snap in hw-Fighting0, ambiguity in a crowded fisheye view, and a different person chosen in hw-Shoplifting2. Next: the user rates the page. If confirmed, move YOLO snapping into the app's analysis route (Phase 7) early.
+- **In the app (2026-09-25):** snapping plus frame-to-frame person tracking now runs server-side in `app/api/analyze` via `model/YOLO/src/yolo_server.py` (`YOLO_BASE_URL`), and the video page interpolates the tracked boxes. See [webapp/.plans/yolo-boxes-in-app.md](../../webapp/.plans/yolo-boxes-in-app.md).
 
 ### Phase 4: Build the fine-tuning dataset (UCA + study labels)
 1. **Splits and leakage:**
