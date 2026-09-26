@@ -1,13 +1,13 @@
 """Build the OpenRouter bake-off test set under data/bakeoff/ (git-ignored).
 
 Three parts:
-  hawkwatch/  the 12 UCF-Crime clips HawkWatch demoed (clip label = file name)
+  hawkwatch/  12 selected UCF-Crime reference clips (clip label = file name)
   timed/      6 UCF-Crime test videos with official start/end times, first 64 s kept
   normal/     18 UCF-Crime test videos with no anomaly, first 64 s kept
 
 Writes data/bakeoff/manifest.json, which the benchmark reads.
 
-  python3 model/openrouter-bakeoff/fetch_data.py --hawkwatch /path/to/Treehacks2025/public/videos
+  python3 model/openrouter-bakeoff/fetch_data.py --hawkwatch /path/to/reference-clips
 
 --version v2 builds a second, fresh test set under data/bakeoff-v2/ with none of the v1 videos:
   timed/   every other annotated UCF test video of the 5 classes, 64 s cut around the first event
@@ -120,7 +120,7 @@ def build_v2(out: Path, full: bool = False) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", choices=["v1", "v2", "full"], default="v1")
-    ap.add_argument("--hawkwatch", type=Path, help="Treehacks2025/public/videos (v1 only)")
+    ap.add_argument("--hawkwatch", type=Path, help="Directory of the 12 selected reference clips (v1 only)")
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
     if args.version == "v2":

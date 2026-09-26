@@ -116,8 +116,8 @@ async function runModels() {
   }
 }
 
-// ---------- HawkWatch reference pipeline ----------
-// Verbatim prompt from github.com/Grace-Shao/Treehacks2025 app/pages/upload/actions.ts: one frame every 3 s,
+// ---------- Single-frame reference pipeline ----------
+// Historical comparison prompt: one frame every 3 s,
 // "isDangerous" events, no categories. Used only as a baseline.
 const HAWKWATCH_PROMPT = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
 
