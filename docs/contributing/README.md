@@ -31,13 +31,7 @@ npm run test:e2e:ci
 
 The isolated E2E setup uses mocked model calls and a fake notification service. Do not replace these with paid providers in tests. Check any generated `next-env.d.ts` change before committing.
 
-Data-preparation checks run from the repository root:
-
-```bash
-python3 -m unittest discover -s model/sonakshi/data_prep/tests
-```
-
-MERL tests require the optional scientific Python dependencies; report skips and environment limitations. GPU jobs require the [shared-resource checks](../../ops/README.md).
+For data-preparation changes, verify the affected index or download on a small fixture before writing shared outputs. Confirm frame-to-time conversion, missing annotations, and split membership. GPU jobs require the [shared-resource checks](../../ops/README.md).
 
 ## Documentation changes
 

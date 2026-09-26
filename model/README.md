@@ -12,7 +12,6 @@ The model stack centers on **Sentinel Machines v1**, the team's fine-tuned **Qwe
 | GLM-4.5-VL | Earlier pilot and shared container environment | [Experiment guide](GLM-4.5-VL/README.md) |
 | Model bake-off | Historical base-model comparisons through the app pipeline | [Evaluation guide](openrouter-bakeoff/README.md) |
 | Study manifests | Splits, leakage checks, and theft intervals | [Data guide](study/README.md) |
-| Data preparation | UCF-Crime and MERL download / indexing tools | [Tool guide](sonakshi/README.md) |
 
 ## Model identity
 

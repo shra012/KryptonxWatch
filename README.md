@@ -75,7 +75,6 @@ Restart the app after configuration changes. Select the local VLM option in Sett
 | [YOLO](model/YOLO/README.md) | Person detection, box refinement, and pose service |
 | [Evaluation](model/openrouter-bakeoff/README.md) | Benchmark methodology, saved results, and reproduction |
 | [Study data](model/study/README.md) | Splits, labels, and leakage controls |
-| [Data preparation](model/sonakshi/README.md) | UCF-Crime and MERL indexing tools |
 | [Operations](ops/README.md) | GB10 services and optional integrations |
 | [Local data](data/README.md) | Working data layout and storage conventions |
 

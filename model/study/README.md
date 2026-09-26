@@ -34,4 +34,4 @@ Maintain source-video and camera-scene separation when making splits. Exclude ba
 
 ## Tools and results
 
-[Data preparation](../sonakshi/README.md) covers dataset indexing. The [Qwen3.8 study](../Qwen3.8-27B-INT4/README.md) documents the completed earlier shoplifting experiment. [Benchmark tooling](../openrouter-bakeoff/README.md) evaluates the application's general VLM pipeline.
+The maintained UCF tools are [fetch_ucf.py](../Qwen3.8-27B-INT4/src/fetch_ucf.py) for archive downloads and [build_index.py](../Qwen3.8-27B-INT4/src/build_index.py) for video and event indexing. The indexer requires `ffprobe`; run it with `--root /srv/kryptonx-data/ucf-crime` when using the shared dataset. The [Qwen3.8 study](../Qwen3.8-27B-INT4/README.md) documents the completed earlier shoplifting experiment. [Benchmark tooling](../openrouter-bakeoff/README.md) evaluates the application's general VLM pipeline.

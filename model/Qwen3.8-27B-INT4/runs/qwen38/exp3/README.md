@@ -12,6 +12,8 @@ A LoRA adapter for [Qwen/Qwen3.8-27B](https://huggingface.co/Qwen/Qwen3.8-27B) (
 8-second CCTV clips for **suspected shoplifting**. It was built for KryptonxWatch, where detections
 are shown on a timeline **for a person to review**. It is not an automated decision system.
 
+This is the historical Qwen3.8 adapter model card, separate from [Sentinel Machines v1](../../../../sentinel-machines-v1/README.md). The usage example requires separately obtained adapter weights.
+
 ## Result
 
 The difference from zero-shot is not conclusive: at least one seed's 95% CI for ΔAUROC includes 0, so this study does not show that fine-tuning helps.
