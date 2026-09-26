@@ -8,7 +8,7 @@ These are **historical base-model comparisons**, not evaluation results for the 
 
 | Cohort | Scope | Saved summary |
 | --- | --- | --- |
-| v1 | 36 clips: 12 HawkWatch examples, 6 timed UCF test clips, 18 normal clips | [v1 results](results/README.md) · [JSON](results/summary.json) |
+| v1 | 36 clips: 12 selected UCF-Crime examples, 6 timed UCF test clips, 18 normal clips | [v1 results](results/README.md) · [JSON](results/summary.json) |
 | v2 | 65 clips: 35 crime clips cut around annotated events and 30 normal clips | [v2 results](results-v2/README.md) · [JSON](results-v2/summary.json) |
 | full | Larger in-scope UCF test-video benchmark | [Full results](results-full/README.md) · [JSON](results-full/summary.json) |
 
@@ -27,7 +27,7 @@ The default pipeline submits four frames per eight-second window, uses the app's
 | Timed hits | Annotated events matched by the predicted timeline |
 | Window AUROC | Ranking quality over labeled windows |
 
-A category-free HawkWatch comparison treats any alarm as a catch, so its Score is not directly equivalent to category-aware Score. Compare its balanced accuracy instead.
+A category-free single-frame baseline comparison treats any alarm as a catch, so its Score is not directly equivalent to category-aware Score. Compare its balanced accuracy instead.
 
 ## Historical findings
 

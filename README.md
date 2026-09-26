@@ -94,6 +94,6 @@ Dataset videos, model weights, credentials, and local working data stay outside 
 
 Historical Qwen3-VL base-model and Qwen3.8 adapter results are documented separately from Sentinel Machines v1. They should not be presented as v1 release metrics. See [evaluation](model/openrouter-bakeoff/README.md) and [study data](model/study/README.md).
 
-## Team and acknowledgements
+## Team
 
 Built by **Shravan, Sonakshi, Shreyas, Vidushi, and Chaitanya**. The stack brings together Qwen, YOLO, Next.js, HP Z Runtime, and an optional Hermes watch agent.

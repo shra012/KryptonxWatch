@@ -4,7 +4,7 @@ Saved base-model comparison; these are not Sentinel Machines v1 release metrics.
 
 | Model | Windows | Score @0.5 | CV score (tuned threshold) | Balanced acc. | Clips detected | Right category | Normal clips false-alarmed | False alarms / min | Window AUROC | Timed events hit | Median onset error | p50 latency | Cost |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| google/gemini-2.5-flash (HawkWatch pipeline) | 409/409 | 81% | 81% (0.5/0.5) | 81% | 67% | – | 6% | 0.19 | 0.56 | 3/6 | 2.5 s | 1.5 s | $0.159 |
+| google/gemini-2.5-flash (single-frame baseline) | 409/409 | 81% | 81% (0.5/0.5) | 81% | 67% | – | 6% | 0.19 | 0.56 | 3/6 | 2.5 s | 1.5 s | $0.159 |
 | qwen/qwen3.8-flash | 162/163 | 78% | 78% (0.5/0.5) | 89% | 78% | 56% | 0% | 0.00 | 0.65 | 3/6 | 4.3 s | 2.1 s | $0.018 |
 | google/gemini-2.5-flash | 163/163 | 75% | 75% (0.5/0.8) | 81% | 94% | 83% | 33% | 1.50 | 0.72 | 5/6 | 1.0 s | 1.5 s | $0.107 |
 | google/gemini-2.5-flash #2 | 163/163 | 72% | 78% (0.8/0.8) | 78% | 94% | 83% | 39% | 1.68 | 0.72 | 5/6 | 1.0 s | 1.5 s | $0.107 |
