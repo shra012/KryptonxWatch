@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sentinel Machines — Demo</title>
+<meta name="description" content="Edge AI SJSUHack 2026: the problem, the solution, the architecture and the team behind Sentinel Machines.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens copied verbatim from webapp/app/globals.css so this page and the
+   dashboard are the same colour system, not an approximation of it. */
+:root, :root[data-theme="light"]{
+  --base-100:#ffffff; --base-200:#fafafa; --base-300:#e4e4e7; --ink:#09090b;
+  --primary:#18181b; --primary-content:#ffffff; --secondary:#52504c;
+  --warning:#8a5a00; --error:#9b2117;
+  --sev-critical:#0a0a0a; --sev-high:#4a4a4a; --sev-medium:#7d7d7d; --sev-low:#b0b0b0;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --base-100:#09090b; --base-200:#0f0f11; --base-300:#27272a; --ink:#fafafa;
+  --primary:#fafafa; --primary-content:#09090b; --secondary:#9d9a94;
+  --warning:#c99a3c; --error:#d2564a;
+  --sev-critical:#ffffff; --sev-high:#c9c9c9; --sev-medium:#8f8f8f; --sev-low:#5c5c5c;
+  color-scheme:dark;
+}
+:root{
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --muted:color-mix(in oklch, var(--ink) 55%, transparent);
+  --faint:color-mix(in oklch, var(--ink) 40%, transparent);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--base-100); color:var(--ink);
+  font:15px/1.65 var(--sans); font-feature-settings:"ss01","cv11";
+  -webkit-font-smoothing:antialiased; padding:0 16px 96px;
+}
+.wrap{max-width:1140px;margin:0 auto}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0;color:var(--muted);max-width:68ch}
+a{color:inherit}
+.lbl{font:500 .68rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+/* ---- top bar -------------------------------------------------------- */
+.bar{
+  position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:14px;
+  height:60px; margin:0 -16px 0; padding:0 16px;
+  background:color-mix(in oklch, var(--base-100) 85%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--base-300);
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;letter-spacing:-.01em}
+.mark{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--primary);color:var(--primary-content)}
+.mark svg{width:15px;height:15px}
+.bar nav{margin-left:auto;display:flex;gap:2px;align-items:center}
+.bar nav a{
+  text-decoration:none;font-size:.82rem;font-weight:500;color:var(--muted);
+  padding:7px 11px;border-radius:8px;transition:background-color .15s,color .15s;
+}
+.bar nav a:hover{color:var(--ink);background:var(--base-200)}
+.tbtn{
+  display:grid;place-items:center;width:32px;height:32px;margin-left:6px;flex:none;
+  border:1px solid var(--base-300);border-radius:999px;background:var(--base-100);
+  color:var(--ink);cursor:pointer;transition:background-color .15s;
+}
+.tbtn:hover{background:var(--base-200)}
+.tbtn svg{width:15px;height:15px}
+@media (max-width:760px){.bar nav a{display:none}}
+
+/* ---- sections ------------------------------------------------------- */
+section{padding:72px 0 0;scroll-margin-top:76px}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.head::after{content:"";flex:1;height:1px;background:var(--base-300)}
+
+/* hero */
+.hero{padding:76px 0 8px}
+.hero h1{font-size:clamp(2rem,5.4vw,3.4rem);line-height:1.04;max-width:19ch;margin:14px 0 18px}
+.hero p{font-size:1.05rem;max-width:62ch}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;
+  border:1px solid var(--base-300);background:var(--base-200);
+  font:500 .68rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.dot{width:6px;height:6px;border-radius:999px;background:var(--ink);flex:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--base-300);border:1px solid var(--base-300);border-radius:12px;overflow:hidden;margin-top:40px}
+.stat{background:var(--base-100);padding:20px 18px}
+.stat b{display:block;font:600 1.85rem/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:8px;font-size:.8rem;color:var(--muted);line-height:1.45}
+
+/* problem */
+.probs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:0;border-top:1px solid var(--base-300);border-left:1px solid var(--base-300);margin-top:8px}
+.probs div{border-right:1px solid var(--base-300);border-bottom:1px solid var(--base-300);padding:22px 20px 24px}
+.probs h3{font-size:.98rem;margin-bottom:8px}
+.probs p{font-size:.88rem}
+.probs .n{font:500 .68rem/1 var(--mono);letter-spacing:.12em;color:var(--faint);display:block;margin-bottom:12px}
+
+/* categories */
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cat{
+  border:1px solid var(--base-300);background:var(--base-200);border-radius:999px;
+  padding:7px 14px;font-size:.82rem;color:var(--ink);cursor:default;
+  transition:background-color .15s,border-color .15s;
+}
+.cat:hover{background:var(--base-100);border-color:var(--faint)}
+.cat i{font-style:normal;color:var(--muted);font-size:.78rem}
+
+/* ---- flip cards ----------------------------------------------------- */
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,208px),1fr));gap:14px}
+.flip{
+  appearance:none;border:0;padding:0;background:none;font:inherit;color:inherit;
+  perspective:1000px;height:164px;cursor:pointer;text-align:left;
+}
+.flip:focus-visible{outline:2px solid color-mix(in oklch,var(--ink) 55%,transparent);outline-offset:3px;border-radius:12px}
+.inner{
+  display:block;position:relative;width:100%;height:100%;
+  transition:transform .55s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;
+}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid var(--base-300);border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.front{background:var(--base-200)}
+.flip:hover .front{border-color:var(--faint)}
+.back{background:var(--primary);color:var(--primary-content);transform:rotateY(180deg);border-color:var(--primary)}
+.face .k{font:500 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.front .t{display:block;font-weight:600;font-size:.98rem;line-height:1.25;letter-spacing:-.01em}
+.back p{font-size:.85rem;line-height:1.5;color:inherit;opacity:.92;margin:0}
+.turn{display:inline-flex;align-items:center;gap:6px;font:500 .62rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.5}
+.turn svg{width:11px;height:11px}
+@media (prefers-reduced-motion:reduce){
+  .inner{transition:none;transform-style:flat}
+  .flip[aria-pressed="true"] .inner{transform:none}
+  .face{backface-visibility:visible}
+  .back{transform:none;opacity:0;pointer-events:none;transition:opacity .2s}
+  .flip[aria-pressed="true"] .back{opacity:1}
+  .flip[aria-pressed="true"] .front{opacity:0}
+}
+.hint{margin:12px 0 22px;font-size:.88rem}
+
+/* ---- pipeline with arrows ------------------------------------------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:4px}
+.flow .flip{flex:1 1 172px;min-width:0}
+.arrow{
+  flex:0 0 auto;align-self:center;display:grid;place-items:center;
+  width:22px;height:22px;color:var(--faint);
+}
+.arrow svg{width:18px;height:18px}
+@media (max-width:720px){
+  .flow{flex-direction:column;align-items:stretch}
+  .flow .flip{flex:1 1 auto}
+  .arrow{transform:rotate(90deg);margin:-2px auto}
+}
+.sub{font-size:1.02rem;margin:44px 0 14px}
+
+/* ---- team: photo cards ------------------------------------------------ */
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,196px),1fr));gap:16px}
+.member{
+  display:flex;flex-direction:column;text-decoration:none;overflow:hidden;
+  border:1px solid var(--base-300);border-radius:14px;background:var(--base-100);
+  transition:border-color .15s,box-shadow .15s,transform .15s;
+}
+.member:hover{border-color:var(--faint);box-shadow:0 4px 14px rgb(0 0 0 / .07);transform:translateY(-2px)}
+.member:focus-visible{outline:2px solid color-mix(in oklch,var(--ink) 55%,transparent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.member,.member:hover{transition:none;transform:none}}
+/* The photo files stay as supplied; framing (focus point + zoom) is display-only. */
+.photo{
+  position:relative;display:grid;place-items:center;aspect-ratio:4/5;overflow:hidden;
+  background:var(--base-200);border-bottom:1px solid var(--base-300);
+  font:600 2.2rem/1 var(--sans);color:var(--muted);letter-spacing:-.02em;
+}
+.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--fx,50%) var(--fy,30%);
+  transform:scale(var(--zoom,1));transform-origin:var(--fx,50%) var(--fy,30%)}
+.member .body{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:14px 14px 14px 16px}
+.member .txt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.member .nm{font-weight:600;font-size:.97rem;letter-spacing:-.01em;color:var(--ink);line-height:1.25}
+.member .loc{font:500 .64rem/1.35 var(--mono);letter-spacing:.06em;color:var(--faint)}
+/* LinkedIn QR: kept on white in both themes so phones can scan it off a projector */
+.member .qr{width:76px;height:76px;flex:none;display:block;background:#fff;border-radius:6px;padding:3px;border:1px solid var(--base-300);image-rendering:pixelated}
+
+footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--base-300);font-size:.82rem;color:var(--faint)}
+footer a{text-decoration:underline;text-underline-offset:3px}
+
+/* results */
+.tblwrap{overflow-x:auto;border:1px solid var(--base-300);border-radius:12px;margin-top:6px}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums;min-width:640px}
+.tbl th,.tbl td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--base-300)}
+.tbl thead th{font:500 .64rem/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--base-200)}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl td.num,.tbl th.num{text-align:right}
+.tbl .where{font:500 .62rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--base-300);border-radius:999px;padding:3px 7px;white-space:nowrap}
+.tbl .best{font-weight:600}
+.src{margin-top:10px;font-size:.78rem;color:var(--faint)}
+
+/* problem: one incident, told as a timeline */
+.story{list-style:none;margin:10px 0 0;padding:0;position:relative}
+.story::before{content:"";position:absolute;left:171.5px;top:22px;bottom:22px;width:1px;background:var(--base-300)}
+.story li{display:grid;grid-template-columns:150px 1fr;column-gap:44px;align-items:baseline;padding:13px 0;position:relative}
+.story li::before{content:"";position:absolute;left:165.5px;top:21px;width:13px;height:13px;box-sizing:border-box;border-radius:999px;background:var(--base-100);border:2px solid var(--ink)}
+.story li.alt::before{border-style:dashed;border-color:var(--faint)}
+.story time{font:500 .7rem/1.6 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:right}
+.story p{margin:0;font-size:1.04rem;line-height:1.55;color:var(--ink);max-width:62ch}
+.story li.alt p{color:var(--muted)}
+.punch{margin:30px 0 0;font:600 clamp(1.45rem,3.3vw,2.2rem)/1.18 var(--sans);letter-spacing:-.025em;color:var(--muted)}
+.punch b{display:block;color:var(--ink);font-weight:600}
+@media (max-width:640px){
+  .story::before{left:6px}
+  .story li{grid-template-columns:1fr;row-gap:4px;padding:12px 0 12px 26px}
+  .story li::before{left:0;top:15px}
+  .story time{text-align:left}
+}
+
+/* ---- Launch-style hero, in the dashboard's own tokens -------------------
+   Paper in the light theme, pitch black in the dark one, like the app itself. */
+.hero.launch{
+  margin-inline:calc(50% - 50vw); padding:84px max(16px, calc(50vw - 570px)) 72px;
+  background:var(--base-100); color:var(--ink); text-align:center; display:flex; flex-direction:column; align-items:center;
+}
+.hero.launch h1{
+  max-width:none; margin:22px 0 28px; font-weight:700; font-size:clamp(3rem,10vw,7.4rem); line-height:1; letter-spacing:-.045em;
+  background:linear-gradient(180deg,var(--ink) 35%,var(--muted)); -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero.launch .tagline{max-width:28ch;margin:0 auto;color:var(--ink);font-weight:600;font-size:clamp(1.25rem,2.6vw,2rem);line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
+.hero.launch .lede{max-width:52ch;margin:16px auto 0;color:var(--muted);font-size:clamp(1rem,1.4vw,1.15rem);text-wrap:balance}
+.shot{margin:56px auto 0;width:100%;max-width:1080px;border-radius:18px;overflow:hidden;border:1px solid var(--base-300);background:var(--base-200);
+  box-shadow:0 30px 100px color-mix(in oklch,var(--ink) 10%,transparent);
+  transform:scale(var(--s,1));transform-origin:50% 0;will-change:transform}
+.shot img{display:block;width:100%;height:auto}
+/* the product shot follows the page theme, like the app */
+.shot .dark{display:none}
+:root[data-theme="dark"] .shot .light{display:none}
+:root[data-theme="dark"] .shot .dark{display:block}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot .light{display:none}:root:not([data-theme="light"]) .shot .dark{display:block}}
+.hero.launch .stats{width:100%;max-width:1080px;margin:56px auto 0;text-align:left}
+/* section headlines: big, bold, centred */
+section h2{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:700;letter-spacing:-.04em;line-height:1.02;text-align:center}
+section p.hint{margin:16px auto 34px;text-align:center;font-size:clamp(1rem,1.5vw,1.2rem);max-width:60ch}
+#team > h2 + p.hint{margin-bottom:34px}
+#problem .story{max-width:860px;margin:26px auto 0}
+#problem .punch{text-align:center;margin-top:40px}
+#solution .cats{justify-content:center}
+#solution h3.sub,#architecture h3.sub,#metrics h3.sub{text-align:center}
+
+/* ---- Scroll-scrubbed scenes (Apple launch style) ---------------------------
+   html.scrub is set by script unless reduced motion is on or the window is very short;
+   without it every scene is a normal static section. */
+html.scrub [data-scene]{position:relative}
+html.scrub .pin{position:sticky;top:60px;height:calc(100vh - 60px);overflow:hidden}
+html.scrub .hero.launch{padding-top:0;padding-bottom:0;display:block;height:280vh}
+html.scrub .hero.launch .pin{display:block}
+html.scrub .hero .htext{padding-top:8vh;will-change:transform,opacity}
+html.scrub .hero .shot{position:absolute;left:50%;top:calc(50% - 40px);margin:0;width:min(1080px,90vw,calc((100vh - 280px) * 1.6));will-change:transform}
+html.scrub .hero .stats{position:absolute;left:50%;bottom:20px;margin:0;width:min(1080px,92vw);opacity:0;will-change:transform,opacity}
+html.scrub [data-scene="problem"]{height:430vh}
+html.scrub [data-scene="problem"] .pin{display:flex;flex-direction:column;justify-content:center}
+html.scrub #problem .story{margin-top:14px}
+html.scrub #problem .story li{opacity:.16;transition:opacity .35s ease}
+html.scrub #problem .story li.past{opacity:.42}
+html.scrub #problem .story li.now{opacity:1}
+html.scrub #problem .punch{opacity:0;transition:opacity .3s}
+html.scrub #problem .punch.on{opacity:1}
+html.scrub #problem .punch .w{color:var(--ink);opacity:.18;transition:opacity .25s}
+html.scrub #problem .punch .w.lit{opacity:1}
+html.scrub #problem .punch b{font-weight:600}
+html.scrub [data-scene="arch"]{height:360vh}
+html.scrub [data-scene="arch"] .pin{display:flex;flex-direction:column;justify-content:center}
+html.scrub #flow .flip{transition:opacity .35s}
+html.scrub #flow .flip.later{opacity:.35}
+html.scrub [data-rise]{will-change:transform,opacity}
+@media (max-height:760px){html.scrub #problem .story li{padding:8px 0} html.scrub #problem .story p{font-size:.96rem}}
+
+/* ---- Architecture diagrams, recoloured to the dashboard tokens ------------
+   Calls that leave the machine are dashed ink (the originals used amber). */
+.diagram{margin-top:6px;overflow-x:auto}
+.diagram svg{display:block;width:100%;min-width:880px;height:auto}
+.diagram .bx{fill:var(--base-100);stroke:var(--base-300);stroke-width:1.2}
+.diagram .bx-g{fill:var(--base-100);stroke:var(--ink);stroke-width:1.6}
+.diagram .bx-d{fill:var(--base-100);stroke:var(--muted);stroke-width:1.1;stroke-dasharray:5 4}
+.diagram .bx-a{fill:var(--base-200);stroke:var(--ink);stroke-width:1.3;stroke-dasharray:6 3}
+.diagram .bus{fill:var(--base-200);stroke:var(--muted);stroke-width:1.2}
+.diagram .pill{fill:var(--base-100);stroke:var(--muted);stroke-width:1.1}
+.diagram .row{fill:var(--base-200)}
+.diagram .zone{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:7 6}
+.diagram .t{fill:var(--ink);font:600 13.5px var(--sans)}
+.diagram .s{fill:var(--muted);font:400 11.5px var(--sans)}
+.diagram .m{fill:var(--ink);font:500 12px var(--mono)}
+.diagram .ms{fill:var(--muted);font:400 11px var(--mono)}
+.diagram .lab,.diagram .row-l{fill:var(--muted);font:500 10.5px var(--mono);letter-spacing:.04em}
+.diagram .lab-a,.diagram .tag{fill:var(--ink);font:600 10.5px var(--mono);letter-spacing:.04em}
+.diagram .num{fill:var(--muted);font:600 11px var(--mono)}
+.diagram .e{stroke:var(--ink);stroke-width:1.4;fill:none}
+.diagram .e-a{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
+.diagram .e-d{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:5 4}
+.diagram .ah,.diagram .ah-a{fill:var(--ink)} .diagram .ah-d{fill:var(--muted)} .diagram .dot{fill:var(--ink)}
+/* scroll scene: the six steps light up in turn */
+.flowd .stp{transition:opacity .35s ease}
+html.scrub .flowd .stp{opacity:.22}
+html.scrub .flowd .stp.past{opacity:.6}
+html.scrub .flowd .stp.now{opacity:1}
+html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
+
+/* demo video */
+.videobox{position:relative;width:100%;max-width:1080px;margin:6px auto 0;aspect-ratio:16/9;border:1px solid var(--base-300);border-radius:18px;overflow:hidden;background:var(--base-200);
+  box-shadow:0 30px 100px color-mix(in oklch,var(--ink) 10%,transparent)}
+.videobox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+#demo .src a{text-decoration:underline;text-underline-offset:3px}
+
+/* metrics table: cloud / local split */
+.tbl.split{min-width:900px}
+.tbl.split th.ctr{text-align:center}
+.tbl.split .grp{border-left:1px solid var(--base-300)}
+.tbl.split thead tr:first-child th{border-bottom:0}
+</style>
+</head>
+<body>
+<script>
+  // Honour whatever theme the dashboard is on: same origin, same key, set before paint.
+  try{document.documentElement.setAttribute("data-theme",localStorage.getItem("kryptonxwatch-theme")==="dark"?"dark":"light")}catch(e){}
+</script>
+
+<div class="wrap">
+
+<div class="bar">
+  <a class="brand" href="/overview">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+    Sentinel Machines
+  </a>
+  <nav>
+    <a href="#team">Team</a>
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#metrics">Metrics</a>
+    <a href="#demo">Demo</a>
+    <a href="/overview">Dashboard →</a>
+  </nav>
+  <button class="tbtn" id="theme" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+  </button>
+</div>
+
+<header class="hero launch" data-scene="hero">
+ <div class="pin">
+ <div class="htext">
+  <span class="pill"><span class="dot"></span>Edge AI SJSUHack 2026 · HP ZGX Nano</span>
+  <h1>Sentinel Machines.</h1>
+  <p class="tagline">Your cameras already see theft. Now something is watching.</p>
+  <p class="lede">A vision-language model on an HP ZGX Nano, in the store, names the incident and hands it to a person.</p>
+ </div>
+  <figure class="shot"><img class="light" src="demo/app-analytics-light.jpg" width="2160" height="1350" alt="Sentinel Machines analytics: a local model on the GB10 and a cloud model analyse the same clip side by side, with live GB10 telemetry"><img class="dark" src="demo/app-analytics-dark.jpg" width="2160" height="1350" alt="Sentinel Machines analytics: a local model on the GB10 and a cloud model analyse the same clip side by side, with live GB10 telemetry"></figure>
+  <div class="stats">
+    <div class="stat"><b>8 s</b><span>Every camera gets a fresh look every eight seconds</span></div>
+    <div class="stat"><b>2.1 s</b><span>Median answer per window, Qwen3-VL on the GB10</span></div>
+    <div class="stat"><b>94%</b><span>Of 35 crime clips flagged in a fresh 65-clip test</span></div>
+    <div class="stat"><b>128 GB</b><span>Unified memory: models, detector and app on one box</span></div>
+  </div>
+ </div>
+</header>
+
+<section id="team">
+  <h2>Team</h2>
+  <p class="hint">San José State University · Edge AI SJSUHack 2026.</p>
+  <div class="team" id="teamgrid"></div>
+</section>
+
+<section id="problem">
+<div data-scene="problem"><div class="pin">
+  <h2>Problem</h2>
+  <ol class="story">
+    <li><time>2:14 PM</time><p>A shopper slips a phone into their jacket. Camera 12 records it clearly.</p></li>
+    <li><time>2:14 PM</time><p>Nobody sees it. One guard, forty screens.</p></li>
+    <li><time>2:16 PM</time><p>They walk out. The motion alarm beeps, as it does fifty times a day. Nobody looks up.</p></li>
+    <li><time>Friday</time><p>The stock count finds a phone missing.</p></li>
+    <li><time>Monday</time><p>Someone scrubs 40 hours of footage looking for it, if anyone bothers at all.</p></li>
+    <li class="alt"><time>The alternative?</time><p>Streaming every camera to the cloud means shipping the store floor to someone else's servers, and paying for it.</p></li>
+  </ol>
+  <p class="punch"><span class="w">The</span> <span class="w">camera</span> <span class="w">saw</span> <span class="w">everything.</span> <b><span class="w">Nobody</span> <span class="w">was</span> <span class="w">watching.</span></b></p>
+</div></div>
+</section>
+
+<section id="solution">
+  <h2>Solution</h2>
+  <p class="hint">An on-site AI watches every camera and names what happened. A person decides.</p>
+  <div class="probs">
+    <div><span class="n">01</span><h3>Describes, never identifies</h3><p>It reports what people do, not who they are.</p></div>
+    <div><span class="n">02</span><h3>Suspected, not accused</h3><p>A person reviews every alert before anyone acts.</p></div>
+    <div><span class="n">03</span><h3>Footage stays on site</h3><p>Video is analysed on the GB10 in the store.</p></div>
+  </div>
+
+  <h3 class="sub">What it detects</h3>
+  <div class="cats">
+    <span class="cat" title="Concealing merchandise, or leaving a store with unpaid goods.">Shoplifting</span>
+    <span class="cat" title="Taking property that is not theirs outside a shop: bags, bikes, packages, parked cars.">Stealing</span>
+    <span class="cat" title="Taking property by force or threat, at a counter or on the street.">Robbery</span>
+    <span class="cat" title="Stealing from a pocket or bag by close contact.">Pickpocketing</span>
+    <span class="cat" title="Physical assault: punching, kicking, shoving, wrestling.">Fighting</span>
+    <span class="cat" title="Deliberately damaging or defacing property.">Vandalism</span>
+    <span class="cat" title="A collapse, fall, seizure or someone lying motionless.">Medical emergency</span>
+    <span class="cat" title="Bypassing payment at a self-checkout.">Checkout bypass</span>
+    <span class="cat" title="Concerning behaviour that fits none of the above.">Suspicious activity</span>
+    <span class="cat" title="Measured as a count, never treated as an incident.">Queue tracking <i>· measured</i></span>
+  </div>
+</section>
+
+<section id="architecture">
+<div data-scene="arch"><div class="pin">
+  <h2>Architecture</h2>
+  <p class="hint">Everything runs on one HP ZGX Nano. Only the dashed calls leave the machine.</p>
+  <h3 class="sub">What happens to 8 seconds of video</h3>
+  <div class="diagram flowd"><svg viewBox="0 0 1200 140" role="img" aria-label="Each 8 second window goes through six steps: sample four frames, route to a model, get JSON back, ground boxes with YOLO, merge into suspected incidents, and human review.">
+      <defs>
+        <marker id="dflow-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+        <marker id="dflow-bd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-d" d="M0 0L10 5L0 10z"/></marker>
+      </defs>
+      <g>
+        <g class="stp"><rect class="bx" x="10" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="24" y="62">01</text><text class="t" x="48" y="62">Sample</text>
+        <text class="s" x="24" y="86">Browser grabs 4 frames,</text><text class="s" x="24" y="103">2 s apart</text>
+
+        </g><g class="stp"><rect class="bx" x="212" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="226" y="62">02</text><text class="t" x="250" y="62">Route</text>
+        <text class="s" x="226" y="86">/api/analyze checks the</text><text class="s" x="226" y="103">allow-list, picks a model</text>
+
+        </g><g class="stp"><rect class="bx" x="414" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="428" y="62">03</text><text class="t" x="452" y="62">Describe</text>
+        <text class="s" x="428" y="86">Qwen3-VL returns JSON:</text><text class="s" x="428" y="103">incidents, scene log, boxes</text>
+
+        </g><g class="stp"><rect class="bx" x="616" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="630" y="62">04</text><text class="t" x="654" y="62">Ground</text>
+        <text class="s" x="630" y="86">YOLO snaps boxes to</text><text class="s" x="630" y="103">people and follows them</text>
+
+        </g><g class="stp"><rect class="bx" x="818" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="832" y="62">05</text><text class="t" x="856" y="62">Merge</text>
+        <text class="s" x="832" y="86">Windows merge into</text><text class="s" x="832" y="103">suspected incidents</text>
+
+        </g><g class="stp"><rect class="bx-g" x="1020" y="40" width="170" height="88" rx="10"/>
+        <text class="num" x="1034" y="62">06</text><text class="t" x="1058" y="62">Review</text>
+        <text class="s" x="1034" y="86">A person confirms or</text><text class="s" x="1034" y="103">dismisses; alerts opt-in</text>
+      </g></g>
+      <g>
+        <line class="e" x1="180" y1="84" x2="210" y2="84" marker-end="url(#dflow-b)"/>
+        <line class="e" x1="382" y1="84" x2="412" y2="84" marker-end="url(#dflow-b)"/>
+        <line class="e" x1="584" y1="84" x2="614" y2="84" marker-end="url(#dflow-b)"/>
+        <line class="e" x1="786" y1="84" x2="816" y2="84" marker-end="url(#dflow-b)"/>
+        <line class="e" x1="988" y1="84" x2="1018" y2="84" marker-end="url(#dflow-b)"/>
+      </g>
+      <!-- retry loop on step 3 -->
+      <path class="e-d" d="M560 40C560 10 470 10 470 38" marker-end="url(#dflow-bd)"/>
+      <text class="lab" x="515" y="14" text-anchor="middle">BAD JSON: RETRY ONCE</text>
+    </svg></div>
+</div></div>
+  <h3 class="sub">Who talks to whom</h3>
+  <div class="diagram"><svg viewBox="0 130 1200 612" role="img" aria-label="The browser calls API routes on the Next.js server on the GB10. The server calls Qwen3-VL-30B-A3B on vLLM through zrt, YOLO for people boxes and pose, nvidia-smi for telemetry. A Hermes agent container reads the feed log through /api/mcp and posts briefings. Only OpenRouter and Twilio are outside the machine.">
+      <defs>
+        <marker id="dmap-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+        <marker id="dmap-aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-a" d="M0 0L10 5L0 10z"/></marker>
+        <marker id="dmap-ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-d" d="M0 0L10 5L0 10z"/></marker>
+      </defs>
+
+      <!-- zones -->
+      <text class="lab" x="20" y="164">BROWSER · LAN / TAILSCALE</text>
+      <rect class="zone" x="275" y="140" width="715" height="592" rx="14"/>
+      <text class="lab" x="292" y="164">HP ZGX NANO · NVIDIA GB10 · 121 GIB UNIFIED MEMORY, SHARED BY THE TEAM</text>
+      <text class="lab-a" x="1010" y="152">INTERNET</text>
+
+      <!-- browser -->
+      <rect class="bx" x="20" y="190" width="240" height="510" rx="10"/>
+      <text class="t" x="34" y="216">Browser</text>
+      <rect class="row" x="30" y="235" width="220" height="40" rx="6"/><text class="s" x="42" y="259">Assistant · analytics summary</text>
+      <rect class="row" x="30" y="283" width="220" height="40" rx="6"/><text class="s" x="42" y="307">Frame sampler · 4 frames / 8 s</text>
+      <rect class="row" x="30" y="331" width="220" height="40" rx="6"/><text class="s" x="42" y="355">Whole-video tracking · pose</text>
+      <rect class="row" x="30" y="379" width="220" height="40" rx="6"/><text class="s" x="42" y="403">Live monitor</text>
+      <rect class="row" x="30" y="427" width="220" height="40" rx="6"/><text class="s" x="42" y="451">Alert pop-ups</text>
+      <rect class="row" x="30" y="475" width="220" height="40" rx="6"/><text class="s" x="42" y="499">Edge node page</text>
+      <rect class="row" x="30" y="523" width="220" height="40" rx="6"/><text class="s" x="42" y="547">Model picker</text>
+      <rect class="row" x="30" y="571" width="220" height="40" rx="6"/><text class="s" x="42" y="595">Watch briefing (Overview)</text>
+      <rect class="bx-d" x="30" y="630" width="220" height="56" rx="6"/>
+      <text class="m" x="42" y="653">IndexedDB</text>
+      <text class="s" x="42" y="671">videos and reviews stay here</text>
+
+      <!-- browser -> server -->
+      <g>
+        <line class="e" x1="260" y1="255" x2="343" y2="255" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="249" text-anchor="middle">ask</text>
+        <line class="e" x1="260" y1="303" x2="343" y2="303" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="297" text-anchor="middle">frames</text>
+        <line class="e" x1="260" y1="351" x2="343" y2="351" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="345" text-anchor="middle">frames</text>
+        <line class="e" x1="260" y1="399" x2="343" y2="399" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="393" text-anchor="middle">frames</text>
+        <line class="e" x1="260" y1="447" x2="343" y2="447" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="441" text-anchor="middle">alert</text>
+        <line class="e" x1="260" y1="495" x2="343" y2="495" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="489" text-anchor="middle">poll 3 s</text>
+        <line class="e" x1="260" y1="543" x2="343" y2="543" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="537" text-anchor="middle">list</text>
+        <line class="e" x1="260" y1="591" x2="343" y2="591" marker-end="url(#dmap-a)"/><text class="lab" x="312" y="585" text-anchor="middle">poll 15 s</text>
+      </g>
+
+      <!-- server -->
+      <rect class="bx" x="345" y="190" width="250" height="510" rx="10"/>
+      <text class="t" x="359" y="216">Next.js 15 server · :3000</text>
+      <rect class="row" x="355" y="235" width="230" height="40" rx="6"/><text class="m" x="367" y="259">/api/chat · /summary</text>
+      <rect class="row" x="355" y="283" width="230" height="40" rx="6"/><text class="m" x="367" y="307">/api/analyze</text><text class="ms" x="575" y="307" text-anchor="end">per window</text>
+      <rect class="row" x="355" y="331" width="230" height="40" rx="6"/><text class="m" x="367" y="355">/api/track · /pose</text>
+      <rect class="row" x="355" y="379" width="230" height="40" rx="6"/><text class="m" x="367" y="403">/api/detect</text><text class="ms" x="575" y="403" text-anchor="end">optional</text>
+      <rect class="row" x="355" y="427" width="230" height="40" rx="6"/><text class="m" x="367" y="451">/api/alerts</text><text class="ms" x="575" y="451" text-anchor="end">capped</text>
+      <rect class="row" x="355" y="475" width="230" height="40" rx="6"/><text class="m" x="367" y="499">/api/system</text><text class="ms" x="575" y="499" text-anchor="end">telemetry</text>
+      <rect class="row" x="355" y="523" width="230" height="40" rx="6"/><text class="m" x="367" y="547">/api/model</text><text class="ms" x="575" y="547" text-anchor="end">allow-list</text>
+      <rect class="row" x="355" y="571" width="230" height="40" rx="6"/><text class="m" x="367" y="595">/api/mcp · /briefings</text><text class="ms" x="575" y="595" text-anchor="end">feed log</text>
+      <rect class="bx-d" x="355" y="630" width="230" height="56" rx="6"/>
+      <text class="m" x="367" y="653">.env.local · data/watch</text>
+      <text class="s" x="367" y="671">keys stay here; windows are logged</text>
+
+      <!-- server -> local backends -->
+      <line class="e" x1="595" y1="255" x2="718" y2="255" marker-end="url(#dmap-a)"/>
+      <line class="e" x1="595" y1="303" x2="718" y2="303" marker-end="url(#dmap-a)"/>
+      <line class="e" x1="595" y1="351" x2="718" y2="351" marker-end="url(#dmap-a)"/>
+      <line class="e-d" x1="595" y1="399" x2="718" y2="399" marker-end="url(#dmap-ad)"/>
+      <line class="e" x1="595" y1="495" x2="718" y2="495" marker-end="url(#dmap-a)"/>
+      <text class="lab" x="690" y="345" text-anchor="middle">frames</text>
+      <text class="lab" x="690" y="489" text-anchor="middle">exec</text>
+
+      <!-- remote models: amber bus up to OpenRouter -->
+      <path class="e-a" d="M660 303V195H1008" marker-end="url(#dmap-aa)"/>
+      <circle class="dot" cx="660" cy="255" r="3.5"/><circle class="dot" cx="660" cy="303" r="3.5"/>
+      <text class="lab-a" x="672" y="187">OR THE SAME MODEL ON OPENROUTER</text>
+
+      <!-- alerts: amber straight out to Twilio -->
+      <line class="e-a" x1="595" y1="447" x2="1008" y2="447" marker-end="url(#dmap-aa)"/>
+      <text class="lab-a" x="660" y="463" text-anchor="middle">SMS, DEDUPLICATED</text>
+
+      <!-- local backends -->
+      <rect class="bx" x="720" y="215" width="240" height="110" rx="10"/>
+      <text class="t" x="734" y="237">zrt · vLLM</text><text class="ms" x="948" y="237" text-anchor="end">OpenAI API</text>
+      <text class="m" x="734" y="266">Qwen3-VL-30B-A3B FP8</text>
+      <text class="s" x="734" y="284">local-vlm: · :8080 proxy</text>
+      <text class="s" x="734" y="302">FP8 · ~52 GB of unified memory</text>
+
+      <rect class="bx" x="720" y="335" width="240" height="46" rx="10"/>
+      <text class="t" x="734" y="354">YOLO11 · :8090</text>
+      <text class="s" x="734" y="371">people boxes · pose · box snapping</text>
+
+      <rect class="bx-d" x="720" y="390" width="240" height="42" rx="10"/>
+      <text class="t" x="734" y="408">Detection service</text>
+      <text class="s" x="734" y="424">optional · for the live feed</text>
+
+      <rect class="bx" x="720" y="472" width="240" height="46" rx="10"/>
+      <text class="t" x="734" y="491">nvidia-smi · /proc</text>
+      <text class="s" x="734" y="508">GPU use, power, memory, CPU</text>
+
+      <rect class="bx" x="720" y="540" width="240" height="102" rx="10"/>
+      <text class="t" x="734" y="562">Hermes agent</text><text class="ms" x="948" y="562" text-anchor="end">Docker</text>
+      <text class="m" x="734" y="584">kryptonx-hermes</text>
+      <text class="s" x="734" y="602">every 5 min + hourly digest</text>
+      <text class="s" x="734" y="619">reads the feed log, posts briefings</text>
+      <text class="s" x="734" y="635">2 GB RAM, 1 CPU, no GPU, no ports</text>
+
+      <rect class="bx-d" x="720" y="660" width="240" height="56" rx="10"/>
+      <text class="t" x="734" y="683">Other GPU jobs</text>
+      <text class="s" x="734" y="702">team fine-tuning: one big job at a time</text>
+
+      <!-- hermes -> server (MCP) and -> OpenRouter -->
+      <line class="e" x1="720" y1="591" x2="597" y2="591" marker-end="url(#dmap-a)"/>
+      <text class="lab" x="658" y="585" text-anchor="middle">MCP · token</text>
+      <line class="e-a" x1="960" y1="591" x2="1008" y2="591" marker-end="url(#dmap-aa)"/>
+
+      <!-- internet -->
+      <rect class="bx-a" x="1010" y="168" width="170" height="54" rx="10"/>
+      <text class="t" x="1024" y="191">OpenRouter</text>
+      <text class="s" x="1024" y="208">Qwen3-VL-30B-A3B</text>
+      <rect class="bx-a" x="1010" y="422" width="170" height="50" rx="10"/>
+      <text class="t" x="1024" y="443">Twilio</text>
+      <text class="s" x="1024" y="460">owner SMS · WhatsApp</text>
+      <rect class="bx-a" x="1010" y="564" width="170" height="54" rx="10"/>
+      <text class="t" x="1024" y="587">OpenRouter</text>
+      <text class="s" x="1024" y="604">qwen3.8-flash, the agent</text>
+    </svg></div>
+  <h3 class="sub">Scaling out: from one GB10 to a fleet of stores</h3>
+  <p class="hint">The same pipeline, event-driven in the cloud: each layer scales on its own signal.</p>
+  <div class="diagram"><svg viewBox="0 0 1400 792" role="img" aria-label="Six layers on AWS: stores and users; API Gateway, CloudFront, WAF and ALB at the edge; stateless services on EKS; Amazon MSK as the event bus; stream processors and autoscaled GPU pools running Qwen3-VL-30B-A3B and YOLO; and S3, Aurora, Redis, OpenSearch and an Iceberg lake for data. A Hermes watch agent reads suspected and reviewed incidents and sends briefings through live push. Observability, security and the model loop sit to the right.">
+      <defs>
+        <marker id="dcloud-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+        <marker id="dcloud-pa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-a" d="M0 0L10 5L0 10z"/></marker>
+        <marker id="dcloud-pd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-d" d="M0 0L10 5L0 10z"/></marker>
+      </defs>
+
+      <!-- layer labels -->
+      <text class="row-l" x="10" y="59">STORES &amp; USERS</text>
+      <text class="row-l" x="10" y="174">AWS EDGE</text>
+      <text class="row-l" x="10" y="289">SERVICES · EKS</text>
+      <text class="row-l" x="10" y="414">EVENT BUS</text>
+      <text class="row-l" x="10" y="554">PROCESSING</text>
+      <text class="row-l" x="10" y="719">DATA</text>
+
+      <!-- AWS region -->
+      <rect class="zone" x="132" y="116" width="1250" height="672" rx="14"/>
+      <text class="lab" x="148" y="777">AWS · ONE REGION, PRIVATE SUBNETS · WARM STANDBY IN A SECOND REGION</text>
+
+      <!-- Row A -->
+      <rect class="bx" x="140" y="20" width="300" height="72" rx="10"/>
+      <text class="t" x="154" y="43">Store edge box</text><text class="tag" x="428" y="43" text-anchor="end">1 PER STORE</text>
+      <text class="s" x="154" y="62">cameras → sample frames · YOLO person gate</text>
+      <text class="s" x="154" y="79">buffers when the store is offline</text>
+      <rect class="bx" x="560" y="20" width="440" height="72" rx="10"/>
+      <text class="t" x="574" y="43">Reviewers</text>
+      <text class="s" x="574" y="62">loss-prevention staff in the dashboard</text>
+      <text class="s" x="574" y="79">see suspected incidents live, confirm or dismiss</text>
+      <rect class="bx" x="1040" y="20" width="160" height="72" rx="10"/>
+      <text class="t" x="1054" y="43">Store owners</text>
+      <text class="s" x="1054" y="62">SMS · push</text>
+      <text class="s" x="1054" y="79">confirmed only</text>
+
+      <!-- Row B -->
+      <rect class="bx" x="140" y="146" width="300" height="56" rx="10"/>
+      <text class="t" x="154" y="168">API Gateway</text><text class="tag" x="428" y="168" text-anchor="end">MANAGED</text>
+      <text class="s" x="154" y="187">device ingest · mTLS · per-store throttling</text>
+      <rect class="bx" x="560" y="146" width="200" height="56" rx="10"/>
+      <text class="t" x="574" y="168">CloudFront + WAF</text>
+      <text class="s" x="574" y="187">Route 53 · TLS · → ALB</text>
+      <rect class="bx" x="800" y="146" width="200" height="56" rx="10"/>
+      <text class="t" x="814" y="168">WebSocket API</text>
+      <text class="s" x="814" y="187">live incident push</text>
+      <rect class="bx" x="1040" y="146" width="160" height="56" rx="10"/>
+      <text class="t" x="1054" y="168">Cognito</text>
+      <text class="s" x="1054" y="187">sign-in · roles</text>
+
+      <!-- Row C -->
+      <rect class="bx" x="140" y="252" width="300" height="68" rx="10"/>
+      <text class="t" x="154" y="275">Ingest API</text><text class="tag" x="428" y="275" text-anchor="end">HPA · CPU</text>
+      <text class="s" x="154" y="294">hands out presigned S3 URLs for frames</text>
+      <text class="s" x="154" y="311">publishes one event per frame</text>
+      <rect class="bx" x="560" y="252" width="200" height="68" rx="10"/>
+      <text class="t" x="574" y="275">Web + Review API</text>
+      <text class="tag" x="748" y="275" text-anchor="end">HPA</text>
+      <text class="s" x="574" y="294">Next.js dashboard</text>
+      <text class="s" x="574" y="311">writes reviews to Aurora</text>
+      <rect class="bx" x="800" y="252" width="200" height="68" rx="10"/>
+      <text class="t" x="814" y="275">Live push</text><text class="tag" x="988" y="275" text-anchor="end">HPA · CONN</text>
+      <text class="s" x="814" y="294">Redis pub/sub → sockets</text>
+      <text class="s" x="814" y="311">one room per store</text>
+      <rect class="bx" x="1040" y="252" width="160" height="68" rx="10"/>
+      <text class="t" x="1054" y="275">Hermes agent</text>
+      <text class="s" x="1054" y="294">per tenant, every 5 min</text>
+      <text class="s" x="1054" y="311">reads only, cites IDs</text>
+
+      <!-- A -> B -> C wiring -->
+      <line class="e" x1="290" y1="92" x2="290" y2="144" marker-end="url(#dcloud-p)"/><text class="lab" x="298" y="108">frame events</text>
+      <line class="e" x1="290" y1="202" x2="290" y2="250" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="660" y1="92" x2="660" y2="144" marker-end="url(#dcloud-p)"/><text class="lab" x="668" y="108">HTTPS</text>
+      <line class="e" x1="660" y1="202" x2="660" y2="250" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="900" y1="144" x2="900" y2="94" marker-end="url(#dcloud-p)"/><text class="lab" x="908" y="108">push</text>
+      <line class="e" x1="900" y1="250" x2="900" y2="204" marker-end="url(#dcloud-p)"/>
+
+      <!-- Row D: Kafka bus -->
+      <rect class="bus" x="140" y="370" width="1060" height="84" rx="14"/>
+      <text class="t" x="156" y="392">Amazon MSK (Kafka)</text>
+      <text class="ms" x="1188" y="392" text-anchor="end">keyed by camera_id · 3 AZs · replication 3</text>
+      <g>
+        <rect class="pill" x="152" y="406" width="132" height="34" rx="17"/><text class="ms" x="218" y="427" text-anchor="middle">frames.sampled</text>
+        <rect class="pill" x="292" y="406" width="132" height="34" rx="17"/><text class="ms" x="358" y="427" text-anchor="middle">windows.ready</text>
+        <rect class="pill" x="432" y="406" width="132" height="34" rx="17"/><text class="ms" x="498" y="427" text-anchor="middle">detections.raw</text>
+        <rect class="pill" x="572" y="406" width="150" height="34" rx="17"/><text class="ms" x="647" y="427" text-anchor="middle">incidents.suspected</text>
+        <rect class="pill" x="730" y="406" width="150" height="34" rx="17"/><text class="ms" x="805" y="427" text-anchor="middle">incidents.reviewed</text>
+        <rect class="pill" x="888" y="406" width="120" height="34" rx="17"/><text class="ms" x="948" y="427" text-anchor="middle">alerts.sent</text>
+        <rect class="pill" x="1016" y="406" width="100" height="34" rx="17"/><text class="ms" x="1066" y="427" text-anchor="middle">*.dlq</text>
+      </g>
+
+      <!-- C <-> D -->
+      <line class="e" x1="290" y1="320" x2="290" y2="368" marker-end="url(#dcloud-p)"/><text class="lab" x="298" y="349">frames.sampled</text>
+      <line class="e" x1="620" y1="320" x2="620" y2="368" marker-end="url(#dcloud-p)"/><text class="lab" x="574" y="349" text-anchor="middle">reviewed</text>
+      <line class="e" x1="700" y1="368" x2="700" y2="322" marker-end="url(#dcloud-p)"/><text class="lab" x="708" y="349">suspected</text>
+      <line class="e" x1="900" y1="368" x2="900" y2="322" marker-end="url(#dcloud-p)"/><text class="lab" x="908" y="349">suspected</text>
+      <line class="e" x1="1120" y1="368" x2="1120" y2="322" marker-end="url(#dcloud-p)"/><text class="lab" x="1128" y="349">both</text>
+      <line class="e" x1="1040" y1="286" x2="1002" y2="286" marker-end="url(#dcloud-p)"/>
+
+      <!-- Row E: processing -->
+      <rect class="bx" x="140" y="504" width="160" height="96" rx="10"/>
+      <text class="t" x="154" y="527">Window builder</text>
+      <text class="s" x="154" y="546">4 frames → one</text><text class="s" x="154" y="562">8 s window</text>
+      <text class="tag" x="154" y="587">KEDA · LAG</text>
+
+      <rect class="bx" x="320" y="504" width="160" height="96" rx="10"/>
+      <text class="t" x="334" y="527">Inference router</text>
+      <text class="s" x="334" y="546">batches, retries,</text><text class="s" x="334" y="562">canary split</text>
+      <text class="tag" x="334" y="587">KEDA · LAG</text>
+
+      <rect class="bx-g" x="500" y="504" width="200" height="96" rx="10"/>
+      <text class="t" x="514" y="527">vLLM GPU pool</text>
+      <text class="m" x="514" y="546">Qwen3-VL-30B-A3B</text>
+      <text class="s" x="514" y="562">FP8 · L40S or H100 nodes</text>
+      <text class="tag" x="514" y="587">KARPENTER · QUEUE</text>
+
+      <rect class="bx" x="720" y="504" width="160" height="96" rx="10"/>
+      <text class="t" x="734" y="527">YOLO pool</text>
+      <text class="s" x="734" y="546">Triton · YOLO11</text><text class="s" x="734" y="562">boxes, pose, tracks</text>
+      <text class="tag" x="734" y="587">KARPENTER · L4</text>
+
+      <rect class="bx" x="900" y="504" width="140" height="96" rx="10"/>
+      <text class="t" x="914" y="527">Incident merger</text>
+      <text class="s" x="914" y="546">Flink, stateful</text><text class="s" x="914" y="562">per camera</text>
+      <text class="tag" x="914" y="587">PARALLELISM</text>
+
+      <rect class="bx" x="1060" y="504" width="90" height="96" rx="10"/>
+      <text class="t" x="1072" y="527">Alerts</text>
+      <text class="s" x="1072" y="546">dedupe,</text><text class="s" x="1072" y="562">rate limit</text>
+      <text class="tag" x="1072" y="587">HPA</text>
+
+      <!-- D <-> E -->
+      <line class="e" x1="190" y1="454" x2="190" y2="502" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="250" y1="502" x2="250" y2="456" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="360" y1="454" x2="360" y2="502" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="440" y1="502" x2="440" y2="456" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="940" y1="454" x2="940" y2="502" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="1010" y1="502" x2="1010" y2="456" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="1105" y1="454" x2="1105" y2="502" marker-end="url(#dcloud-p)"/>
+      <text class="lab" x="196" y="482">in</text><text class="lab" x="256" y="482">out</text>
+      <text class="lab" x="366" y="482">in</text><text class="lab" x="446" y="482">out</text>
+      <text class="lab" x="946" y="482">in</text><text class="lab" x="1016" y="482">out</text>
+      <text class="lab" x="1111" y="482">in</text>
+
+      <!-- router -> GPU pools -->
+      <line class="e" x1="480" y1="540" x2="498" y2="540" marker-end="url(#dcloud-p)"/>
+      <path class="e" d="M440 600V628H800V602" marker-end="url(#dcloud-p)"/>
+      <text class="lab" x="620" y="644" text-anchor="middle">SAME FRAMES → BOXES, THEN GROUNDED</text>
+
+      <!-- Row F: data -->
+      <rect class="bx" x="140" y="684" width="160" height="80" rx="10"/>
+      <text class="t" x="154" y="707">ElastiCache Redis</text>
+      <text class="s" x="154" y="726">window buffers, alert</text><text class="s" x="154" y="742">dedupe, live pub/sub</text>
+      <rect class="bx" x="320" y="684" width="160" height="80" rx="10"/>
+      <text class="t" x="334" y="707">S3</text>
+      <text class="s" x="334" y="726">frames, clips, weights</text><text class="s" x="334" y="742">lifecycle → Glacier</text>
+      <rect class="bx" x="500" y="684" width="200" height="80" rx="10"/>
+      <text class="t" x="514" y="707">Aurora PostgreSQL</text>
+      <text class="s" x="514" y="726">incidents, reviews, audit</text><text class="s" x="514" y="742">read replicas · RLS per tenant</text>
+      <rect class="bx" x="720" y="684" width="160" height="80" rx="10"/>
+      <text class="t" x="734" y="707">OpenSearch</text>
+      <text class="s" x="734" y="726">search the scene log:</text><text class="s" x="734" y="742">"red hoodie, aisle 4"</text>
+      <rect class="bx" x="900" y="684" width="300" height="80" rx="10"/>
+      <text class="t" x="914" y="707">Lake: S3 + Iceberg + Athena</text>
+      <text class="s" x="914" y="726">every topic, via a Kafka sink</text><text class="s" x="914" y="742">analytics and reviewed training labels</text>
+
+      <!-- E -> F -->
+      <line class="e" x1="220" y1="600" x2="220" y2="682" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="360" y1="600" x2="360" y2="682" marker-end="url(#dcloud-p)"/><text class="lab" x="368" y="660">fetch frames</text>
+      <line class="e-d" x1="1188" y1="454" x2="1188" y2="682" marker-end="url(#dcloud-pd)"/><text class="lab" x="1180" y="660" text-anchor="end">sink</text>
+
+      <!-- right column: cross-cutting -->
+      <rect class="bx" x="1222" y="146" width="150" height="130" rx="10"/>
+      <text class="t" x="1236" y="169">Observability</text>
+      <text class="s" x="1236" y="190">Prometheus, Grafana</text>
+      <text class="s" x="1236" y="207">OpenTelemetry traces</text>
+      <text class="s" x="1236" y="224">DCGM GPU metrics</text>
+      <text class="s" x="1236" y="241">Kafka consumer lag</text>
+      <text class="s" x="1236" y="258">per-camera latency</text>
+
+      <rect class="bx" x="1222" y="292" width="150" height="130" rx="10"/>
+      <text class="t" x="1236" y="315">Security</text>
+      <text class="s" x="1236" y="336">KMS on every store</text>
+      <text class="s" x="1236" y="353">Secrets Manager</text>
+      <text class="s" x="1236" y="370">IAM role per service</text>
+      <text class="s" x="1236" y="387">tenant_id on every</text>
+      <text class="s" x="1236" y="404">event and row</text>
+
+      <rect class="bx-a" x="1222" y="504" width="150" height="62" rx="10"/>
+      <text class="t" x="1236" y="527">SNS · Twilio</text>
+      <text class="s" x="1236" y="546">SMS, push, voice</text>
+
+      <rect class="bx" x="1222" y="684" width="150" height="80" rx="10"/>
+      <text class="t" x="1236" y="707">Model loop</text>
+      <text class="s" x="1236" y="726">LoRA fine-tune, eval,</text><text class="s" x="1236" y="742">registry, 5% canary</text>
+
+      <line class="e" x1="1150" y1="535" x2="1220" y2="535" marker-end="url(#dcloud-p)"/>
+      <line class="e" x1="1200" y1="724" x2="1220" y2="724" marker-end="url(#dcloud-p)"/>
+      <path class="e-a" d="M1372 535H1390V56H1202" marker-end="url(#dcloud-pa)"/>
+      <text class="lab-a" x="1384" y="300" transform="rotate(-90 1384 300)" text-anchor="middle">LEAVES AWS</text>
+    </svg></div>
+</section>
+
+<section id="metrics">
+  <h2>Metrics</h2>
+  <p class="hint">Every number below was measured from our HP ZGX Nano against the UCF-Crime test split: local models on the box, Gemini through its API.</p>
+  <div class="stats" style="margin-top:8px">
+    <div class="stat"><b>$85K → $251</b><span>Projected cloud cost per store per year (30 cameras, 24/7): Sentinel Machines v1 on every window vs our cascade. That is $236 vs $0.70 per camera-month, or ~$8.5M vs ~$25K for a 100-store chain</span></div>
+    <div class="stat"><b>99.7%</b><span>Fewer cloud calls: 450 windows per camera-hour become 0.3–1.3 alerts</span></div>
+    <div class="stat"><b>0 / h</b><span>False alarms on legitimate shopping (MERL shoppers handling products), detector</span></div>
+    <div class="stat"><b>38 J</b><span>Energy per 8-second window, Qwen3.5-9B on the GB10 with 4 in parallel (61 J one at a time; 8 GB, $0)</span></div>
+  </div>
+
+  <h3 class="sub">Naming the crime: cloud vs on the GB10</h3>
+  <p style="margin-bottom:14px">Same 277 eight-second windows from 13 crime classes and normal footage, same prompt, 8 frames each.</p>
+  <div class="tblwrap"><table class="tbl split">
+    <thead>
+      <tr><th rowspan="2">Model</th><th colspan="2" class="grp ctr">Right crime named</th><th colspan="2" class="grp ctr">Normal clips false-alarmed</th><th colspan="2" class="grp ctr">Seconds / window</th><th colspan="2" class="grp ctr">Cloud cost / store-year*</th></tr>
+      <tr><th class="num grp">Cloud</th><th class="num">Local</th><th class="num grp">Cloud</th><th class="num">Local</th><th class="num grp">Cloud</th><th class="num">Local</th><th class="num grp">Cloud</th><th class="num">Local</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sentinel Machines v1</td><td class="num grp">57.4%</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">12.2%</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">1.23</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">$85.0K</td><td class="num"><span style="color:var(--faint)">—</span></td></tr>
+      <tr><td>Gemini 3 Flash</td><td class="num best grp">64.3%</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">5.4%</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">2.34</td><td class="num"><span style="color:var(--faint)">—</span></td><td class="num grp">$512.6K</td><td class="num"><span style="color:var(--faint)">—</span></td></tr>
+      <tr><td>Qwen3-VL-8B</td><td class="num grp">37.2%</td><td class="num">39.5%</td><td class="num grp">9.5%</td><td class="num">4.1%</td><td class="num best grp">0.86</td><td class="num">2.93 <span style="color:var(--faint)">(0.64 batched)</span></td><td class="num grp">$12.5K</td><td class="num best">$0</td></tr>
+      <tr><td>Qwen3.5-9B</td><td class="num grp"><span style="color:var(--faint)">timed out</span></td><td class="num">36.4%</td><td class="num grp"><span style="color:var(--faint)">—</span></td><td class="num">12.8%</td><td class="num grp"><span style="color:var(--faint)">—</span></td><td class="num">1.59</td><td class="num grp"><span style="color:var(--faint)">—</span></td><td class="num best">$0</td></tr>
+      <tr><td>Qwen3.8-27B</td><td class="num grp">28.7%</td><td class="num">24.0%</td><td class="num grp">1.4%</td><td class="num best">0.0%</td><td class="num grp">9.49</td><td class="num">2.84</td><td class="num grp">$304.6K</td><td class="num best">$0</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">*Projected: 30 cameras, 24/7, every 8-second window sent to the model, at the cost OpenRouter billed per window in this test. Cloud runs the model through OpenRouter; Local runs it on-device in the store (Qwen3.5-9B and Qwen3.8-27B locally in 4-bit). Qwen3.5-9B's cloud provider timed out. Local timings are batch 1 unless noted. Small classes (1–5 windows) make per-class figures noisy; overall differences under ~8 points are within noise.</p>
+
+  <h3 class="sub">What we learned</h3>
+  <div class="probs">
+    <div><span class="n">01</span><h3>The cascade beats either half</h3><p>The on-box detector is quiet (0.7% of normal videos alarmed, 0.17–0.33 alarms per hour) but misses exact moments; the VLM names crimes but is slow and, in the cloud, costly. Screening first, naming second, keeps both strengths.</p></div>
+    <div><span class="n">02</span><h3>Fine-tuning needs labels, not just GPUs</h3><p>On 11 hand-labelled theft videos, fine-tuned VideoMAE did not beat frozen features (frame AUROC 0.852 frozen vs 0.78–0.80, paired bootstrap, 3 seeds), though LoRA lifted recall at 1 false alarm an hour from 3% to 19%.</p></div>
+    <div><span class="n">03</span><h3>Local is private and cheap; cloud is sharper</h3><p>Gemini names 57% of crimes; the best local model, 40%, with a third of the false alarms and no footage leaving the store. Our roadmap closes the gap with more labelled incidents, not bigger models.</p></div>
+  </div>
+</section>
+
+<section id="demo">
+  <h2>Demo</h2>
+  <p class="hint">Sentinel Machines running on the HP ZGX Nano.</p>
+  <div class="videobox">
+    <iframe src="https://www.youtube-nocookie.com/embed/Mi7Q1wsWgcw?rel=0" title="Sentinel Machines demo video"
+      loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  <p class="src" style="text-align:center"><a href="https://youtu.be/Mi7Q1wsWgcw" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></p>
+</section>
+
+
+<footer>
+  Sentinel Machines · KryptonxWatch. Everything runs on one HP ZGX Nano (NVIDIA GB10).
+  Demo footage from <a href="https://www.crcv.ucf.edu/projects/real-world/">UCF-Crime</a>, research use.
+  Detections are suspected until a person reviews them.
+</footer>
+
+</div>
+
+<script>
+// Content below is written from this repo -- app/page.tsx, app/api, lib/server
+// and AGENTS.md -- not from any external deck.
+const ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+const TURN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+
+const card=([k,t,d])=>`
+ <button class="flip" type="button" aria-pressed="false">
+  <span class="inner">
+   <span class="face front"><span class="k">${k}</span><span class="t">${t}</span><span class="turn">${TURN}Turn</span></span>
+   <span class="face back"><span class="k">${k}</span><p>${d}</p><span class="turn">${TURN}Back</span></span>
+  </span>
+ </button>`;
+
+// The five hops a frame actually makes, in order, with arrows between them.
+const FLOW=[
+ ["Step 01","Watch","A recorded upload, a replayed feed or a live webcam. Many streams at once."],
+ ["Step 02","Sample","Four frames every eight seconds, one every two, at most 512 px wide."],
+ ["Step 03","Understand","Qwen3-VL-30B reads the four frames together and answers in JSON."],
+ ["Step 04","Locate","YOLO11 finds the people and snaps the box onto the right one, then tracks it."],
+ ["Step 05","Review","It arrives as suspected. A person confirms before any alert goes out."],
+];
+
+
+// Everything the five hops stand on.
+const STACK=[
+ ["Hardware","HP ZGX Nano · GB10","One box, 121 GiB shared between CPU and GPU. No second machine, no cloud."],
+ ["Serving","vLLM via zrt","Runs the model in FP8 behind an OpenAI-compatible proxy on :8080."],
+ ["App","Next.js 15","One server on :3000. Keys live in .env.local and are never sent to the browser."],
+ ["Storage","IndexedDB","Recordings and review decisions stay in your browser. Only sampled frames are sent."],
+ ["Alerts","Twilio","SMS, WhatsApp or email to whoever a recording opted in. Deduplicated and capped."],
+ ["Fallback","OpenRouter","Any OpenAI-compatible cloud model, for comparison, only when you pick one."],
+ ["Telemetry","nvidia-smi · /proc","GPU, power and memory on the Edge node page. A reading we can't take says so."],
+ ["Evaluation","Bake-off","Every candidate model is re-scored on the same clips through the app's own pipeline."],
+];
+
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".flip"); if(!b) return;
+  b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+});
+
+// ---- Team ---------------------------------------------------------------
+// [name, photo in public/team/, LinkedIn, focus x, focus y, zoom]. The focus and
+// zoom only frame the photo on screen. A missing photo falls back to initials.
+const TEAM=[
+ ["Sonakshi Panda","sonakshi.jpg","https://www.linkedin.com/in/sonakshi-panda-5450533aa/","50%","34%",1],
+ ["Shreyas Durairajalu","shreyas.jpg","https://www.linkedin.com/in/shreyas07/","50%","32%",1],
+ ["Shravan Kumar","shravan.jpg","https://www.linkedin.com/in/shravan-kumar12/","52%","36%",1],
+ ["Vidushi Verma","vidushi.jpg","https://www.linkedin.com/in/vidushi--verma/","52%","20%",2.6],
+ ["Chaitanya Uppalapati","chaitanya.jpg","https://www.linkedin.com/in/chaitanyauppalapati/","49%","30%",1],
+];
+const initials=n=>n.split(" ").slice(0,2).map(w=>w[0]).join("");
+document.getElementById("teamgrid").innerHTML=TEAM.map(([n,img,url,fx,fy,zoom])=>`
+ <a class="member" href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${n} on LinkedIn">
+  <span class="photo" style="--fx:${fx};--fy:${fy};--zoom:${zoom}">${initials(n)}</span>
+  <span class="body">
+   <span class="txt"><span class="nm">${n}</span><span class="loc">SAN JOSÉ STATE UNIVERSITY</span></span>
+   <img class="qr" src="team/qr-${img.replace(/\.jpg$/,".png")}" width="76" height="76" alt="QR code: ${n} on LinkedIn">
+  </span>
+ </a>`).join("");
+// Swap in a real photo only once it has actually loaded.
+document.querySelectorAll(".member").forEach((el,i)=>{
+  const ph=el.querySelector(".photo"), probe=new Image();
+  probe.onload=()=>{ph.textContent="";const im=new Image();im.src=probe.src;im.alt=TEAM[i][0];ph.appendChild(im)};
+  probe.src="team/"+TEAM[i][1];
+});
+
+// ---- Theme, shared with the dashboard -----------------------------------
+document.getElementById("theme").addEventListener("click",()=>{
+  const next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  document.documentElement.setAttribute("data-theme",next);
+  try{localStorage.setItem("kryptonxwatch-theme",next)}catch(e){}
+});
+</script>
+
+
+
+
+<script>
+// Scroll-scrubbed scenes: progress is recomputed every frame from the scroll position,
+// so scrolling back rewinds. Skipped under reduced motion or on very short windows.
+(() => {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || innerHeight < 520) return;
+  const root = document.documentElement; root.classList.add("scrub");
+  const BAR = 60, clamp = v => Math.max(0, Math.min(1, v));
+  const prog = el => { const r = el.getBoundingClientRect(), len = r.height - (innerHeight - BAR); return len > 0 ? clamp((BAR - r.top) / len) : 0; };
+
+  const hero = document.querySelector('[data-scene="hero"]');
+  const htext = hero.querySelector(".htext"), shot = hero.querySelector(".shot"), stats = hero.querySelector(".stats");
+  const prob = document.querySelector('[data-scene="problem"]'), items = [...prob.querySelectorAll(".story li")];
+  const punch = prob.querySelector(".punch"), words = [...punch.querySelectorAll(".w")];
+  const arch = document.querySelector('[data-scene="arch"]');
+  // Everything else rises into place with the scroll (and sinks back when scrolling up).
+  const risers = [...document.querySelectorAll("#team h2, #team .hint, #team .member, #solution h2, #solution .hint, #solution .probs > div, #solution .sub, #solution .cat, #architecture > .sub, #architecture > .diagram, #architecture > p.hint, #metrics h2, #metrics .hint, #metrics .stat, #metrics .sub, #metrics .tblwrap, #metrics .src, #metrics .probs > div, #demo h2, #demo .hint, #demo .videobox, #demo .src")];
+  risers.forEach(el => el.setAttribute("data-rise", ""));
+
+  const frame = () => {
+    raf = 0; const vh = innerHeight;
+    // Hero: title shrinks away while the product shot rises and grows to fill the stage.
+    const p = prog(hero), t = clamp(p / 0.3), a = clamp(p / 0.5), st = clamp((p - 0.58) / 0.22);
+    htext.style.opacity = 1 - t; htext.style.transform = `translateY(${-t * 90}px) scale(${1 - t * 0.14})`;
+    shot.style.transform = `translate(-50%, calc(-50% + ${(1 - a) * 0.5 * vh}px)) scale(${0.7 + 0.3 * a})`;
+    stats.style.opacity = st; stats.style.transform = `translate(-50%, ${(1 - st) * 24}px)`;
+    // Problem: one moment of the story at a time, then the punchline lights word by word.
+    const n = items.length, step = prog(prob) * (n + 2.2), cur = Math.min(n - 1, Math.floor(step));
+    items.forEach((li, i) => { li.classList.toggle("now", i === cur && step < n + 0.4); li.classList.toggle("past", i < cur || step >= n + 0.4); });
+    const q = clamp((step - n) / 1.8); punch.classList.toggle("on", step > n - 0.2);
+    words.forEach((w, i) => w.classList.toggle("lit", i < Math.round(q * words.length)));
+    // Architecture: the six steps light up one after another.
+    const stps = [...arch.querySelectorAll(".stp")], k = Math.min(stps.length - 1, Math.floor(prog(arch) * stps.length));
+    stps.forEach((g, i) => { g.classList.toggle("now", i === k); g.classList.toggle("past", i < k); });
+    // Risers: 0 when an element's top is at the bottom edge, 1 once it is 30% up the screen.
+    risers.forEach((el, i) => { const r = el.getBoundingClientRect(); const e = clamp((vh - r.top - (i % 5) * 18) / (vh * 0.3));
+      el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 56}px)`; });
+  };
+  let raf = 0; const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); frame();
+})();
+</script>
+</body>
+</html>

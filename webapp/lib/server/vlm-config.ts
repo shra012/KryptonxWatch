@@ -10,7 +10,11 @@ import { isLocalVlmModel, isScorerModel, LOCAL_VLM_PREFIX, localVlmName, SCORER_
 export type ServerVlmConfig = VlmConfig & { scorer?: boolean; local?: boolean; alias?: string };
 
 // Qwen3.x thinks by default; per-window labels need a direct answer, as OpenRouter's reasoning:false gives.
-const LOCAL_EXTRA_BODY = { chat_template_kwargs: { enable_thinking: false } };
+// LOCAL_VLM_EXTRA_BODY (JSON) overrides this, e.g. Ollama wants {"reasoning_effort":"none"} to turn thinking off.
+const LOCAL_EXTRA_BODY: Record<string, unknown> = (() => {
+  try { if (process.env.LOCAL_VLM_EXTRA_BODY) return JSON.parse(process.env.LOCAL_VLM_EXTRA_BODY); } catch { /* ignore malformed override */ }
+  return { chat_template_kwargs: { enable_thinking: false } };
+})();
 
 /** Local yes/no scorers (LOCAL_SCORER_MODELS, served names at LOCAL_SCORER_BASE_URL), as `local:<name>` ids. */
 export function scorerModels(): string[] {
