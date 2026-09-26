@@ -113,6 +113,7 @@ button, a, input, select { touch-action: manipulation; }
 .video-frame { position: relative; background: #000; overflow: hidden; border-radius: 12px; }
 .video-frame video { width: 100%; display: block; }
 .video-box { position: absolute; border: 1.5px solid #ffffff; border-radius: 6px; box-shadow: 0 0 0 1px rgba(0,0,0,.65); pointer-events: none; }
+.video-box-alt { border-style: dashed; }
 .video-box-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; background: #ffffff; color: #000; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .04em; text-transform: uppercase; padding: .15rem .45rem; border-radius: 5px 5px 0 0; }
 .timeline-track { position: relative; height: 1.1rem; border-radius: 999px; background: var(--color-base-300); }
 .timeline-marker { position: absolute; top: 0; width: .3rem; height: 1.1rem; border-radius: 999px; transform: translateX(-50%); background: var(--color-base-content); cursor: pointer; }

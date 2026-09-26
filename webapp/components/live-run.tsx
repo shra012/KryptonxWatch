@@ -19,14 +19,15 @@ import { INCIDENT_THRESHOLD, mergeDetections, WINDOW, type Frame, type Incident,
 import { gpuSampler, isLocalModel, upsertUsage, usageTally } from "@/lib/usage";
 import { benchmarkFor } from "@/lib/benchmarks";
 import { pct, gb } from "@/lib/telemetry-types";
-import type { VideoRecord } from "@/lib/types";
+import { boxAt } from "@/lib/vlm/boxes";
+import { categories, type BoundingBox, type Category, type Detection, type VideoRecord } from "@/lib/types";
 
 type Clip = { url: string; title: string; simulated: boolean };
 type Phase = "idle" | "running" | "paused" | "finishing" | "done";
 type Side = "local" | "cloud";
 const SIDES: Side[] = ["local", "cloud"];
 interface WindowStat { latencyMs: number; promptTokens: number; completionTokens: number; cost: number }
-interface Lane { stats: WindowStat[]; findings: Incident[]; inFlight: number; failed: number; error: string; model: string }
+interface Lane { stats: WindowStat[]; findings: Incident[]; named: string[]; inFlight: number; failed: number; error: string; model: string }
 /** What a lane keeps between events, in a ref so a late reply never reads stale state. */
 interface LaneRun { id: string; started: number; model: string; record: VideoRecord; results: WindowResult[]; tally: ReturnType<typeof usageTally>; gpu: ReturnType<typeof gpuSampler> | null; pending: number }
 
@@ -34,7 +35,17 @@ const WINDOW_SEC = WINDOW.frameStep * WINDOW.framesPerWindow;
 const OFF = "";
 /** The pinned model per lane (labels swapped on purpose; see the note at the top). */
 const PINNED: Record<Side, string> = { local: "sentinel-machines-v1", cloud: "local-vlm:qwen3-vl-30b-a3b" };
-const emptyLane = (): Lane => ({ stats: [], findings: [], inFlight: 0, failed: 0, error: "", model: "" });
+/** A box on the player: the lane's newest finding while the clip plays (the analysis runs a few seconds behind). */
+interface LiveBox { box: BoundingBox; label: string; until: number }
+/** The last position a window saw the person at: its latest keyframe, else the incident's own box. */
+const latestBox = (i: Incident) => [...(i.keyframes ?? [])].sort((a, b) => b.seconds - a.seconds)[0]?.box ?? i.box;
+const emptyLane = (): Lane => ({ stats: [], findings: [], named: [], inFlight: 0, failed: 0, error: "", model: "" });
+/** A UCF-Crime demo clip's ground truth, from its folder name (Shoplifting0 → Shoplifting; UCF's Stealing is our Theft). */
+function truthFor(title: string): Category | null {
+  const name = title.replace(/\d+$/, "");
+  const mapped = name === "Stealing" ? "Theft" : name;
+  return categories.includes(mapped as Category) ? mapped as Category : null;
+}
 const usd = (n: number) => n === 0 ? "$0.00" : n < 0.1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`;
 const tokens = (n: number) => n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}k` : String(n);
 const avg = (v: number[]) => v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
@@ -62,6 +73,10 @@ export function LiveRun() {
   const [clipError, setClipError] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [lanes, setLanes] = useState<Record<Side, Lane>>({ local: emptyLane(), cloud: emptyLane() });
+  const [liveBoxes, setLiveBoxes] = useState<Record<Side, LiveBox[]>>({ local: [], cloud: [] });
+  const [laneDetections, setLaneDetections] = useState<Record<Side, Detection[]>>({ local: [], cloud: [] });
+  const [time, setTime] = useState(0);
+  const [ratio, setRatio] = useState(16 / 9);
 
   const blob = useRef<Blob | null>(null);
   const buffer = useRef<Frame[]>([]);
@@ -109,6 +124,7 @@ export function LiveRun() {
     const ordered = [...r.results].sort((a, b) => a.start - b.start);
     r.record = { ...r.record, detections: mergeDetections(r.record.id, ordered, r.model), moments: ordered.map(w => ({ start: w.start, end: w.end, summary: w.summary })),
       analysis: final ? "complete" : "processing", analysisModel: r.model, analyzedAt: new Date().toISOString() };
+    setLaneDetections(d => ({ ...d, [side]: r.record.detections }));
     saveVideo(r.record).catch(() => { /* the provider already shows storage errors */ });
     if (final) delete runs.current[side];
   }, [saveVideo]);
@@ -129,9 +145,12 @@ export function LiveRun() {
       analyzeWindow(frames, start, end, signal, undefined, r.model)
         .then(res => {
           r.results.push(res); r.tally.add(res.usage, res.latencyMs);
+          // Show this window's people until the next window replaces them.
+          const boxed = res.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD && latestBox(i));
+          setLiveBoxes(b => ({ ...b, [side]: boxed.map(i => ({ box: latestBox(i)!, label: i.category, until: Date.now() + WINDOW_SEC * 1000 + 2000 })) }));
           const hits = res.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD);
           patch(side, l => ({ model: res.model || l.model, stats: [...l.stats, { latencyMs: res.latencyMs ?? 0, promptTokens: res.usage?.promptTokens ?? 0, completionTokens: res.usage?.completionTokens ?? 0, cost: res.usage?.cost ?? 0 }],
-            findings: hits.length ? [...hits, ...l.findings].slice(0, 4) : l.findings }));
+            findings: hits.length ? [...hits, ...l.findings].slice(0, 4) : l.findings, named: [...new Set([...l.named, ...hits.map(h => h.category)])] }));
           persist(side, false);
         })
         .catch(e => { if (!signal?.aborted) { r.tally.fail(); patch(side, l => ({ failed: l.failed + 1, error: e instanceof Error ? e.message : "Analysis request failed." })); } })
@@ -154,6 +173,7 @@ export function LiveRun() {
         duration: el.duration || 0, source: "upload", analysis: "processing", blob: data, size: data.size, detections: [], analysisModel: m } };
     }
     setLanes({ local: { ...emptyLane(), model: model.local }, cloud: { ...emptyLane(), model: model.cloud } });
+    setLiveBoxes({ local: [], cloud: [] }); setLaneDetections({ local: [], cloud: [] });
     setPhase("running");
   }
 
@@ -182,7 +202,16 @@ export function LiveRun() {
     ended.current = true; setPhase("finishing"); settle();
   };
 
+  // While a run plays: each lane's newest boxes. Afterwards (paused, scrubbing, replaying): the box at the playhead,
+  // exactly as the recording page draws it.
+  const now = Date.now();
+  const overlay = SIDES.flatMap(side => phase === "running"
+    ? liveBoxes[side].filter(b => b.until > now).map(b => ({ side, box: b.box, label: b.label }))
+    : laneDetections[side].flatMap(d => { const box = boxAt(d, time); return box ? [{ side, box, label: d.category }] : []; }));
   const fig = { local: figures(lanes.local, true), cloud: figures(lanes.cloud, false) };
+  // Ground truth for UCF-Crime demo clips: did each lane name the clip's real crime at least once (≥ 50%)?
+  const truth = clip && !clip.simulated ? truthFor(clip.title) : null;
+  const named = (s: Side) => !!truth && lanes[s].named.includes(truth);
   const on = { local: !!(busy ? lanes.local.model : model.local), cloud: !!(busy ? lanes.cloud.model : model.cloud) };
   const shown = (side: Side) => lanes[side].model || model[side];
   // Marks the better of two measured values in a row; nothing is marked until both lanes have a number.
@@ -203,6 +232,9 @@ export function LiveRun() {
     { label: "Per camera-hour", cell: s => fig[s].perHour == null ? "—" : usd(fig[s].perHour!) },
     { label: "Windows", cell: s => <>{lanes[s].stats.length}{lanes[s].inFlight ? <span className="text-base-content/45"> +{lanes[s].inFlight}</span> : null}{lanes[s].failed ? <span className="text-error"> · {lanes[s].failed} failed</span> : null}</> },
     { label: "Findings ≥ 50%", cell: s => lanes[s].stats.length ? String(lanes[s].findings.length) : "—" },
+    ...(truth ? [{ label: "Named the crime", best: on.local && on.cloud && lanes.local.stats.length && lanes.cloud.stats.length && named("local") !== named("cloud") ? (named("local") ? "local" : "cloud") as Side : null,
+      cell: (s: Side) => { if (!lanes[s].stats.length) return "—"; const other = lanes[s].named.filter(c => c !== truth);
+        return <><span>{named(s) ? "Yes" : "No"}</span>{other.length > 0 && <span className="block text-[.68rem] font-sans text-base-content/45">{named(s) ? "also " : "said "}{other.join(", ").toLowerCase()}</span>}</>; } }] : []),
     { label: "Bake-off score", best: better(benchmarkFor(realOf(shown("local")))?.score ?? null, benchmarkFor(realOf(shown("cloud")))?.score ?? null, false),
       cell: s => { const b = benchmarkFor(realOf(shown(s))); return b ? `${b.score}%` : <span className="text-base-content/40 font-sans text-xs">not benchmarked</span>; } },
   ];
@@ -212,13 +244,20 @@ export function LiveRun() {
     <div className="grid xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-6 items-start">
       <div className="min-w-0">
         <div className="video-frame">
-          {src ? <video ref={player} src={src} controls playsInline muted preload="auto" className="w-full aspect-video bg-black"
-            onPlay={onPlay} onPause={onPause} onSeeked={onSeeked} onEnded={onEnded} aria-label={`Demo clip ${clip?.title ?? ""}`} />
+          {src ? <div className="video-canvas" style={{ "--video-ratio": ratio } as React.CSSProperties}>
+            <video ref={player} src={src} controls playsInline muted preload="auto" className="bg-black"
+              onPlay={onPlay} onPause={onPause} onSeeked={onSeeked} onEnded={onEnded} onTimeUpdate={e => setTime(e.currentTarget.currentTime)}
+              onLoadedMetadata={e => { const v = e.currentTarget; if (v.videoWidth && v.videoHeight) setRatio(v.videoWidth / v.videoHeight); }}
+              aria-label={`Demo clip ${clip?.title ?? ""}`} />
+            {overlay.map((b, i) => <div key={i} className={`video-box ${b.side === "cloud" ? "video-box-alt" : ""}`} style={{ left: `${b.box.x * 100}%`, top: `${b.box.y * 100}%`, width: `${b.box.width * 100}%`, height: `${b.box.height * 100}%` }}>
+              <span className="video-box-label">{b.label} · {b.side === "local" ? "Local" : "Cloud"}</span></div>)}
+          </div>
             : <div className="aspect-video grid place-items-center text-sm text-white/60">{clipError ? "Clip unavailable" : <span className="loading loading-spinner loading-md" />}</div>}
           {phase === "running" && <span className="absolute top-3 left-3 flex items-center gap-2 rounded-full bg-black/70 text-white px-2.5 py-1 font-mono text-[.62rem] uppercase tracking-[.06em]"><span className="size-1.5 rounded-full bg-error animate-pulse" />Live analysis · {active.length} model{active.length === 1 ? "" : "s"}</span>}
         </div>
         <div className="mt-3">
           <div className="font-medium truncate">{clip?.title ?? "Loading clip…"}{clip && <span className="text-base-content/45 font-normal"> · {clip.simulated ? "simulated sample" : "UCF-Crime demo clip"}</span>}</div>
+          {truth && <div className="text-xs mt-0.5"><span className="font-mono uppercase tracking-[.06em] text-base-content/45">UCF-Crime label · </span><span className="font-medium">{truth}</span></div>}
           <div className="text-xs text-base-content/55 mt-0.5 flex items-center gap-2">{phase === "running" && <span className="size-1.5 rounded-full bg-base-content animate-pulse" />}{phaseLabel[phase]} · {windows} window{windows === 1 ? "" : "s"} analysed</div>
         </div>
 
@@ -266,7 +305,7 @@ export function LiveRun() {
         <h4 className="font-mono text-[.66rem] uppercase tracking-[.06em] text-base-content/50 mb-2">Latest findings · {side === "local" ? "local" : "cloud"}{shown(side) ? ` · ${name(shown(side))}` : ""}</h4>
         {lanes[side].findings.length ? <ul className="space-y-2">{lanes[side].findings.map((f, i) => <li key={`${f.seconds}-${f.category}-${i}`} className="flex items-center gap-3 text-sm">
           <span className="font-mono text-xs text-base-content/55 w-11 shrink-0"><EventTime seconds={f.seconds} /></span>
-          <span className="flex-1 min-w-0 truncate">Suspected {f.category.toLowerCase()}</span>
+          <span className="flex-1 min-w-0 truncate">Suspected {f.category.toLowerCase()}{truth && f.category === truth && <span className="ml-2 font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/55">✓ label</span>}</span>
           <SeverityBadge severity={f.severity} /><span className="font-mono text-xs text-base-content/55 w-9 text-right">{Math.round(f.confidence * 100)}%</span>
         </li>)}</ul>
           : <p className="text-sm text-base-content/50">{!on[side] ? "Off." : phase === "idle" ? "Findings the model is at least 50% sure of appear here as the clip plays." : "No incident above 50% confidence so far."}</p>}
