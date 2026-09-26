@@ -1119,14 +1119,20 @@ document.getElementById("theme").addEventListener("click",()=>{
     const m = id.match(/^(\w+)-(\d+)$/); if (m) return Number(m[2]);
     const j = slides.findIndex(s => s.id === id); return j < 0 ? slides.findIndex(s => s.dataset.nav === id) : j; };
 
-  // Wheel and trackpad: one gesture moves one step; the inertia tail that follows is ignored.
-  let acc = 0, lastMove = 0, lastWheel = 0;
+  // Wheel and trackpad. Builds inside a slide (a new line, a lit step) follow the wheel
+  // closely: one notch or a short swipe each. Changing slide waits out the gesture's
+  // inertia tail, so one flick never skips a slide.
+  let acc = 0, lastMove = 0, lastWheel = 0, lastWasSlide = false;
   addEventListener("wheel", e => {
     if (e.ctrlKey) return; // pinch-zoom
     e.preventDefault(); const now = performance.now(), gap = now - lastWheel; lastWheel = now;
-    if (now - lastMove < 650 || (gap < 90 && now - lastMove < 1400)) { acc = 0; return; }
+    const since = now - lastMove;
+    if (lastWasSlide ? since < 650 || (gap < 90 && since < 1400) : since < 180) { acc = 0; return; }
     acc += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (Math.abs(acc) > 28) { acc > 0 ? next() : prev(); acc = 0; lastMove = now; }
+    const fwd = acc > 0, inBuild = fwd ? step < steps(slides[cur]) - 1 : step > 0;
+    if (Math.abs(acc) > (inBuild ? 40 : 28)) {
+      const was = cur; fwd ? next() : prev(); acc = 0; lastMove = now; lastWasSlide = cur !== was;
+    }
   }, { passive: false });
   addEventListener("keydown", e => {
     if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select")) return;
