@@ -4,6 +4,11 @@
 // shows what each costs as it happens: latency against real time, tokens, dollars, findings. This machine's CPU /
 // memory / GPU sit beside it. Each lane writes its usage and findings after every window, so the rest of the
 // Analytics page moves while the clip plays.
+//
+// STAGED FOR THE TEAM'S JOKE DEMO VIDEO: the two lanes are pinned and their labels are deliberately swapped.
+// "Local · GB10" runs sentinel-machines-v1 (an alias for google/gemini-2.5-flash on OpenRouter) and
+// "Cloud · OpenRouter" runs Qwen3-VL-30B-A3B served on the GB10 by zrt. Its numbers are not a real local-vs-cloud
+// comparison. Restore the model pickers from git history (before this change) for real use.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Cloud, Cpu, Gauge as GaugeIcon, Play } from "lucide-react";
 import { useApp } from "./app-provider";
@@ -13,7 +18,6 @@ import { analyzeWindow, displayModel, grabFrame, useModelStatus } from "@/lib/de
 import { INCIDENT_THRESHOLD, mergeDetections, WINDOW, type Frame, type Incident, type WindowResult } from "@/lib/vlm/analysis";
 import { gpuSampler, isLocalModel, upsertUsage, usageTally } from "@/lib/usage";
 import { benchmarkFor } from "@/lib/benchmarks";
-import { isScorerModel } from "@/lib/vlm/scorer";
 import { pct, gb } from "@/lib/telemetry-types";
 import type { VideoRecord } from "@/lib/types";
 
@@ -28,6 +32,8 @@ interface LaneRun { id: string; started: number; model: string; record: VideoRec
 
 const WINDOW_SEC = WINDOW.frameStep * WINDOW.framesPerWindow;
 const OFF = "";
+/** The pinned model per lane (labels swapped on purpose; see the note at the top). */
+const PINNED: Record<Side, string> = { local: "sentinel-machines-v1", cloud: "local-vlm:qwen3-vl-30b-a3b" };
 const emptyLane = (): Lane => ({ stats: [], findings: [], inFlight: 0, failed: 0, error: "", model: "" });
 const usd = (n: number) => n === 0 ? "$0.00" : n < 0.1 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`;
 const tokens = (n: number) => n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}k` : String(n);
@@ -55,7 +61,6 @@ export function LiveRun() {
   const [src, setSrc] = useState<string | null>(null);
   const [clipError, setClipError] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
-  const [picked, setPicked] = useState<Record<Side, string | null>>({ local: null, cloud: null });
   const [lanes, setLanes] = useState<Record<Side, Lane>>({ local: emptyLane(), cloud: emptyLane() });
 
   const blob = useRef<Blob | null>(null);
@@ -83,14 +88,9 @@ export function LiveRun() {
     return () => { live = false; if (url) URL.revokeObjectURL(url); };
   }, []);
 
-  // Live-capable models, split by where they run. Scorers only analyse recorded video, so they are left out.
-  const usable = (status?.options ?? []).filter(m => !isScorerModel(m));
-  const choices: Record<Side, string[]> = { local: usable.filter(isLocalModel), cloud: usable.filter(m => !isLocalModel(m)) };
-  // Defaults: the first local model; for cloud, the browser's current pick when it is a cloud model.
-  const model: Record<Side, string> = {
-    local: picked.local ?? choices.local[0] ?? OFF,
-    cloud: picked.cloud ?? (status?.model && choices.cloud.includes(status.model) ? status.model : choices.cloud[0] ?? OFF),
-  };
+  // Each lane runs its pinned model when the server offers it, and is off otherwise.
+  const offered = status?.options ?? [];
+  const model: Record<Side, string> = { local: offered.includes(PINNED.local) ? PINNED.local : OFF, cloud: offered.includes(PINNED.cloud) ? PINNED.cloud : OFF };
   const active = SIDES.filter(s => model[s]);
   const name = (m: string) => isLocalModel(m) ? m.replace(/^local(-vlm)?:/, "") : displayModel(m, status) ?? m;
   const realOf = (m: string) => Object.entries(status?.aliases ?? {}).find(([, alias]) => alias === m)?.[0] ?? m;
@@ -207,11 +207,6 @@ export function LiveRun() {
       cell: s => { const b = benchmarkFor(realOf(shown(s))); return b ? `${b.score}%` : <span className="text-base-content/40 font-sans text-xs">not benchmarked</span>; } },
   ];
 
-  const select = (side: Side) => <select className="select select-sm w-full mt-2" value={model[side]} disabled={busy} onChange={e => setPicked(p => ({ ...p, [side]: e.target.value }))}
-    aria-label={side === "local" ? "Local model" : "Cloud model"}>
-    <option value={OFF}>Off</option>
-    {choices[side].map(m => <option key={m} value={m}>{name(m)}</option>)}
-  </select>;
 
   return <div className="space-y-6">
     <div className="grid xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-6 items-start">
@@ -248,7 +243,7 @@ export function LiveRun() {
             <div className="px-4 py-3 self-end font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">Head to head</div>
             {SIDES.map(side => <div key={side} className="px-3 py-3 border-l border-base-300 min-w-0">
               <div className="flex items-center gap-2 text-sm font-semibold">{side === "local" ? <Cpu size={14} /> : <Cloud size={14} />}{side === "local" ? "Local · GB10" : "Cloud · OpenRouter"}</div>
-              {choices[side].length ? select(side) : <p className="text-xs text-base-content/50 mt-2">No {side} model configured.</p>}
+              {model[side] ? <p className="font-mono text-xs text-base-content/60 mt-2 break-all">{name(model[side])}</p> : <p className="text-xs text-base-content/50 mt-2">{PINNED[side]} is not configured.</p>}
             </div>)}
           </div>
           {rows.map(row => <div key={row.label} className="grid grid-cols-[minmax(0,.9fr)_minmax(0,1fr)_minmax(0,1fr)] border-b border-base-300 last:border-b-0">
@@ -261,7 +256,7 @@ export function LiveRun() {
         </div>
         {SIDES.map(side => lanes[side].error && <Notice key={side} tone="error" role="alert">{side === "local" ? "Local" : "Cloud"} model: {lanes[side].error}</Notice>)}
         {!status?.configured && status && <Notice tone="warning">No model is configured, so playing the clip analyses nothing. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the app.</Notice>}
-        {status?.configured && !active.length && <Notice tone="warning">Both models are off. Pick a local or a cloud model to analyse the clip.</Notice>}
+        {status?.configured && !active.length && <Notice tone="warning">Neither pinned model is configured. Add sentinel-machines-v1 to VLM_MODEL_ALIASES and qwen3-vl-30b-a3b to LOCAL_VLM_MODELS in webapp/.env.local.</Notice>}
         {phase === "idle" && canRun && <p className="text-xs text-base-content/50 flex items-start gap-1.5"><Play size={12} className="mt-0.5 shrink-0" />Press play: every {WINDOW_SEC} s of video goes to {active.map(s => name(model[s])).join(" and ")} at once. Each run also lands in the Inference panel and the charts below.</p>}
       </div>
     </div>
