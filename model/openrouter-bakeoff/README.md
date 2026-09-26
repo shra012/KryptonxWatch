@@ -2,6 +2,8 @@
 
 Status: done 2026-09-24 · 12 models + HawkWatch baseline · total spend ≈ $0.87 on OpenRouter.
 
+Outcome (2026-09-25): the app now runs **Qwen3-VL-30B-A3B-Instruct FP8 locally** through zrt (Score 69% on v1, in [`results/summary.md`](results/summary.md)); serving Nemotron locally through zrt reset the machine, so it was not adopted. Follow-up work: [local-vlm-quality.md](../.plans/local-vlm-quality.md).
+
 ## Question
 
 KryptonxWatch should work like [HawkWatch](https://github.com/Grace-Shao/Treehacks2025) (upload analysis, timestamped incidents, live monitoring, assistant, AI summary), but at the hackathon it must run on one **HP ZGX Nano (NVIDIA GB10, 128 GB unified memory, ~273 GB/s)**. Which open-weight vision-language model should we download and serve locally?

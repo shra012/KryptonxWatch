@@ -1,4 +1,4 @@
-"""Person boxes over HTTP for the web app (plan: webapp/.plans/yolo-boxes-in-app.md).
+"""Person boxes over HTTP for the web app (plan: docs/archive/webapp-plans/yolo-boxes-in-app.md).
 
 POST /detect  {"images": ["data:image/jpeg;base64,...", ...], "conf": 0.25}
           ->  {"persons": [[{"x", "y", "width", "height", "score"}, ...], ...]}   (one list per image, normalised 0-1)

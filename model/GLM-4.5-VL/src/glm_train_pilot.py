@@ -1,4 +1,4 @@
-"""G3 training pilot for GLM-4.5V: one small QLoRA run (see model/GLM-4.5-VL/plans/glm-4.5v-arm.md).
+"""G3 training pilot for GLM-4.5V: one small QLoRA run (see docs/archive/model-plans/glm-4.5v-arm.md).
 
 Checks mechanics only: peak memory, seconds per step, that the loss moves, and that the saved
 adapter reloads to identical scores. Labels are PLACEHOLDERS, not study labels:

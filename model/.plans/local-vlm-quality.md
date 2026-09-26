@@ -1,6 +1,6 @@
 # Local model as good as Gemini 2.5 Flash (detection, scene log, boxes)
 
-Status: 2026-09-25 · Phase 0 done · Phase 1 result in (Qwen3-VL-30B-A3B local) · Phase 2 done (defaults kept) · Phase 3 done (YOLO snapping built; visual review pending) · data consolidation downloading (UCF crime classes, then training normals) · Phases 2–7 pending. Update this line as phases finish.
+Status: 2026-09-26 · Phase 0 done · Phase 1 done (Qwen3-VL-30B-A3B FP8 local, in the app) · Phase 2 done (defaults kept) · Phase 3 done (YOLO snapping and tracking in the app; 12-card box review done, user confirmation of ratings pending) · Nemotron local arm stopped (zrt serving reset the machine; see archived plans) · UCF data consolidation done (all crime classes and 800 training normals on disk) · Phases 4–6 not started · Phase 7 partly done. Update this line as phases finish.
 
 ## Context
 Local analysis in the web app gives weaker detections, scene log and boxes than `google/gemini-2.5-flash` via OpenRouter. The team's [OpenRouter bake-off](../openrouter-bakeoff/README.md) (the app's own pipeline, 36 UCF clips) shows the first model we served, Qwen3.8-27B, is among the weakest open options: it flagged 39% of crime clips against Gemini's 94%. Open models also draw boxes that barely overlap Gemini's (median IoU about 0.1). No open model matches Gemini at naming the crime (50–61% vs 83%).
@@ -15,8 +15,8 @@ The goal is to match or beat Gemini **on our task** (crime detection in store CC
 | Asset | Status |
 |---|---|
 | UCF-Crime Shoplifting 50, Stealing 100, test Normal 150, **Robbery 150** | On disk (Robbery moved in 2026-09-25) |
-| UCF-Crime Fighting, Vandalism, Abuse, Arrest, Arson, Assault, Burglary, Explosion, RoadAccidents, Shooting (17 GB) | Downloading (`ucf-crime/download-2026-09-25.log`) |
-| UCF-Crime Training Normal, 800 videos (73.4 GB) | Downloading after the crime classes |
+| UCF-Crime Fighting, Vandalism, Abuse, Arrest, Arson, Assault, Burglary, Explosion, RoadAccidents, Shooting (17 GB) | On disk (`ucf-crime/download-2026-09-25.log`) |
+| UCF-Crime Training Normal, 800 videos (73.4 GB) | On disk (all 800 verified, 2026-09-25) |
 | **UCA** (`uca/`): 1,854 videos, about 23.5k human-written timestamped sentences (train 1,165 / val 379 / test 310) | On disk. **Licence: academic and research use only**; see `uca/SOURCE.txt` |
 | Study labels (`model/study/v1/`): 34 theft intervals in 17 training shoplifting videos, study splits, leak audit | In repo. Some intervals are `claude-proposed` and need human review before training |
 | MERL Shopping (hard negatives) | On disk |
@@ -39,7 +39,7 @@ Differences under about 10 points on 36 clips are noise. Headline claims use v2 
 ### Phase 0: Data and benchmark tooling ✅
 Bake-off v1 built (36 clips, 614 frames). `vlm-benchmark.ts` now has pipeline options (`--frames-per-window`, `--frame-step`, `--max-width`, `--tag`), `VLM_EXTRA_BODY`, and the `boxes` command. Run it with `npx jiti scripts/vlm-benchmark.ts …` (the host Node is v18).
 
-### Phase 1: Pick the base model (running)
+### Phase 1: Pick the base model ✅
 1. Qwen3-VL-30B-A3B-Instruct-FP8 via zrt (label `qwen3-vl-30b-a3b`), 36 clips, app pipeline, tag `local`. Then M1, M2, M5.
 2. Nemotron-3-Nano-Omni-30B-A3B (NVFP4, thinking off), same run.
 3. Gate: pick the winner on M1 (primary) and M2. Local numbers should sit within noise of the same model's OpenRouter row, which confirms FP8/NVFP4 lost nothing.
@@ -71,9 +71,11 @@ Options, each run on v1 with its own `--tag`: 8 frames per window, 768 px or nat
 - **GB10 gotcha:** cuDNN 9.20 in the NGC 26.03 image makes YOLO return no detections on sm_121. With `torch.backends.cudnn.enabled = False`, results match the CPU at about 10 ms/image (CPU 42 ms). Watch for the same issue in any conv model on this box.
 - **M2 (agreement with Gemini) cannot judge person-snapping.** Snapping moves local boxes only slightly (Qwen3-VL IoU ≥ 0.3: 15% → 12%), and snapping *Gemini's own* boxes drops its self-agreement from 97% to 39%. Gemini draws loose region boxes (person plus object or area), not person boxes. M2 is therefore dropped as a box-quality measure.
 - **Visual review of 12 matched moments** (Claude's read, pending the user's): YOLO-snapped Qwen3-VL boxes are usually the tightest on the acting person (robberies, tunnel fight, vandalism); Gemini's are often large regions or empty areas. Failures: a wrong-person snap in hw-Fighting0, ambiguity in a crowded fisheye view, and a different person chosen in hw-Shoplifting2. Next: the user rates the page. If confirmed, move YOLO snapping into the app's analysis route (Phase 7) early.
-- **In the app (2026-09-25):** snapping plus frame-to-frame person tracking now runs server-side in `app/api/analyze` via `model/YOLO/src/yolo_server.py` (`YOLO_BASE_URL`), and the video page interpolates the tracked boxes. See [webapp/.plans/yolo-boxes-in-app.md](../../webapp/.plans/yolo-boxes-in-app.md).
+- **In the app (2026-09-25):** snapping plus frame-to-frame person tracking now runs server-side in `app/api/analyze` via `model/YOLO/src/yolo_server.py` (`YOLO_BASE_URL`), and the video page interpolates the tracked boxes. See [docs/archive/webapp-plans/yolo-boxes-in-app.md](../../docs/archive/webapp-plans/yolo-boxes-in-app.md).
 
-### Nemotron-3-Nano-Omni arm (2026-09-25, running)
+### Nemotron-3-Nano-Omni arm (2026-09-25, stopped)
+**Outcome:** serving the NVFP4 checkpoint through zrt hard-reset the machine twice, so this pipeline did not complete and no local Nemotron scores were recorded. Serving notes and a fine-tune proposal are archived in [nemotron-local-serving.md](../../docs/archive/model-plans/nemotron-local-serving.md) and [nemotron-finetune.md](../../docs/archive/model-plans/nemotron-finetune.md).
+
 Nemotron led the team's OpenRouter runs on the larger sets (**full**, 1,489 windows: Score 63% vs Qwen3-VL 59% vs Gemini 57%; **v2**: 81% vs 80% vs 69%). Gemini still names crimes best (full: 71% vs 52% vs 49%) but false-alarms on 57% of normal clips. So Phases 1–3 are repeated locally for Nemotron (`nvidia/Nemotron-3-Nano-Omni-30B-A3B-Reasoning-NVFP4@16993199e436`, 22.4 GB, zrt label `nemotron-omni`, thinking off, NVIDIA Open Model License).
 
 Detached pipeline `~/kryptonx-logs/nemotron-pipeline.sh` (log `nemotron-pipeline.log`):

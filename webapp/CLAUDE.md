@@ -1,26 +1,21 @@
 # Sentinel Machines web app
 
-Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter now, a local server on the GB10 later) analyses uploads and live feeds. Without a model configured, the app runs in demo mode. Another team builds the fine-tuned models; they integrate through [the data contract](../docs/data-contract.md). Roadmap: [webapp-roadmap.md](.plans/webapp-roadmap.md). Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
+Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter now, a local server on the GB10 later) analyses uploads and live feeds. Without a model configured, the app runs in demo mode. Another team builds the fine-tuned models; they integrate through [the data contract](../docs/data-contract.md). Roadmap history: [webapp-roadmap.md](../docs/archive/webapp-plans/webapp-roadmap.md). Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
 
 ## Planning context
-Before planning or changing the web app, read the recent plans in `.plans/` and use them alongside this guidance and the data contract. Keep the relevant plan there up to date when scope or decisions change. Save every new plan to `.plans/<topic>.md` with Context, ordered steps and Verification.
+Before planning or changing the web app, read the active plans in `.plans/` (finished ones are in `../docs/archive/webapp-plans/`) and use them alongside this guidance and the data contract. Keep the relevant plan there up to date when scope or decisions change. Save every new plan to `.plans/<topic>.md` with Context, ordered steps and Verification.
 
 ## Commands
-- `npm run dev`: http://localhost:3000. Model config lives in `.env.local` (see `.env.example`); restart after changing it.
+- `npm run dev`: http://localhost:3000. Config lives in `.env.local`: model settings from `.env.example`, alerts and the watch agent from `.env.local.example`; restart after changing it.
 - `npm run lint` / `npm run typecheck` / `npm run build`
 - `npm run test:e2e`: Playwright against port 3000, reusing whatever already answers
 - `npm run test:e2e:ci`: owns its servers on port 3100 (building into `.next-e2e/`, so a dev server on 3000 keeps working) and points Twilio at `tests/fake-twilio.mjs`, so alert tests never spend credit. It repoints the generated `next-env.d.ts` at `.next-e2e`; restore it with `git checkout next-env.d.ts`. Use this where port 3000 belongs to something else (the ZGX). Set `PW_CHROMIUM_PATH` if Chromium lives outside Playwright's cache.
 - `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
+- `npx --no-install jiti scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`). First e2e run: `npx playwright install chromium`.
 
 ## Where things live
-- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/videos`, `/videos/[id]` (player, timeline, boxes, assistant), `/detections`, `/analytics`, `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
-- `npm run test:e2e`: Playwright; first run `npx playwright install chromium`
-- `node scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`)
-- `python3 scripts/generate-samples.py`: regenerate synthetic sample WebMs (needs Pillow, ffmpeg)
-
-## Where things live
-- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics`, `/settings`. Pages are client components because state lives in the browser.
-- `app/api/`: server routes `model`, `analyze` (one window of frames), `chat`, `summary`. They are the only code that reads `VLM_*` env vars (via `lib/server/vlm-config.ts`).
+- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics` (includes a live head-to-head run), `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
+- `app/api/`: server routes `model`, `analyze` (one window of frames), `chat`, `summary`, `track`, `pose`, `detect`, `alerts`, `system`, `demo-clips`, and for the Hermes watch agent `mcp`, `briefings`, `watch/events`. They are the only code that reads `VLM_*` env vars (via `lib/server/vlm-config.ts`).
 - `lib/vlm/`: prompt, parsing and merging (`analysis.ts`), assistant/summary prompts (`assistant.ts`), OpenAI-compatible client (`client.ts`). No runtime imports, so the benchmark script shares them.
 - `lib/detection-client.ts`: browser side: frame capture, windowed analysis, assistant and summary calls, `useModelStatus()`.
 - `components/app-provider.tsx`: the single client store. Read and write videos, review status, theme and toasts through `useApp()` only.
@@ -28,8 +23,8 @@ Before planning or changing the web app, read the recent plans in `.plans/` and 
 - `components/shell.tsx`: sidebar and mobile nav. Register new pages in `nav`.
 - `lib/types.ts`: domain types and the `DetectionService` / `AssistantService` integration points.
 - `lib/analytics.ts`: all counts, chart data and CSV. `lib/storage.ts`: IndexedDB. `lib/demo.ts`: simulated samples.
-- `lib/server/`: server-only modules. `telemetry.ts` reads nvidia-smi and `/proc`; `alerts.ts` holds the Twilio call and the alert policy. Never import these from a `"use client"` file — the browser talks to `/api/system` and `/api/alerts` instead, through `components/use-telemetry.ts` and `lib/alert-client.ts`.
-- Secrets live in `webapp/.env.local` (git-ignored). `.env.local.example` lists every variable and what it does.
+- `lib/server/`: server-only modules. `telemetry.ts` reads nvidia-smi and `/proc`; `alerts.ts` holds the Twilio call and the alert policy; `watch-log.ts` and `watch-tools.ts` are the watch agent's feed log and MCP tools; `inference-stats.ts` measures inference speed. Never import these from a `"use client"` file — the browser talks to `/api/system` and `/api/alerts` instead, through `components/use-telemetry.ts` and `lib/alert-client.ts`.
+- Secrets live in `webapp/.env.local` (git-ignored). `.env.example` and `.env.local.example` together list every variable and what it does.
 
 ## UI rules
 - Tailwind 4 + daisyUI 5 classes, `lucide-react` icons, Recharts for charts. Ask before adding a UI library.

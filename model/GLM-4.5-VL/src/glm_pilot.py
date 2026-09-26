@@ -1,4 +1,4 @@
-"""G2 inference pilot for GLM-4.5V (see model/GLM-4.5-VL/plans/glm-4.5v-arm.md).
+"""G2 inference pilot for GLM-4.5V (see docs/archive/model-plans/glm-4.5v-arm.md).
 
 Scores a few 8 s windows with the model in 4-bit NF4, thinking disabled, and reports P("yes")
 for the answer token, seconds per window, peak memory and determinism.

@@ -1,5 +1,7 @@
 # Qwen3.8-27B-INT4
 
+Status (2026-09-26): this is the original edge-flow design. The app no longer uses Qwen3.8-27B; it runs Qwen3-VL-30B-A3B locally (see [model/README.md](../README.md)). This folder now mainly holds the shoplifting study ([plans/shoplifting-study.md](plans/shoplifting-study.md)): the LoRA result is not conclusive (ΔAUROC +0.027, every 95% CI includes 0) with about 3x the false positives per hour ([model card](runs/qwen38/exp3/MODEL_CARD.md)).
+
 Edge flow for HawkWatch. The camera path stays on device. Qwen3.8-27B-INT4 reads a short set of frames only after a suspicious event is detected, then the result goes to the dashboard.
 
 ## Model assets
