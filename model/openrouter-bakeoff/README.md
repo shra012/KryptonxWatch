@@ -45,6 +45,14 @@ From the repository root, prepare the selected dataset. This step downloads foot
 python3 model/openrouter-bakeoff/fetch_data.py --version v2
 ```
 
+For v1, provide the directory containing the 12 selected reference clips:
+
+```bash
+python3 model/openrouter-bakeoff/fetch_data.py --version v1 --reference-clips /path/to/reference-clips
+```
+
+The reference cohort is named `reference`; the single-frame comparison is selected with `--pipeline baseline`. Existing local manifests retain their clip paths and IDs, with their reference-cohort labels normalized when read.
+
 Then, with the web app dependencies installed:
 
 ```bash

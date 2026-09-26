@@ -1,13 +1,13 @@
 """Build the OpenRouter bake-off test set under data/bakeoff/ (git-ignored).
 
 Three parts:
-  hawkwatch/  12 selected UCF-Crime reference clips (clip label = file name)
+  reference/  12 selected UCF-Crime reference clips (clip label = file name)
   timed/      6 UCF-Crime test videos with official start/end times, first 64 s kept
   normal/     18 UCF-Crime test videos with no anomaly, first 64 s kept
 
 Writes data/bakeoff/manifest.json, which the benchmark reads.
 
-  python3 model/openrouter-bakeoff/fetch_data.py --hawkwatch /path/to/reference-clips
+  python3 model/openrouter-bakeoff/fetch_data.py --reference-clips /path/to/reference-clips
 
 --version v2 builds a second, fresh test set under data/bakeoff-v2/ with none of the v1 videos:
   timed/   every other annotated UCF test video of the 5 classes, 64 s cut around the first event
@@ -44,7 +44,7 @@ NORMAL = ["Normal_Videos_881_x264", "Normal_Videos_345_x264", "Normal_Videos_889
           "Normal_Videos_870_x264", "Normal_Videos_939_x264", "Normal_Videos_907_x264", "Normal_Videos_910_x264",
           "Normal_Videos_904_x264", "Normal_Videos_100_x264"]
 FULL_CLASSES = {"Shoplifting", "Stealing", "Robbery", "Fighting", "Vandalism", "Burglary", "Shooting", "Assault", "Abuse"}
-HAWKWATCH_CLASS = {"Shoplifting": "Shoplifting", "Stealing": "Stealing", "Robbery": "Robbery", "Fighting": "Fighting", "Vandalism": "Vandalism"}
+REFERENCE_CLASSES = {"Shoplifting": "Shoplifting", "Stealing": "Stealing", "Robbery": "Robbery", "Fighting": "Fighting", "Vandalism": "Vandalism"}
 
 
 def probe(path: Path) -> tuple[float, float]:
@@ -83,7 +83,7 @@ def build_v2(out: Path, full: bool = False) -> int:
         crimes = sorted(n for n, (c, _) in ann.items() if c in FULL_CLASSES and n in members)
         normals = sorted(n for n, (c, _) in ann.items() if c == "Normal" and n in members)
     else:
-        crimes = sorted(n for n, (c, _) in ann.items() if c in HAWKWATCH_CLASS and n not in TIMED and n in members)
+        crimes = sorted(n for n, (c, _) in ann.items() if c in REFERENCE_CLASSES and n not in TIMED and n in members)
         normals = sorted((members[n].file_size, n) for n, (c, _) in ann.items()
                          if c == "Normal" and n not in NORMAL and n in members and 2e6 <= members[n].file_size <= 15e6)
         normals = [n for _, n in normals[::max(1, len(normals) // 30)]][:30]
@@ -120,18 +120,18 @@ def build_v2(out: Path, full: bool = False) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--version", choices=["v1", "v2", "full"], default="v1")
-    ap.add_argument("--hawkwatch", type=Path, help="Directory of the 12 selected reference clips (v1 only)")
+    ap.add_argument("--reference-clips", type=Path, help="Directory of the 12 selected reference clips (v1 only)")
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
     if args.version == "v2":
         return build_v2(args.out or ROOT / "data/bakeoff-v2")
     if args.version == "full":
         return build_v2(args.out or ROOT / "data/bakeoff-full", full=True)
-    if not args.hawkwatch:
-        ap.error("--hawkwatch is required for v1")
+    if not args.reference_clips:
+        ap.error("--reference-clips is required for v1")
     args.out = args.out or ROOT / "data/bakeoff"
     out: Path = args.out
-    for sub in ("hawkwatch", "timed", "normal", "raw"):
+    for sub in ("reference", "timed", "normal", "raw"):
         (out / sub).mkdir(parents=True, exist_ok=True)
 
     ann = {}
@@ -146,11 +146,11 @@ def main() -> int:
     members = {Path(i.filename).stem: i for i in archive.infolist() if i.filename.endswith(".mp4")}
 
     items = []
-    for clip in sorted(args.hawkwatch.glob("*.mp4")):
-        cls = HAWKWATCH_CLASS[clip.stem.rstrip("0123456789")]
-        shutil.copy(clip, out / "hawkwatch" / clip.name)
+    for clip in sorted(args.reference_clips.glob("*.mp4")):
+        cls = REFERENCE_CLASSES[clip.stem.rstrip("0123456789")]
+        shutil.copy(clip, out / "reference" / clip.name)
         duration, _ = probe(clip)
-        items.append({"id": f"hw-{clip.stem}", "set": "hawkwatch", "path": f"hawkwatch/{clip.name}",
+        items.append({"id": f"hw-{clip.stem}", "set": "reference", "path": f"reference/{clip.name}",
                       "label": cls, "duration": round(duration, 2), "events": None})
 
     for name, part in [(n, "timed") for n in TIMED] + [(n, "normal") for n in NORMAL]:

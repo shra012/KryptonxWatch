@@ -1,6 +1,6 @@
 "use client";
 // Visual fingerprints, so the monitor walls never show the same footage twice: a trimmed or re-encoded copy
-// (HawkWatch's Fighting1 is a cut of UCF's Fighting003) has a different size and length but the same frames.
+// (such as a short excerpt from a longer UCF recording) has a different size and length but the same frames.
 // A fingerprint is one 64-bit difference hash (dHash) of a 9x8 greyscale frame every few seconds.
 // Kept per browser in localStorage, apart from the recordings, so computing them never races an analysis save.
 import { useEffect, useState } from "react";

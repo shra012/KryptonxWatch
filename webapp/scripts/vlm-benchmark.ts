@@ -1,11 +1,11 @@
 // Bake-off of vision-language models on the Sentinel Machines analysis pipeline.
 // Uses the app's own prompt, parser and merge logic (lib/vlm), so a score here is what the app would do.
 //
-//   node scripts/vlm-benchmark.ts frames   (once; extracts JPEG frames with ffmpeg)
-//   node scripts/vlm-benchmark.ts run   --models qwen/qwen3-vl-8b-instruct,google/gemma-4-31b-it [--sets hawkwatch,timed,normal] [--limit 1]
-//   node scripts/vlm-benchmark.ts run   --models google/gemini-2.5-flash --pipeline hawkwatch   (HawkWatch's own prompt, 1 frame / 3 s)
-//   node scripts/vlm-benchmark.ts score
-//   node scripts/vlm-benchmark.ts boxes [--ref google/gemini-2.5-flash]   (box agreement with a reference model)
+//   npx --no-install jiti scripts/vlm-benchmark.ts frames   (once; extracts JPEG frames with ffmpeg)
+//   npx --no-install jiti scripts/vlm-benchmark.ts run   --models qwen/qwen3-vl-8b-instruct,google/gemma-4-31b-it [--sets reference,timed,normal] [--limit 1]
+//   npx --no-install jiti scripts/vlm-benchmark.ts run   --models google/gemini-2.5-flash --pipeline baseline   (single-frame comparison prompt, 1 frame / 3 s)
+//   npx --no-install jiti scripts/vlm-benchmark.ts score
+//   npx --no-install jiti scripts/vlm-benchmark.ts boxes [--ref google/gemini-2.5-flash]   (box agreement with a reference model)
 //   add --dataset v2 (fresh test set) or --dataset full (every in-scope UCF test video) to any command; build with fetch_data.py --version v2/full
 //
 // Pipeline options for `run` (defaults = the app's pipeline, so existing results stay comparable):
@@ -31,8 +31,16 @@ const dataset = process.argv.includes("--dataset") ? process.argv[process.argv.i
 const dataDir = join(repo, dataset === "v1" ? "data/bakeoff" : `data/bakeoff-${dataset}`);
 const outDir = join(repo, "model/openrouter-bakeoff", dataset === "v1" ? "results" : `results-${dataset}`);
 
-interface Item { id: string; set: "hawkwatch" | "timed" | "normal"; path: string; label: string; duration: number; events: [number, number][] | null }
+interface Item { id: string; set: "reference" | "timed" | "normal"; path: string; label: string; duration: number; events: [number, number][] | null }
 interface Row { model: string; video: string; set: string; start: number; end: number; ok: boolean; pipeline?: { frameStep: number; framesPerWindow: number; maxWidth: number }; error?: string; latencyMs?: number; cost?: number; promptTokens?: number; completionTokens?: number; raw?: string; result?: WindowResult }
+
+/** Normalize earlier manifest set labels while retaining their existing clip paths and IDs. */
+function readManifest(): { items: Item[] } {
+  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  return { ...manifest, items: manifest.items.map(item => ({ ...item,
+    set: item.set === "normal" || item.set === "timed" ? item.set : "reference",
+  })) };
+}
 
 function env(name: string): string | undefined {
   if (name in process.env) return process.env[name] || undefined; // an explicitly empty value means "unset", e.g. VLM_API_KEY= for a local server
@@ -69,7 +77,7 @@ async function pool<T>(items: T[], size: number, fn: (item: T) => Promise<void>)
 
 async function runModels() {
   const models = (arg("models") ?? "").split(",").filter(Boolean);
-  const sets = (arg("sets") ?? "hawkwatch,timed,normal").split(",");
+  const sets = (arg("sets") ?? "reference,timed,normal").split(",");
   const limit = Number(arg("limit", "0"));
   const concurrency = Number(arg("concurrency", "6"));
   const baseUrl = env("VLM_BASE_URL") ?? "https://openrouter.ai/api/v1";
@@ -80,17 +88,17 @@ async function runModels() {
   const maxTokens = Number(arg("max-tokens", "600"));
   const tag = arg("tag");
   const plan = (duration: number) => planWindows(duration, frameStep, framesPerWindow);
-  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const manifest: { items: Item[] } = readManifest();
   const items = manifest.items.filter(i => sets.includes(i.set));
   mkdirSync(outDir, { recursive: true });
 
-  const hawkwatch = arg("pipeline") === "hawkwatch";
+  const baseline = arg("pipeline") === "baseline";
   const repeat = arg("repeat"); // e.g. --repeat 2 writes a second, independent run to measure run-to-run stability
   for (const baseModel of models) {
-    const model = (hawkwatch ? baseModel + HAWKWATCH_SUFFIX : baseModel) + (repeat ? ` #${repeat}` : "");
-    const file = join(outDir, `${slug(baseModel)}${hawkwatch ? "__hawkwatch-pipeline" : ""}${repeat ? `__r${repeat}` : ""}${tag ? `__${tag}` : ""}.jsonl`);
+    const model = (baseline ? baseModel + BASELINE_SUFFIX : baseModel) + (repeat ? ` #${repeat}` : "");
+    const file = join(outDir, `${slug(baseModel)}${baseline ? "__baseline-pipeline" : ""}${repeat ? `__r${repeat}` : ""}${tag ? `__${tag}` : ""}.jsonl`);
     const done = new Set(existsSync(file) ? readFileSync(file, "utf8").split("\n").filter(Boolean).map(l => { const r: Row = JSON.parse(l); return r.ok ? `${r.video}@${r.start}` : ""; }) : []);
-    const jobs = items.flatMap(item => (hawkwatch ? hawkwatchWindows(item.duration) : plan(item.duration)).map(w => ({ item, w })))
+    const jobs = items.flatMap(item => (baseline ? baselineWindows(item.duration) : plan(item.duration)).map(w => ({ item, w })))
       .filter(j => !done.has(`${j.item.id}@${j.w.start}`));
     if (process.argv.includes("--reverse")) jobs.reverse();
     jobs.splice(limit || jobs.length);
@@ -100,9 +108,9 @@ async function runModels() {
       const frames = await Promise.all(w.times.map(async t => ({ seconds: t, image: await frame(item, t, maxWidth) })));
       const row: Row = { model: model + (tag ? ` [${tag}]` : ""), video: item.id, set: item.set, start: w.start, end: w.end, ok: false, pipeline: { frameStep, framesPerWindow, maxWidth } };
       try {
-        const reply = await chat({ baseUrl, apiKey, model: baseModel, extraBody, timeoutMs: 300_000 }, hawkwatch ? hawkwatchMessages(frames[0].image) : windowMessages(frames), { maxTokens });
+        const reply = await chat({ baseUrl, apiKey, model: baseModel, extraBody, timeoutMs: 300_000 }, baseline ? baselineMessages(frames[0].image) : windowMessages(frames), { maxTokens });
         Object.assign(row, { latencyMs: reply.latencyMs, cost: reply.cost, promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, raw: reply.text });
-        row.result = hawkwatch ? parseHawkwatch(reply.text, frames[0].seconds, w.start, w.end) : parseWindow(reply.text, frames, w.start, w.end);
+        row.result = baseline ? parseBaseline(reply.text, frames[0].seconds, w.start, w.end) : parseWindow(reply.text, frames, w.start, w.end);
         row.ok = true;
       } catch (e) {
         row.error = e instanceof Error ? e.message : String(e);
@@ -119,7 +127,7 @@ async function runModels() {
 // ---------- Single-frame reference pipeline ----------
 // Historical comparison prompt: one frame every 3 s,
 // "isDangerous" events, no categories. Used only as a baseline.
-const HAWKWATCH_PROMPT = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
+const BASELINE_PROMPT = `Analyze this frame and determine if any of these specific dangerous situations are occurring:
 
 1. Medical Emergencies:
 - Person unconscious or lying motionless
@@ -161,15 +169,15 @@ Return a JSON object in this exact format:
         }
     ]
 }`;
-const HAWKWATCH_SUFFIX = " (HawkWatch pipeline)";
-const isHawkwatch = (model: string) => model.endsWith(HAWKWATCH_SUFFIX);
-const hawkwatchWindows = (duration: number) => planWindows(duration, 3, 1);
+const BASELINE_SUFFIX = " (single-frame baseline)";
+const isBaseline = (model: string) => model.endsWith(BASELINE_SUFFIX);
+const baselineWindows = (duration: number) => planWindows(duration, 3, 1);
 
-function hawkwatchMessages(image: string) {
-  return [{ role: "user", content: [{ type: "text", text: HAWKWATCH_PROMPT }, { type: "image_url", image_url: { url: image } }] }];
+function baselineMessages(image: string) {
+  return [{ role: "user", content: [{ type: "text", text: BASELINE_PROMPT }, { type: "image_url", image_url: { url: image } }] }];
 }
 
-function parseHawkwatch(text: string, seconds: number, start: number, end: number): WindowResult {
+function parseBaseline(text: string, seconds: number, start: number, end: number): WindowResult {
   const raw = extractJson(text) as { events?: { description?: string; isDangerous?: boolean }[] };
   const events = Array.isArray(raw.events) ? raw.events : [];
   const incidents = events.filter(e => e?.isDangerous === true).map(e => ({
@@ -232,7 +240,7 @@ function crossValidated(items: Item[], perVideo: Map<string, WindowResult[]>, hw
 }
 
 function score() {
-  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const manifest: { items: Item[] } = readManifest();
   const files = (arg("models") ?? "").split(",").filter(Boolean).map(m => join(outDir, `${slug(m)}.jsonl`));
   const list = files.length ? files : readdir(outDir).filter(f => f.endsWith(".jsonl")).map(f => join(outDir, f));
   const summaries = [];
@@ -243,9 +251,9 @@ function score() {
     for (const r of rows) last.set(`${r.video}@${r.start}`, r);
     const final = [...last.values()];
     const model = final[0]?.model ?? file;
-    const hw = isHawkwatch(model);
+    const hw = isBaseline(model);
     const pl = final[0]?.pipeline;
-    const expected = manifest.items.reduce((n, i) => n + (hw ? hawkwatchWindows(i.duration) : planWindows(i.duration, pl?.frameStep, pl?.framesPerWindow)).length, 0);
+    const expected = manifest.items.reduce((n, i) => n + (hw ? baselineWindows(i.duration) : planWindows(i.duration, pl?.frameStep, pl?.framesPerWindow)).length, 0);
     const okRows = final.filter(r => r.ok);
     const perVideo = new Map<string, WindowResult[]>();
     for (const r of okRows) perVideo.set(r.video, [...(perVideo.get(r.video) ?? []), r.result!]);
@@ -262,7 +270,7 @@ function score() {
     // window-level on timed + normal videos (official temporal labels)
     const pos: number[] = [], neg: number[] = [];
     let hits = 0, events = 0; const onsetErr: number[] = [];
-    for (const i of manifest.items.filter(i => i.set !== "hawkwatch")) {
+    for (const i of manifest.items.filter(i => i.set !== "reference")) {
       const ws = perVideo.get(i.id) ?? [];
       for (const w of ws) {
         const overlap = (i.events ?? []).some(([a, b]) => Math.min(b, w.end) - Math.max(a, w.start) > 0.5);
@@ -279,7 +287,7 @@ function score() {
     const correctRate = hw ? NaN : clip.filter(c => c.correct).length / clip.length;
     const normalFaClips = normalDets.filter(n => n.dets.length).length / normalDets.length;
     const lat = okRows.map(r => r.latencyMs ?? 0);
-    // interleave sets so each fold gets a mix of hawkwatch / timed / normal videos
+    // interleave sets so each fold gets a mix of reference / timed / normal videos
     const cv = crossValidated([...manifest.items].sort((a, b) => a.set.localeCompare(b.set) || a.id.localeCompare(b.id)), perVideo, hw);
     summaries.push({
       model,
@@ -290,7 +298,7 @@ function score() {
       normalFalseAlarmClips: normalFaClips,
       falseAlarmsPerMin: normalDets.reduce((s, n) => s + n.dets.length, 0) / normalMinutes,
       balancedAccuracy: (detectRate + (1 - normalFaClips)) / 2,
-      // Primary: right crime named on anomalous clips, and silence on normal clips (HawkWatch pipeline has no categories).
+      // Primary: right crime named on anomalous clips, and silence on normal clips (single-frame baseline has no categories).
       score: ((hw ? detectRate : correctRate) + (1 - normalFaClips)) / 2,
       ...cv,
       windowAuroc: auroc(pos, neg),
@@ -341,7 +349,7 @@ function boxes() {
   const ref = arg("ref", "google/gemini-2.5-flash")!;
   const refFile = join(outDir, `${slug(ref)}.jsonl`);
   const reference = incidentsOf(refFile);
-  const files = readdir(outDir).filter(f => f.endsWith(".jsonl") && join(outDir, f) !== refFile && !f.includes("hawkwatch-pipeline"));
+  const files = readdir(outDir).filter(f => f.endsWith(".jsonl") && join(outDir, f) !== refFile && !f.includes("baseline-pipeline"));
   const rows = files.map(f => {
     const cand = incidentsOf(join(outDir, f));
     let refBoxes = 0, matched = 0, sameCat = 0; const ious: number[] = [];
@@ -369,7 +377,7 @@ function readdir(dir: string): string[] {
 }
 
 async function extractFrames() {
-  const manifest: { items: Item[] } = JSON.parse(readFileSync(join(dataDir, "manifest.json"), "utf8"));
+  const manifest: { items: Item[] } = readManifest();
   const jobs = manifest.items.flatMap(item => planWindows(item.duration).flatMap(w => w.times.map(t => ({ item, t }))));
   await pool(jobs, 8, async ({ item, t }) => { await frame(item, t); });
   console.error(`${jobs.length} frames ready`);
@@ -380,4 +388,4 @@ if (command === "frames") await extractFrames();
 else if (command === "run") await runModels();
 else if (command === "score") score();
 else if (command === "boxes") boxes();
-else console.error("usage: node scripts/vlm-benchmark.ts frames | run --models a,b | score | boxes");
+else console.error("usage: npx --no-install jiti scripts/vlm-benchmark.ts frames | run --models a,b | score | boxes");

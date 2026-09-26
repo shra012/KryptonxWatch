@@ -1,6 +1,6 @@
 [
  {
-  "model": "google/gemini-2.5-flash (HawkWatch pipeline)",
+  "model": "google/gemini-2.5-flash (single-frame baseline)",
   "windows": "3809/3809",
   "parseFailures": 0,
   "clipDetect": 0.8170731707317073,

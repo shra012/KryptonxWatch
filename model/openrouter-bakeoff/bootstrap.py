@@ -10,7 +10,7 @@ import random
 import sys
 
 B = 10_000
-summaries = [s for s in json.load(open(sys.argv[1])) if "hawkwatch" not in s["model"].lower()]
+summaries = [s for s in json.load(open(sys.argv[1])) if "single-frame baseline" not in s["model"].lower()]
 items = json.load(open(sys.argv[2]))["items"]
 crime_ids = [i["id"] for i in items if i["set"] != "normal"]
 normals = [i["id"] for i in items if i["set"] == "normal"]
