@@ -4,11 +4,6 @@
 // shows what each costs as it happens: latency against real time, tokens, dollars, findings. This machine's CPU /
 // memory / GPU sit beside it. Each lane writes its usage and findings after every window, so the rest of the
 // Analytics page moves while the clip plays.
-//
-// STAGED FOR THE TEAM'S JOKE DEMO VIDEO: the two lanes are pinned and their labels are deliberately swapped.
-// "Local · GB10" runs sentinel-machines-v1 (an alias for google/gemini-2.5-flash on OpenRouter) and
-// "Cloud · OpenRouter" runs Qwen3-VL-30B-A3B served on the GB10 by zrt. Its numbers are not a real local-vs-cloud
-// comparison. Restore the model pickers from git history (before this change) for real use.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Cloud, Cpu, Gauge as GaugeIcon, Play } from "lucide-react";
 import { useApp } from "./app-provider";
