@@ -4,7 +4,8 @@ import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import os from "node:os";
 import { promisify } from "node:util";
-import type { DcgmSnapshot, GpuProcess, GpuSnapshot, HostSnapshot, SystemSnapshot } from "@/lib/telemetry-types";
+import { inferenceSnapshot } from "@/lib/server/inference-stats";
+import type { GpuProcess, GpuSnapshot, HostSnapshot, SystemSnapshot } from "@/lib/telemetry-types";
 
 const run = promisify(execFile);
 const CACHE_MS = 1000;
@@ -33,7 +34,8 @@ async function readGpu(): Promise<{ gpu: GpuSnapshot | null; reason: string }> {
   const row = stdout.split("\n").find(l => l.trim());
   if (!row) return { gpu: null, reason: "nvidia-smi returned no GPU rows." };
   const c = row.split(",");
-  return { gpu: { name: text(c[0]), driver: text(c[1]), utilisation: num(c[2]), memoryUsedMb: num(c[3]), memoryTotalMb: num(c[4]), temperatureC: num(c[5]), powerWatts: num(c[6]), powerLimitWatts: num(c[7]), graphicsClockMhz: num(c[8]), memoryClockMhz: num(c[9]), processes: await gpuProcesses() }, reason: "" };
+  const memoryUsedMb = num(c[3]), memoryTotalMb = num(c[4]);
+  return { gpu: { name: text(c[0]), driver: text(c[1]), utilisation: num(c[2]), memoryUsedMb, memoryTotalMb, memorySource: memoryUsedMb != null && memoryTotalMb != null ? "device" : null, temperatureC: num(c[5]), powerWatts: num(c[6]), powerLimitWatts: num(c[7]), graphicsClockMhz: num(c[8]), memoryClockMhz: num(c[9]), processes: await gpuProcesses() }, reason: "" };
 }
 
 // /proc/stat gives cumulative jiffies, so CPU load needs two samples. We keep the
@@ -76,18 +78,18 @@ async function readHost(): Promise<HostSnapshot> {
   return { hostname, platform: os.platform(), arch: os.arch(), cpuModel: model, cpuCount: os.cpus().length || null, cpuLoad: load, loadAverage: os.loadavg(), ...mem, uptimeSeconds: os.uptime() };
 }
 
-// Tensor-core activity and memory bandwidth are DCGM field metrics. Without
-// dcgm-exporter we report why rather than inventing a number.
-async function readDcgm(): Promise<DcgmSnapshot> {
-  try { await run("dcgmi", ["discovery", "-l"], { timeout: 3000 }); }
-  catch { return { available: false, reason: "DCGM is not installed on this node, so tensor-core activity and memory bandwidth cannot be sampled.", tensorActivity: null, memoryBandwidthPct: null }; }
-  return { available: true, reason: "DCGM is present but field collection is not wired up yet.", tensorActivity: null, memoryBandwidthPct: null };
+// GB10 has no dedicated GPU memory, so nvidia-smi reports memory.used/total as N/A. Fall back to
+// what compute processes hold, against the unified pool the GPU actually allocates from.
+function withUnifiedMemory(gpu: GpuSnapshot | null, host: HostSnapshot): GpuSnapshot | null {
+  if (!gpu || gpu.memorySource === "device" || !host.memoryTotalMb) return gpu;
+  if (gpu.processes.some(p => p.memoryMb == null)) return gpu;
+  return { ...gpu, memoryUsedMb: gpu.processes.reduce((a, p) => a + (p.memoryMb ?? 0), 0), memoryTotalMb: host.memoryTotalMb, memorySource: "processes" };
 }
 
 export async function systemSnapshot(): Promise<SystemSnapshot> {
   if (cached && Date.now() - cached.at < CACHE_MS) return cached.value;
-  const [{ gpu, reason }, host, dcgm] = await Promise.all([readGpu(), readHost(), readDcgm()]);
-  const value: SystemSnapshot = { at: new Date().toISOString(), gpu, gpuUnavailableReason: reason, host, dcgm };
+  const [{ gpu, reason }, host] = await Promise.all([readGpu(), readHost()]);
+  const value: SystemSnapshot = { at: new Date().toISOString(), gpu: withUnifiedMemory(gpu, host), gpuUnavailableReason: reason, host, inference: inferenceSnapshot() };
   cached = { at: Date.now(), value };
   return value;
 }

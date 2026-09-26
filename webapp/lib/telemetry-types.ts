@@ -8,6 +8,9 @@ export interface GpuSnapshot {
   utilisation: number | null;   // percent
   memoryUsedMb: number | null;
   memoryTotalMb: number | null;
+  /** "device": nvidia-smi's own memory counters. "processes": GB10 has no dedicated memory, so this is the
+   *  sum of compute processes' allocations against the unified pool. */
+  memorySource: "device" | "processes" | null;
   temperatureC: number | null;
   powerWatts: number | null;
   powerLimitWatts: number | null;
@@ -27,15 +30,14 @@ export interface HostSnapshot {
   memoryTotalMb: number | null;
   uptimeSeconds: number | null;
 }
-// Readings that need NVIDIA DCGM. It is not installed on the ZGX yet, so these
-// carry a reason rather than a number.
-export interface DcgmSnapshot { available: boolean; reason: string; tensorActivity: number | null; memoryBandwidthPct: number | null }
+// Model calls made by this web app over the last `windowSeconds` (lib/server/inference-stats.ts).
+export interface InferenceSnapshot { tokensPerSecond: number | null; calls: number; windowSeconds: number; model: string | null; local: boolean | null; lastAt: string | null }
 export interface SystemSnapshot {
   at: string;                    // ISO timestamp of the reading
   gpu: GpuSnapshot | null;       // null when nvidia-smi is absent or failed
   gpuUnavailableReason: string;
   host: HostSnapshot;
-  dcgm: DcgmSnapshot;
+  inference: InferenceSnapshot;
 }
 export const unifiedMemory = true; // GB10 shares one memory pool between CPU and GPU
 export function pct(used: number | null, total: number | null) { return used == null || !total ? null : Math.min(100, Math.max(0, (used / total) * 100)); }

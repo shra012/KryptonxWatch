@@ -50,8 +50,10 @@ export function RecordedDate({value}:{value:string}){return <span>{dateLabel(val
    Colour always comes from a daisyUI token via `currentColor`. */
 export function Gauge({value,label,unit="%",max=100,tone="text-primary",size=132}:{value:number|null;label:string;unit?:string;max?:number;tone?:string;size?:number}){
  const r=size/2-11, c=2*Math.PI*r, span=.74, frac=value==null?0:Math.min(1,Math.max(0,value/max));
- return <div className="flex flex-col items-center" role="img" aria-label={`${label}: ${value==null?"unavailable":`${Math.round(value)}${unit}`}`}>
-  <svg width={size} height={size*.72} viewBox={`0 0 ${size} ${size*.72}`} className="overflow-visible">
+ // Tall enough for the arc's rounded ends, which dip below the centre, so the label never sits on them.
+ const height=Math.ceil(size/2+r*Math.cos((1-span)*Math.PI)+6);
+ return <div className="flex flex-col items-center gap-2 min-w-0" role="img" aria-label={`${label}: ${value==null?"unavailable":`${Math.round(value)}${unit}`}`}>
+  <svg viewBox={`0 0 ${size} ${height}`} className="w-full h-auto" style={{maxWidth:size}}>
    <g transform={`translate(${size/2} ${size/2}) rotate(${90+(1-span)*180})`}>
     <circle r={r} fill="none" strokeWidth="9" strokeLinecap="round" className="text-base-300" stroke="currentColor" strokeDasharray={`${c*span} ${c}`}/>
     <circle r={r} fill="none" strokeWidth="9" strokeLinecap="round" className={value==null?"text-base-300":tone} stroke="currentColor" strokeDasharray={`${c*span*frac} ${c}`} style={{transition:"stroke-dasharray .6s ease"}}/>
@@ -59,7 +61,7 @@ export function Gauge({value,label,unit="%",max=100,tone="text-primary",size=132
    <text x={size/2} y={size/2-2} textAnchor="middle" className="fill-base-content font-mono font-semibold" fontSize={size*.2}>{value==null?"—":Math.round(value)}</text>
    <text x={size/2} y={size/2+16} textAnchor="middle" className="fill-base-content/45" fontSize={size*.09}>{value==null?"unavailable":unit}</text>
   </svg>
-  <div className="text-xs font-medium text-base-content/65 -mt-1">{label}</div>
+  <div className="font-mono text-[.66rem] uppercase tracking-[.06em] text-base-content/55 text-center leading-tight">{label}</div>
  </div>;
 }
 export function Sparkline({values,tone="text-primary",height=38,label}:{values:(number|null)[];tone?:string;height?:number;label:string}){
@@ -77,8 +79,8 @@ export function Meter({value,max=100,tone="bg-primary",label,caption}:{value:num
  return <div><div className="flex items-baseline justify-between gap-3 mb-1.5"><span className="text-sm text-base-content/70">{label}</span><span className="font-mono text-sm tabular-nums">{caption??(value==null?"unavailable":`${Math.round(frac)}%`)}</span></div>
   <div className="h-2 rounded-full bg-base-300 overflow-hidden" role="meter" aria-valuenow={value==null?undefined:Math.round(frac)} aria-valuemin={0} aria-valuemax={100} aria-label={label}><div className={`h-full rounded-full ${value==null?"bg-base-300":tone}`} style={{width:`${frac}%`,transition:"width .6s ease"}}/></div></div>;
 }
-export function Readout({label,value,hint,tone=""}:{label:string;value:React.ReactNode;hint?:string;tone?:string}){
- return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{label}</div><div className={`font-mono text-lg font-semibold tabular-nums mt-1.5 truncate ${tone}`}>{value}</div>{hint&&<div className="text-xs text-base-content/45 mt-0.5 truncate">{hint}</div>}</div>;
+export function Readout({label,value,hint,tone="",className=""}:{label:string;value:React.ReactNode;hint?:string;tone?:string;className?:string}){
+ return <div className={`border-r border-b border-base-300 px-4 py-3.5 min-w-0 ${className}`}><div className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{label}</div><div className={`font-mono text-lg font-semibold tabular-nums mt-1.5 truncate ${tone}`}>{value}</div>{hint&&<div className="text-xs text-base-content/45 mt-0.5 truncate">{hint}</div>}</div>;
 }
 export function Unavailable({title,reason}:{title:string;reason:string}){
  return <div className="border-r border-b border-base-300 px-4 py-3.5"><div className="font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">{title}</div><div className="font-mono text-lg text-base-content/25 mt-1.5">not sampled</div><p className="text-xs text-base-content/45 mt-1">{reason}</p></div>;

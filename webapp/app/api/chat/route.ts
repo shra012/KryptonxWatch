@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { modelId, notConfigured, vlmConfig } from "@/lib/server/vlm-config";
 import { assistantMessages, withReferences, type ChatTurn, type VideoContext } from "@/lib/vlm/assistant";
 import { chat } from "@/lib/vlm/client";
+import { recordInference } from "@/lib/server/inference-stats";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
   };
   try {
     const reply = await chat(config, assistantMessages(video, history), { maxTokens: 400, temperature: 0.3, signal: request.signal });
+    recordInference(config, reply);
     return NextResponse.json({ ...withReferences(reply.text), model: modelId(config) });
   } catch (e) {
     return NextResponse.json({ error: `Assistant request failed: ${e instanceof Error ? e.message : String(e)}` }, { status: 502 });
