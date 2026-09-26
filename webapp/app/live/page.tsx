@@ -16,6 +16,7 @@ import { useCallCenter } from "@/components/call-center";
 import { fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
 import { responseFor, responsePriority } from "@/lib/response";
 import { gpuSampler, isLocalModel, logUsage, usageTally } from "@/lib/usage";
+import type { FeedSource } from "@/lib/watch-types";
 
 type Source = { kind: "camera" } | { kind: "video"; id: string };
 interface FeedItem { id: string; at: number; result: WindowResult; alert: boolean }
@@ -69,9 +70,12 @@ export default function LiveMonitor() {
 
   const sendWindow = useCallback((frames: Frame[]) => {
     const signal = abort.current?.signal;
+    // Names this feed in the watch agent's feed log. A replay is watched as a live feed of that recording.
+    const liveSource: FeedSource = source.kind === "camera" ? { id: "live-webcam", kind: "live", title: "Webcam feed" }
+      : { id: `replay-${source.id}`, kind: "live", title: `Replay: ${videos.find(v => v.id === source.id)?.title ?? "recording"}` };
     const start = Math.max(0, frames[0].seconds - WINDOW.frameStep / 2), end = frames[frames.length - 1].seconds + WINDOW.frameStep / 2;
     setPending(p => p + 1);
-    analyzeWindow(frames, start, end, signal, source.kind === "camera" ? "Live webcam feed." : undefined)
+    analyzeWindow(frames, start, end, signal, source.kind === "camera" ? "Live webcam feed." : undefined, undefined, liveSource)
       .then(result => {
         results.current.push(result);
         tally.current?.add(result.usage, result.latencyMs);

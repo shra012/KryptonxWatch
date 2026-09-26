@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { sampleVideos } from "@/lib/demo";
 import { videoRepository, storageError } from "@/lib/storage";
 import type { ReviewStatus, VideoRecord } from "@/lib/types";
+import { reportReview } from "@/lib/watch-client";
 type Context = { videos: VideoRecord[]; loading:boolean; error:string; theme:"light"|"dark"; alerts:boolean; smsAlerts:boolean; toast:string; setTheme:(v:"light"|"dark")=>void; setAlerts:(v:boolean)=>void; setSmsAlerts:(v:boolean)=>void; notify:(v:string)=>void; saveVideo:(v:VideoRecord)=>Promise<void>; deleteVideo:(id:string)=>Promise<void>; setReviewStatus:(videoId:string,eventId:string,status:ReviewStatus)=>Promise<void>; clearError:()=>void };
 const AppContext=createContext<Context|null>(null);
 const hiddenKey="kryptonxwatch-hidden-samples";
@@ -17,7 +18,7 @@ export function AppProvider({children}:{children:React.ReactNode}){
  const notify=useCallback((value:string)=>setToast(value),[]);
  const saveVideo=useCallback(async(v:VideoRecord)=>{try{await videoRepository.save(v);setVideos(current=>{const without=current.filter(x=>x.id!==v.id);return [...without,v].sort((a,b)=>b.recordedAt.localeCompare(a.recordedAt));});setError("");}catch(e){const msg=storageError(e);setError(msg);throw new Error(msg);}},[]);
  const deleteVideo=useCallback(async(id:string)=>{const target=videos.find(v=>v.id===id);if(!target)return;try{await videoRepository.remove(id);if(target.source==="sample"){const hidden=[...new Set([...hiddenSamples(),id])];localStorage.setItem(hiddenKey,JSON.stringify(hidden));}setVideos(current=>current.filter(v=>v.id!==id));setError("");}catch(e){const msg=storageError(e);setError(msg);throw new Error(msg);}},[videos]);
- const setReviewStatus=useCallback(async(videoId:string,eventId:string,status:ReviewStatus)=>{const v=videos.find(x=>x.id===videoId);if(!v)return;await saveVideo({...v,detections:v.detections.map(d=>d.id===eventId?{...d,status}:d)});},[videos,saveVideo]);
+ const setReviewStatus=useCallback(async(videoId:string,eventId:string,status:ReviewStatus)=>{const v=videos.find(x=>x.id===videoId);if(!v)return;await saveVideo({...v,detections:v.detections.map(d=>d.id===eventId?{...d,status}:d)});const d=v.detections.find(x=>x.id===eventId);if(d)reportReview(v,d,status);},[videos,saveVideo]);
  const value=useMemo(()=>({videos,loading,error,theme,alerts,smsAlerts,toast,setTheme:setThemeState,setAlerts:setAlertsState,setSmsAlerts:setSmsAlertsState,notify,saveVideo,deleteVideo,setReviewStatus,clearError:()=>setError("")}),[videos,loading,error,theme,alerts,smsAlerts,toast,notify,saveVideo,deleteVideo,setReviewStatus]);
  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

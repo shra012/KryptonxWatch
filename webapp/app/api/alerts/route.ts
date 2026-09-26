@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { alertStatus, sendAlert, type AlertRequest } from "@/lib/server/alerts";
+import { recordWatchEvent, watchId } from "@/lib/server/watch-log";
 import { categories, severityOrder, type AlertRecipient } from "@/lib/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -51,6 +52,8 @@ export async function POST(request: Request) {
   if ("error" in parsed) return NextResponse.json({ outcome: "failed", message: parsed.error }, { status: 400 });
   const origin = request.headers.get("origin") || (request.headers.get("host") ? `http://${request.headers.get("host")}` : "");
   const result = await sendAlert(parsed.request, origin);
+  const r = parsed.request;
+  if (!r.test) await recordWatchEvent({ type: "alert", id: watchId(), at: new Date().toISOString(), detectionId: r.detectionId, category: r.category, title: r.videoTitle, simulated: r.simulated, outcome: result.outcome });
   const status = result.outcome === "sent" ? 200 : result.outcome === "failed" ? 502 : result.outcome === "rate_limited" ? 429 : result.outcome === "not_configured" ? 503 : 200;
   return NextResponse.json(result, { status, headers: { "cache-control": "no-store" } });
 }

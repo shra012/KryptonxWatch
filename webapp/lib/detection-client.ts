@@ -9,6 +9,8 @@ import { gpuSampler, isLocalModel, logUsage, usageTally, type WindowUsage } from
 import { mergeDetections, planWindows, type Frame, type WindowResult } from "./vlm/analysis";
 import type { ChatTurn, SummaryRow } from "./vlm/assistant";
 import { isScorerModel, planScorerWindows } from "./vlm/scorer";
+import { feedSource } from "@/lib/watch-client";
+import type { FeedSource } from "@/lib/watch-types";
 
 export interface ModelStatus {
   configured: boolean; model?: string; chatModel?: string; provider?: string; options?: string[];
@@ -91,8 +93,9 @@ function seek(video: HTMLVideoElement, seconds: number) {
   });
 }
 
-export function analyzeWindow(frames: Frame[], start: number, end: number, signal?: AbortSignal, context?: string, model?: string) {
-  return post<WindowResult & { model: string; latencyMs?: number; usage?: WindowUsage }>("/api/analyze", { frames, start, end, context, model }, signal);
+/** `model` overrides the browser's pick; `source` names the feed, so the server can add the window to the watch agent's feed log. */
+export function analyzeWindow(frames: Frame[], start: number, end: number, signal?: AbortSignal, context?: string, model?: string, source?: FeedSource) {
+  return post<WindowResult & { model: string; latencyMs?: number; usage?: WindowUsage }>("/api/analyze", { frames, start, end, context, model, source }, signal);
 }
 
 export interface AnalysisProgress { done: number; total: number; failed: number; phase?: "windows" | "tracking" }
@@ -167,7 +170,7 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
     if (signal.aborted) break;
     const frames: Frame[] = [];
     for (const t of w.times) { await seek(el, t); frames.push({ seconds: t, image: grabFrame(el, frameWidth) }); }
-    const job = analyzeWindow(frames, w.start, w.end, signal)
+    const job = analyzeWindow(frames, w.start, w.end, signal, undefined, undefined, feedSource(video))
       .then(r => { results.push(r); model = r.model; tally.add(r.usage, r.latencyMs); })
       .catch(e => { if (!signal.aborted) { failed++; lastError = e instanceof Error ? e.message : String(e); } })
       .finally(() => { done++; inFlight.delete(job); onProgress({ done, total: windows.length, failed }); });

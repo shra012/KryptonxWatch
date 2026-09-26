@@ -5,6 +5,9 @@ import { groundBoxes } from "@/lib/server/yolo";
 import { INCIDENT_THRESHOLD, parseWindow, windowMessages, type Frame } from "@/lib/vlm/analysis";
 import { chat, VlmError } from "@/lib/vlm/client";
 import { parseYesNo, SCORER_WINDOW, scorerBody, scorerWindowResult } from "@/lib/vlm/scorer";
+import { recordInference } from "@/lib/server/inference-stats";
+import { recordWatchEvent, watchId } from "@/lib/server/watch-log";
+import { parseFeedSource } from "@/lib/watch-types";
 
 export const dynamic = "force-dynamic";
 
@@ -37,9 +40,10 @@ async function scoreWindow(config: ServerVlmConfig, frames: Frame[], start: numb
   }
 }
 
-// Analyze one window of consecutive frames. Body: { frames: [{seconds, image}], start, end, context?, model? }
+// Analyze one window of consecutive frames. Body: { frames: [{seconds, image}], start, end, context?, model?, source? }
+// `source` names the feed; with it, the window goes into the watch agent's feed log.
 export async function POST(request: Request) {
-  let body: { frames?: Frame[]; start?: number; end?: number; context?: string; model?: string };
+  let body: { frames?: Frame[]; start?: number; end?: number; context?: string; model?: string; source?: unknown };
   try { body = await request.json(); } catch { return NextResponse.json({ error: "Request body must be JSON." }, { status: 400 }); }
   const config = vlmConfig("vision", body.model);
   if (!config) return NextResponse.json(notConfigured, { status: 503 });
@@ -61,12 +65,20 @@ export async function POST(request: Request) {
     // Small models occasionally emit malformed JSON; one retry fixes most cases.
     for (let attempt = 0; attempt < 2; attempt++) {
       const reply = await chat(config, windowMessages(frames, context), { maxTokens: 600, temperature: attempt ? 0.2 : 0, signal: request.signal });
+      recordInference(config, reply);
       raw = reply.text;
       let result;
       try { result = parseWindow(reply.text, frames, start, end); } catch { continue; /* retry */ }
       // Snap boxes to YOLO persons and follow them across the frames (VLM boxes if YOLO is not configured).
+      const grounded = await groundBoxes(result, frames, request.signal);
+      const source = parseFeedSource(body.source);
+      if (source) {
+        const id = watchId();
+        await recordWatchEvent({ type: "window", id, at: new Date().toISOString(), source, start: grounded.start, end: grounded.end, model: modelId(config), summary: grounded.summary,
+          incidents: grounded.incidents.map((i, n) => ({ id: `${id}:${n}`, category: i.category, severity: i.severity, confidence: i.confidence, seconds: i.seconds, description: i.description })) });
+      }
       // Usage for the Analytics page: tokens and cost as the endpoint reports them; `local` = served on the GB10 via zrt.
-      return NextResponse.json({ ...(await groundBoxes(result, frames, request.signal)), model: modelId(config), latencyMs: reply.latencyMs,
+      return NextResponse.json({ ...grounded, model: modelId(config), latencyMs: reply.latencyMs,
         usage: { promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, cost: reply.cost, local: !!config.local } });
     }
     return NextResponse.json({ error: "The model reply was not valid JSON twice in a row. Try again or choose another model.", raw: raw.slice(0, 500) }, { status: 502 });

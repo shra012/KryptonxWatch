@@ -6,6 +6,7 @@ import { useApp } from "@/components/app-provider";
 import { MonitorTile } from "@/components/monitor-tile";
 import { ResponseDialog } from "@/components/response-dialog";
 import { useTelemetry } from "@/components/use-telemetry";
+import { WatchBriefing } from "@/components/watch-briefing";
 import { EmptyState, EventLabel, EventTime, Notice, PageTitle, Panel, SeverityBadge, Sparkline } from "@/components/ui";
 import { fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
 import { responseFor, responsePriority } from "@/lib/response";
@@ -123,6 +124,8 @@ export default function Dashboard(){
   alertOk={alertState?.configured??false}/>
 
  {note&&<div className="mb-6"><Notice tone={note.tone} role={note.tone==="error"?"alert":undefined}>{note.text}</Notice></div>}
+
+ <div className="mb-10"><WatchBriefing/></div>
 
  <Panel title="Monitor wall" action={<Link href="/videos" className="text-sm link link-primary link-hover">Library</Link>}>
   {wall.length?<>

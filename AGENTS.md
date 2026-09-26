@@ -50,6 +50,12 @@ A HawkWatch-style ([Treehacks2025](https://github.com/Grace-Shao/Treehacks2025))
   - Code: `lib/server/vlm-config.ts`, `lib/vlm/scorer.ts`, `lib/server/frames-to-video.ts`, `app/api/analyze|model|chat|summary`.
 - Opened by IP over plain HTTP (e.g. `http://10.36.35.170:3000`), the browser is not a secure context: no `crypto.randomUUID` (use `lib/id.ts`) and no webcam (use `localhost` via a port forward). `next.config.ts` `allowedDevOrigins` lists the team's Tailscale IPs.
 
+## Hermes watch agent (running)
+- Plan: [webapp/.plans/hermes-watch-agent.md](webapp/.plans/hermes-watch-agent.md). [Hermes Agent](https://hermes-agent.nousresearch.com) in Docker container `kryptonx-hermes` (state in `~/.hermes-kryptonx`, 2 GB RAM and 1 CPU cap, no GPU, no published ports). Runs a 5-minute update and an hourly digest; the briefing shows on `/overview`.
+- Model: `qwen/qwen3.8-flash` on OpenRouter (key copied from `VLM_API_KEY`). Qwen3-VL-30B wrote tool calls as plain text under Hermes, so it is not used for the agent.
+- Start or refresh: `ops/hermes/setup.sh` (safe to re-run). Stop: `ops/hermes/stop.sh`. Run now: `sg docker -c 'docker exec kryptonx-hermes hermes cron run kryptonx-watch-update'`.
+- Web app side: `WATCH_AGENT_TOKEN` in `webapp/.env.local` turns on the feed log (`data/watch/*.jsonl`) and the MCP endpoint `/api/mcp` the agent reads. Without it nothing is logged.
+
 ## Active work: [model/.plans/local-vlm-quality.md](model/.plans/local-vlm-quality.md)
 Goal: a local model as good as `google/gemini-2.5-flash` on detection, scene log and boxes, with **Gemini only as a benchmark, never as a teacher** (fine-tune on human-written UCA plus theft times; Google's terms restrict training on Gemini outputs).
 
