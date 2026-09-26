@@ -280,7 +280,7 @@ export function LiveRun() {
             <div className="px-4 py-3 self-end font-mono text-[.62rem] uppercase tracking-[.06em] text-base-content/45">Head to head</div>
             {SIDES.map(side => <div key={side} className="px-3 py-3 border-l border-base-300 min-w-0">
               <div className="flex items-center gap-2 text-sm font-semibold">{side === "local" ? <Cpu size={14} /> : <Cloud size={14} />}{side === "local" ? "Local · GB10" : "Cloud · OpenRouter"}</div>
-              {model[side] ? <p className="font-mono text-xs text-base-content/60 mt-2 break-all">{name(model[side])}</p> : <p className="text-xs text-base-content/50 mt-2">{PINNED[side]} is not configured.</p>}
+              {model[side] ? <p className="font-mono text-xs text-base-content/60 mt-2 break-all">{name(model[side])}</p> : <p className="text-xs text-base-content/50 mt-2">{side === "local" ? "Local Qwen3-VL-30B-A3B" : "Hosted comparison model"} is not configured.</p>}
             </div>)}
           </div>
           {rows.map(row => <div key={row.label} className="grid grid-cols-[minmax(0,.9fr)_minmax(0,1fr)_minmax(0,1fr)] border-b border-base-300 last:border-b-0">
