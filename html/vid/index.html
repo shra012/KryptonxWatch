@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guardly — presentation</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #0b1220; color: #e2e8f0; font-family: Inter, "Helvetica Neue", Arial, sans-serif; }
+    body { display: flex; flex-direction: column; }
+    main { flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px 12px 0; }
+    .stage { position: relative; width: min(100%, calc((100vh - 72px) * 16 / 9)); aspect-ratio: 16 / 9; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 12px 40px rgba(0, 0, 0, .35); }
+    .stage img { display: block; width: 100%; height: 100%; object-fit: contain; background: #fff; user-select: none; -webkit-user-drag: none; }
+    .stage img[hidden] { display: none !important; }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 18px 14px; }
+    .controls { display: flex; align-items: center; gap: 8px; }
+    nav button { background: #1e293b; color: #e2e8f0; border: 0; border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+    nav button:hover { background: #334155; }
+    button:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+    .count { font-variant-numeric: tabular-nums; font-size: 14px; color: #94a3b8; min-width: 4.5rem; text-align: center; }
+    .hint { font-size: 13px; color: #64748b; }
+    .dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .dots button { width: 10px; height: 10px; padding: 0; border-radius: 99px; background: #334155; }
+    .dots button[aria-current="true"] { background: #38bdf8; }
+    @media (max-width: 700px) { .hint { display: none; } }
+
+    #arch { display: none; background: #f8fafc; color: #0f172a; padding: 18px 22px 14px; text-align: left; }
+    #arch.open { display: flex; flex-direction: column; gap: 10px; position: absolute; inset: 0; }
+    #arch h1 { margin: 0; font-size: 28px; letter-spacing: -0.03em; }
+    #arch .sub { margin: 4px 0 0; color: #475569; font-size: 14px; }
+    #arch .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+    #arch .play { background: #0f172a; color: #fff; border: 0; border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+    #arch .blocks { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.05fr 1.05fr 1.05fr .85fr 1.45fr .9fr; grid-template-rows: 1fr 1fr 1fr; gap: 8px; }
+    #arch .block { background: #fff; color: #0f172a; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 8px 10px; font: inherit; font-size: 13px; font-weight: 750; cursor: pointer; text-align: left; overflow: auto; }
+    #arch .block .points { display: none; margin-top: 6px; font-weight: 500; font-size: 12.5px; line-height: 1.35; color: #334155; }
+    #arch .block[aria-pressed="true"] .points { display: block; }
+    #arch .block.side .points, #arch .block.zero .points { color: #f8fafc; }
+    #arch .block.brain { background: #dbeafe; border-color: #2563eb; }
+    #arch .block.alert { background: #fee2e2; border-color: #dc2626; }
+    #arch .block.decide { background: #fef3c7; border-color: #d97706; }
+    #arch .block.side { background: #0f172a; color: #fff; border-color: #0f172a; }
+    #arch .block.zero { background: #16a34a; color: #fff; border-color: #16a34a; }
+    #arch .block.planned { border-style: dashed; }
+    #arch .block[aria-pressed="true"] { outline: 3px solid #0284c7; outline-offset: 1px; }
+    #arch .detail { flex: 1; min-height: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 22px; overflow: auto; }
+    #arch .detail h2 { margin: 0 0 8px; font-size: 26px; }
+    #arch .detail ul { margin: 0; padding-left: 18px; font-size: 18px; line-height: 1.45; }
+    #arch .detail li + li { margin-top: 6px; }
+    #arch .prompt { color: #64748b; font-size: 18px; margin: 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="stage">
+      <img id="slide" alt="Guardly presentation slide 1 of 15" src="slides/guardly-slides.001.png">
+      <section id="arch" aria-label="Interactive local edge architecture">
+        <div class="top">
+          <div>
+            <h1>Local Edge AI Architecture</h1>
+            <p class="sub">Click a block to open it. Play walks the path from camera to human review.</p>
+          </div>
+          <button type="button" class="play" id="arch-play">Play the path</button>
+        </div>
+        <div class="blocks" id="arch-blocks"></div>
+      </section>
+    </div>
+  </main>
+  <nav aria-label="Slide controls">
+    <div class="controls">
+      <button type="button" id="prev">Previous</button>
+      <span class="count" id="count">1 / 15</span>
+      <button type="button" id="next">Next</button>
+    </div>
+    <p class="hint">Arrow keys, space, or click the slide</p>
+    <div class="dots" id="dots"></div>
+  </nav>
+  <script>
+    const slides = [
+      "slides/guardly-slides.001.png",
+      "slides/guardly-slides.002.png",
+      "slides/guardly-slides.003.png",
+      "slides/guardly-slides.004.png",
+      "slides/guardly-slides.005.png",
+      "slides/guardly-slides.006.png",
+      "slides/guardly-slides.007.png",
+      "slides/guardly-slides.008.png",
+      "slides/guardly-slides.009.png",
+      "slides/guardly-slides.010.png",
+      "slides/guardly-slides.011.png",
+      "slides/guardly-slides.012.png",
+      "slides/guardly-slides.013.png",
+      "slides/guardly-slides.014.png",
+      "slides/guardly-slides.015.png"
+    ];
+    const titles = [
+      "Title: Guardly, your friendly AI guardian",
+      "Problem: cameras see everything, they understand nothing",
+      "Why cloud-first video analytics falls short",
+      "Solution: put the brain on the device",
+      "How Guardly works",
+      "Product demo",
+      "Tech stack and models",
+      "Local edge AI architecture",
+      "Why edge AI matters",
+      "Validation and technical results",
+      "Impact and feasibility",
+      "Responsible AI and trust",
+      "Beyond retail: one architecture, many guardians",
+      "Team, roadmap, and closing",
+      "Thank you"
+    ];
+    const blocks = [
+      { id: "camera", name: "1 Camera input", kind: "", at: "1 / 1", points: ["CCTV, webcam, or a recorded clip.", "50–150 cameras per store."] },
+      { id: "frames", name: "2 Frame sampling", kind: "", at: "1 / 2", points: ["1 frame every 2 s.", "4 frames = one 8 s window.", "≤512 px JPEG, sampled on site."] },
+      { id: "yolo", name: "3 YOLO11m", kind: "", at: "1 / 3", points: ["Person boxes on the key frame (built).", "Tracking + pose / motion (next step)."] },
+      { id: "suspicious", name: "Suspicious event?", kind: "decide planned", at: "1 / 4", points: ["Yes: send the window to the model.", "No: keep sampling."] },
+      { id: "vlm", name: "4 Local vision-language model", kind: "brain", at: "1 / 5", points: ["Qwen3-VL-30B-A3B. Backup: Nemotron-3-Nano-Omni.", "Category, severity, confidence, time, and a box.", "Specialist: Qwen3.8-27B + shoplifting LoRA.", "P(shoplifting) for each 8 s clip."] },
+      { id: "why", name: "Why local", kind: "side", at: "1 / 6", points: ["AI stack ≤30 GB of 128 GB.", "Room for many cameras.", "No per-camera cloud fee.", "Keeps working offline."] },
+      { id: "review", name: "8 Human review", kind: "", at: "2 / 1", points: ["Confirm, dismiss, or reset.", "Stays “suspected” until a person reviews it.", "No one is accused automatically."] },
+      { id: "dashboard", name: "7 Dashboard", kind: "", at: "2 / 2", points: ["Timeline and bounding boxes.", "Detection log, analytics, CSV.", "Assistant and summary run on the local model."] },
+      { id: "alert", name: "6 Local alert", kind: "alert", at: "2 / 3", points: ["“Suspected shoplifting at 00:14 — review now.”", "In-app alert and a red ring on the live feed."] },
+      { id: "confidence", name: "5 Confidence check", kind: "decide", at: "2 / 4", points: ["Cut-off is 0.5.", "Yes: local alert.", "No: second pass."] },
+      { id: "zero", name: "0 bytes leave", kind: "zero", at: "2 / 6", points: ["In local mode, no video leaves the store.", "No faces. No identity database."] },
+      { id: "feedback", name: "Feedback loop", kind: "planned", at: "3 / 1", points: ["Review verdicts become labelled clips.", "Those clips train the next LoRA round."] },
+      { id: "store", name: "Local event store", kind: "", at: "3 / 2", points: ["Detections, scene log, and review status.", "The video file stays on this device."] },
+      { id: "second", name: "Low confidence, second pass", kind: "planned", at: "3 / 4 / span 2", points: ["Specialist LoRA scores the same clip again.", "Confirmed: alert. Still low: log it, no alert."] },
+      { id: "cloud", name: "Cloud escalation", kind: "planned", at: "3 / 6", points: ["Off by default. Outside the store.", "Only a rare, still-uncertain case.", "Sampled frames, never raw video."] }
+    ];
+    const img = document.getElementById("slide");
+    const arch = document.getElementById("arch");
+    const archBlocks = document.getElementById("arch-blocks");
+    let pinned = null;
+    let playing = false;
+    let playTimer = null;
+
+    blocks.forEach((block, n) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "block " + block.kind;
+      const place = block.at.split("/").map(s => s.trim());
+      b.style.gridRow = place[0];
+      b.style.gridColumn = place.slice(1).join(" / ");
+      b.innerHTML = block.name + "<span class='points'>" + block.points.join("<br>") + "</span>";
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => { stopPlay(); openBlock(n); });
+      archBlocks.appendChild(b);
+    });
+
+    function openBlock(n) {
+      pinned = n;
+      [...archBlocks.children].forEach((el, k) => el.setAttribute("aria-pressed", k === n ? "true" : "false"));
+    }
+    function stopPlay() {
+      playing = false;
+      clearInterval(playTimer);
+      document.getElementById("arch-play").textContent = "Play the path";
+    }
+    document.getElementById("arch-play").addEventListener("click", () => {
+      if (playing) { stopPlay(); return; }
+      playing = true;
+      document.getElementById("arch-play").textContent = "Pause";
+      let step = pinned == null ? 0 : (pinned + 1) % blocks.length;
+      openBlock(step);
+      playTimer = setInterval(() => { step = (step + 1) % blocks.length; openBlock(step); }, 2200);
+    });
+    const count = document.getElementById("count");
+    const dots = document.getElementById("dots");
+    let i = Math.min(slides.length - 1, Math.max(0, (Number(location.hash.slice(1)) || 1) - 1));
+
+    slides.forEach((_, n) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "Go to slide " + (n + 1) + ", " + titles[n]);
+      b.addEventListener("click", () => show(n));
+      dots.appendChild(b);
+    });
+
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      const interactive = i === 7;
+      img.hidden = interactive;
+      arch.classList.toggle("open", interactive);
+      if (!interactive) stopPlay();
+      img.src = slides[i];
+      img.alt = "Guardly presentation slide " + (i + 1) + " of " + slides.length + ". " + titles[i];
+      count.textContent = (i + 1) + " / " + slides.length;
+      document.querySelector(".hint").textContent = interactive ? "Click a block to open it. Arrow keys still change slides." : "Arrow keys, space, or click the slide";
+      [...dots.children].forEach((d, k) => d.setAttribute("aria-current", k === i ? "true" : "false"));
+      history.replaceState(null, "", "#" + (i + 1));
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(i - 1));
+    document.getElementById("next").addEventListener("click", () => show(i + 1));
+    img.addEventListener("click", (e) => { if (i === 7) return; show(e.clientX < img.getBoundingClientRect().left + img.clientWidth / 2 ? i - 1 : i + 1); });
+    addEventListener("keydown", (e) => {
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      else if (["ArrowLeft", "ArrowUp", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      else if (e.key === "Home") show(0);
+      else if (e.key === "End") show(slides.length - 1);
+    });
+    show(i);
+  </script>
+</body>
+</html>
