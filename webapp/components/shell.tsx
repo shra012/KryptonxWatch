@@ -1,18 +1,27 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BarChart3, Cctv, Clapperboard, CloudUpload, Cpu, LayoutDashboard, ListFilter, Moon, Settings2, ShieldCheck, Sun, X } from "lucide-react";
+import { Activity, BarChart3, Cctv, Clapperboard, CloudUpload, Cpu, LayoutDashboard, ListFilter, Moon, Presentation, Settings2, ShieldCheck, Sun, X, type LucideIcon } from "lucide-react";
 import { useApp } from "./app-provider";
 import { useTelemetry } from "./use-telemetry";
 import { useModelStatus } from "@/lib/detection-client";
 
-const groups=[
+/** `external` is a static page in public/, reached by a real navigation rather than the router. */
+type NavItem={href:string;label:string;icon:LucideIcon;external?:boolean};
+const groups:{group:string;items:NavItem[]}[]=[
  {group:"Monitor",items:[{href:"/overview",label:"Overview",icon:LayoutDashboard},{href:"/live",label:"Live monitor",icon:Cctv},{href:"/detections",label:"Detection log",icon:ListFilter},{href:"/analytics",label:"Analytics",icon:BarChart3}]},
  {group:"Footage",items:[{href:"/upload",label:"Upload video",icon:CloudUpload},{href:"/videos",label:"Video library",icon:Clapperboard}]},
  {group:"Edge",items:[{href:"/system",label:"Edge node",icon:Cpu},{href:"/settings",label:"Preferences",icon:Settings2}]},
+ {group:"Project",items:[{href:"/demo.html",label:"Demo",icon:Presentation,external:true}]},
 ];
 const nav=groups.flatMap(g=>g.items);
 function active(path:string,href:string){return path===href||(href!=="/"&&path.startsWith(href+"/"));}
+
+/** A nav entry. `external` ones are static pages in public/, so they need a real navigation, not a client-side route. */
+function NavLink({href,external,current,className,children}:{href:string;external?:boolean;current:boolean;className:string;children:React.ReactNode}){
+ const aria=current?"page" as const:undefined;
+ return external?<a href={href} aria-current={aria} className={className}>{children}</a>:<Link href={href} aria-current={aria} className={className}>{children}</Link>;
+}
 
 /** Whether a model is answering, and which one. */
 function ModelChip(){
@@ -45,7 +54,7 @@ return <div className="min-h-screen lg:flex">
   <Link href="/" title="Sentinel Machines home" className="flex items-center gap-3 px-2 mb-8"><span className="grid place-items-center size-9 rounded-xl bg-linear-to-b from-primary to-primary/80 text-primary-content shadow-sm"><ShieldCheck size={18}/></span><span><span className="block text-[.95rem] font-semibold tracking-tight leading-5">Sentinel Machines</span><span className="block text-xs text-base-content/45">Edge vision</span></span></Link>
   <nav className="flex flex-col gap-6" aria-label="Main navigation">{groups.map(({group,items})=><div key={group}>
    <div className="text-[.7rem] font-medium text-base-content/40 px-3 mb-1.5">{group}</div>
-   <div className="flex flex-col gap-0.5">{items.map(({href,label,icon:Icon})=><Link key={href} href={href} aria-current={active(path,href)?"page":undefined} className={`group flex gap-2.5 items-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${active(path,href)?"bg-base-100 text-base-content shadow-[0_1px_2px_rgb(0_0_0/.06),0_0_0_1px_var(--color-base-300)]":"text-base-content/60 hover:text-base-content hover:bg-base-300/40"}`}><Icon size={16} className={active(path,href)?"":"opacity-80"}/>{label}</Link>)}</div>
+   <div className="flex flex-col gap-0.5">{items.map(({href,label,icon:Icon,external})=><NavLink key={href} href={href} external={external} current={active(path,href)} className={`group flex gap-2.5 items-center rounded-lg px-3 py-2 text-sm font-medium transition-all ${active(path,href)?"bg-base-100 text-base-content shadow-[0_1px_2px_rgb(0_0_0/.06),0_0_0_1px_var(--color-base-300)]":"text-base-content/60 hover:text-base-content hover:bg-base-300/40"}`}><Icon size={16} className={active(path,href)?"":"opacity-80"}/>{label}</NavLink>)}</div>
   </div>)}</nav>
   <div className="mt-auto rounded-xl border border-base-300 bg-base-100 p-3.5"><div className="flex items-center gap-2 text-xs font-medium"><Activity size={13} className="text-primary"/>Local demo workspace</div><p className="text-xs text-base-content/50 mt-1.5 leading-relaxed">Sample annotations are simulated. Uploads stay in this browser and get no automated analysis.</p></div>
  </aside>
@@ -56,7 +65,7 @@ return <div className="min-h-screen lg:flex">
    <div className="flex items-center gap-2"><EdgeChip/><button className="btn btn-ghost btn-circle btn-sm" aria-label={theme==="light"?"Switch to dark mode":"Switch to light mode"} onClick={()=>setTheme(theme==="light"?"dark":"light")}>{theme==="light"?<Moon size={17}/>:<Sun size={17}/>}</button><span className="avatar avatar-placeholder"><span className="bg-linear-to-br from-base-300 to-base-200 border border-base-300 rounded-full w-8 text-[.65rem] font-semibold">KW</span></span></div>
 
   </header>
-  <nav className="lg:hidden bg-base-100/85 backdrop-blur border-b border-base-300 px-3 py-2 flex gap-1 overflow-x-auto scroll-quiet" aria-label="Mobile navigation">{nav.map(({href,label,icon:Icon})=><Link key={href} href={href} aria-current={active(path,href)?"page":undefined} className={`inline-flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${active(path,href)?"bg-primary text-primary-content":"text-base-content/60 hover:bg-base-200"}`}><Icon size={14}/>{label}</Link>)}</nav>
+  <nav className="lg:hidden bg-base-100/85 backdrop-blur border-b border-base-300 px-3 py-2 flex gap-1 overflow-x-auto scroll-quiet" aria-label="Mobile navigation">{nav.map(({href,label,icon:Icon,external})=><NavLink key={href} href={href} external={external} current={active(path,href)} className={`inline-flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${active(path,href)?"bg-primary text-primary-content":"text-base-content/60 hover:bg-base-200"}`}><Icon size={14}/>{label}</NavLink>)}</nav>
   {error&&<div className="mx-4 lg:mx-8 mt-5 flex items-start gap-3 border-l-2 border-error pl-3.5 py-1.5" role="alert"><span className="text-sm text-base-content/80 flex-1">{error}</span><button className="btn btn-ghost btn-xs btn-circle" onClick={clearError} aria-label="Dismiss error"><X size={14}/></button></div>}
   <main className="fade-in p-4 lg:p-8 max-w-[1500px] mx-auto" key={path}>{children}</main>
  </div>

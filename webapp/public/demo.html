@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sentinel Machines — Demo</title>
+<meta name="description" content="Edge AI SJSUHack 2026: the problem, the solution, the architecture and the team behind Sentinel Machines.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Tokens copied verbatim from webapp/app/globals.css so this page and the
+   dashboard are the same colour system, not an approximation of it. */
+:root, :root[data-theme="light"]{
+  --base-100:#ffffff; --base-200:#fafafa; --base-300:#e4e4e7; --ink:#09090b;
+  --primary:#18181b; --primary-content:#ffffff; --secondary:#52504c;
+  --warning:#8a5a00; --error:#9b2117;
+  --sev-critical:#0a0a0a; --sev-high:#4a4a4a; --sev-medium:#7d7d7d; --sev-low:#b0b0b0;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --base-100:#09090b; --base-200:#0f0f11; --base-300:#27272a; --ink:#fafafa;
+  --primary:#fafafa; --primary-content:#09090b; --secondary:#9d9a94;
+  --warning:#c99a3c; --error:#d2564a;
+  --sev-critical:#ffffff; --sev-high:#c9c9c9; --sev-medium:#8f8f8f; --sev-low:#5c5c5c;
+  color-scheme:dark;
+}
+:root{
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --muted:color-mix(in oklch, var(--ink) 55%, transparent);
+  --faint:color-mix(in oklch, var(--ink) 40%, transparent);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--base-100); color:var(--ink);
+  font:15px/1.65 var(--sans); font-feature-settings:"ss01","cv11";
+  -webkit-font-smoothing:antialiased; padding:0 16px 96px;
+}
+.wrap{max-width:1140px;margin:0 auto}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0;color:var(--muted);max-width:68ch}
+a{color:inherit}
+.lbl{font:500 .68rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+/* ---- top bar -------------------------------------------------------- */
+.bar{
+  position:sticky; top:0; z-index:40; display:flex; align-items:center; gap:14px;
+  height:60px; margin:0 -16px 0; padding:0 16px;
+  background:color-mix(in oklch, var(--base-100) 85%, transparent);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--base-300);
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;letter-spacing:-.01em}
+.mark{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--primary);color:var(--primary-content)}
+.mark svg{width:15px;height:15px}
+.bar nav{margin-left:auto;display:flex;gap:2px;align-items:center}
+.bar nav a{
+  text-decoration:none;font-size:.82rem;font-weight:500;color:var(--muted);
+  padding:7px 11px;border-radius:8px;transition:background-color .15s,color .15s;
+}
+.bar nav a:hover{color:var(--ink);background:var(--base-200)}
+.tbtn{
+  display:grid;place-items:center;width:32px;height:32px;margin-left:6px;flex:none;
+  border:1px solid var(--base-300);border-radius:999px;background:var(--base-100);
+  color:var(--ink);cursor:pointer;transition:background-color .15s;
+}
+.tbtn:hover{background:var(--base-200)}
+.tbtn svg{width:15px;height:15px}
+@media (max-width:760px){.bar nav a{display:none}}
+
+/* ---- sections ------------------------------------------------------- */
+section{padding:72px 0 0;scroll-margin-top:76px}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.head::after{content:"";flex:1;height:1px;background:var(--base-300)}
+
+/* hero */
+.hero{padding:76px 0 8px}
+.hero h1{font-size:clamp(2rem,5.4vw,3.4rem);line-height:1.04;max-width:19ch;margin:14px 0 18px}
+.hero p{font-size:1.05rem;max-width:62ch}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;
+  border:1px solid var(--base-300);background:var(--base-200);
+  font:500 .68rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+}
+.dot{width:6px;height:6px;border-radius:999px;background:var(--ink);flex:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--base-300);border:1px solid var(--base-300);border-radius:12px;overflow:hidden;margin-top:40px}
+.stat{background:var(--base-100);padding:20px 18px}
+.stat b{display:block;font:600 1.85rem/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:8px;font-size:.8rem;color:var(--muted);line-height:1.45}
+
+/* problem */
+.probs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:0;border-top:1px solid var(--base-300);border-left:1px solid var(--base-300);margin-top:8px}
+.probs div{border-right:1px solid var(--base-300);border-bottom:1px solid var(--base-300);padding:22px 20px 24px}
+.probs h3{font-size:.98rem;margin-bottom:8px}
+.probs p{font-size:.88rem}
+.probs .n{font:500 .68rem/1 var(--mono);letter-spacing:.12em;color:var(--faint);display:block;margin-bottom:12px}
+
+/* categories */
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cat{
+  border:1px solid var(--base-300);background:var(--base-200);border-radius:999px;
+  padding:7px 14px;font-size:.82rem;color:var(--ink);cursor:default;
+  transition:background-color .15s,border-color .15s;
+}
+.cat:hover{background:var(--base-100);border-color:var(--faint)}
+.cat i{font-style:normal;color:var(--muted);font-size:.78rem}
+
+/* ---- flip cards ----------------------------------------------------- */
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,208px),1fr));gap:14px}
+.flip{
+  appearance:none;border:0;padding:0;background:none;font:inherit;color:inherit;
+  perspective:1000px;height:164px;cursor:pointer;text-align:left;
+}
+.flip:focus-visible{outline:2px solid color-mix(in oklch,var(--ink) 55%,transparent);outline-offset:3px;border-radius:12px}
+.inner{
+  display:block;position:relative;width:100%;height:100%;
+  transition:transform .55s cubic-bezier(.2,.7,.2,1);transform-style:preserve-3d;
+}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid var(--base-300);border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.front{background:var(--base-200)}
+.flip:hover .front{border-color:var(--faint)}
+.back{background:var(--primary);color:var(--primary-content);transform:rotateY(180deg);border-color:var(--primary)}
+.face .k{font:500 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.front .t{display:block;font-weight:600;font-size:.98rem;line-height:1.25;letter-spacing:-.01em}
+.back p{font-size:.85rem;line-height:1.5;color:inherit;opacity:.92;margin:0}
+.turn{display:inline-flex;align-items:center;gap:6px;font:500 .62rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.5}
+.turn svg{width:11px;height:11px}
+@media (prefers-reduced-motion:reduce){
+  .inner{transition:none;transform-style:flat}
+  .flip[aria-pressed="true"] .inner{transform:none}
+  .face{backface-visibility:visible}
+  .back{transform:none;opacity:0;pointer-events:none;transition:opacity .2s}
+  .flip[aria-pressed="true"] .back{opacity:1}
+  .flip[aria-pressed="true"] .front{opacity:0}
+}
+.hint{margin:12px 0 22px;font-size:.88rem}
+
+/* ---- pipeline with arrows ------------------------------------------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:4px}
+.flow .flip{flex:1 1 172px;min-width:0}
+.arrow{
+  flex:0 0 auto;align-self:center;display:grid;place-items:center;
+  width:22px;height:22px;color:var(--faint);
+}
+.arrow svg{width:18px;height:18px}
+@media (max-width:720px){
+  .flow{flex-direction:column;align-items:stretch}
+  .flow .flip{flex:1 1 auto}
+  .arrow{transform:rotate(90deg);margin:-2px auto}
+}
+.sub{font-size:1.02rem;margin:44px 0 14px}
+
+/* ---- team: LinkedIn-shaped cards ------------------------------------ */
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:16px}
+.member{
+  display:flex;flex-direction:column;text-decoration:none;overflow:hidden;
+  border:1px solid var(--base-300);border-radius:14px;background:var(--base-100);
+  transition:border-color .15s,box-shadow .15s,transform .15s;
+}
+.member:hover{border-color:var(--faint);box-shadow:0 4px 14px rgb(0 0 0 / .07);transform:translateY(-2px)}
+.member:focus-visible{outline:2px solid color-mix(in oklch,var(--ink) 55%,transparent);outline-offset:3px}
+/* the banner strip a LinkedIn card carries above the photo */
+.banner{
+  display:block;height:58px;
+  background:
+    linear-gradient(135deg,color-mix(in oklch,var(--ink) 12%,var(--base-200)),var(--base-200)),
+    var(--base-200);
+  border-bottom:1px solid var(--base-300);
+}
+.body{display:flex;flex-direction:column;flex:1;position:relative;padding:0 16px 16px;margin-top:-30px}
+.avatar{
+  width:60px;height:60px;border-radius:999px;
+  border:3px solid var(--base-100);background:var(--base-300);
+  display:grid;place-items:center;overflow:hidden;
+  font:600 1.05rem/1 var(--sans);color:var(--muted);letter-spacing:-.01em;
+}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.member .nm{display:block;margin-top:10px;font-weight:600;font-size:.97rem;letter-spacing:-.01em;color:var(--ink)}
+.member .rl{display:block;margin-top:3px;font-size:.83rem;color:var(--muted);line-height:1.45}
+.member .loc{display:block;margin:8px 0 14px;font:500 .68rem/1 var(--mono);letter-spacing:.06em;color:var(--faint)}
+.member .btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;margin-top:auto;
+  padding:7px 0;border:1px solid var(--base-300);border-radius:999px;
+  font-size:.8rem;font-weight:600;color:var(--muted);transition:background-color .15s,color .15s,border-color .15s;
+}
+.member:hover .btn{background:var(--primary);color:var(--primary-content);border-color:var(--primary)}
+.member .btn svg{width:13px;height:13px;flex:none}
+
+footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--base-300);font-size:.82rem;color:var(--faint)}
+footer a{text-decoration:underline;text-underline-offset:3px}
+</style>
+</head>
+<body>
+<script>
+  // Honour whatever theme the dashboard is on: same origin, same key, set before paint.
+  try{document.documentElement.setAttribute("data-theme",localStorage.getItem("kryptonxwatch-theme")==="dark"?"dark":"light")}catch(e){}
+</script>
+
+<div class="wrap">
+
+<div class="bar">
+  <a class="brand" href="/overview">
+    <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+    Sentinel Machines
+  </a>
+  <nav>
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#team">Team</a>
+    <a href="/overview">Dashboard →</a>
+  </nav>
+  <button class="tbtn" id="theme" aria-label="Switch theme" title="Switch theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>
+  </button>
+</div>
+
+<header class="hero">
+  <span class="pill"><span class="dot"></span>Edge AI SJSUHack 2026 · HP ZGX Nano</span>
+  <h1>Your cameras already see theft. Nobody is watching them.</h1>
+  <p>A vision-language model on an on-site GB10 reviews every camera in eight-second windows, names the crime, boxes the person and puts it in front of a human within seconds. Detections are suspected until a person reviews them.</p>
+  <div class="stats">
+    <div class="stat"><b>8 s</b><span>Every camera gets a fresh look every eight seconds</span></div>
+    <div class="stat"><b>2.1 s</b><span>Median answer per window, Qwen3-VL on the GB10</span></div>
+    <div class="stat"><b>94%</b><span>Of 35 crime clips flagged in a fresh 65-clip test</span></div>
+    <div class="stat"><b>128 GB</b><span>Unified memory: models, detector and app on one box</span></div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="head"><span class="lbl">01 · Problem</span></div>
+  <h2>Recording is not watching</h2>
+  <p style="margin-top:12px">A shop already has the cameras. What it does not have is anyone with the attention to watch forty feeds at once — so footage is something you scroll through <em>after</em> the loss, if at all.</p>
+  <div class="probs">
+    <div><span class="n">01</span><h3>Nobody is watching live</h3><p>One person cannot hold forty feeds in their head. Attention runs out long before the shift does.</p></div>
+    <div><span class="n">02</span><h3>Footage is read backwards</h3><p>Video gets opened after the stock count, when the person is long gone and the clip is one of a thousand hours.</p></div>
+    <div><span class="n">03</span><h3>Motion alerts cry wolf</h3><p>A pixel-difference alarm fires on a shadow, a trolley, a door. Staff learn to ignore it within a week.</p></div>
+    <div><span class="n">04</span><h3>Cloud video is a liability</h3><p>Shipping a shop floor to someone else's datacentre is a privacy problem, a bandwidth bill and a dependency.</p></div>
+  </div>
+</section>
+
+<section id="solution">
+  <div class="head"><span class="lbl">02 · Solution</span></div>
+  <h2>Built to watch, not to judge</h2>
+  <p class="hint">It names what happened and hands it to a person. Three lines it does not cross.</p>
+  <div class="probs">
+    <div><span class="n">01</span><h3>It describes, never identifies</h3><p>No identity database and no watchlist. It reports what people do, never who they are.</p></div>
+    <div><span class="n">02</span><h3>Suspected, not accused</h3><p>Every detection waits for a human. The system never accuses anyone, and alerts are opt-in and capped.</p></div>
+    <div><span class="n">03</span><h3>Footage stays in the building</h3><p>With the local model, frames only ever reach the GB10 on site. Cloud models are opt-in, for comparison.</p></div>
+  </div>
+
+  <h3 class="sub">Ten kinds of incident, named, not just flagged</h3>
+  <p style="margin-bottom:14px">Queue length is measured too, as a count rather than an incident.</p>
+  <div class="cats">
+    <span class="cat" title="Concealing merchandise, or leaving a store with unpaid goods.">Shoplifting</span>
+    <span class="cat" title="Taking property that is not theirs outside a shop: bags, bikes, packages, parked cars.">Stealing</span>
+    <span class="cat" title="Taking property by force or threat, at a counter or on the street.">Robbery</span>
+    <span class="cat" title="Stealing from a pocket or bag by close contact.">Pickpocketing</span>
+    <span class="cat" title="Physical assault: punching, kicking, shoving, wrestling.">Fighting</span>
+    <span class="cat" title="Deliberately damaging or defacing property.">Vandalism</span>
+    <span class="cat" title="A collapse, fall, seizure or someone lying motionless.">Medical emergency</span>
+    <span class="cat" title="Bypassing payment at a self-checkout.">Checkout bypass</span>
+    <span class="cat" title="Concerning behaviour that fits none of the above.">Suspicious activity</span>
+    <span class="cat" title="Measured as a count, never treated as an incident.">Queue tracking <i>· measured</i></span>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="head"><span class="lbl">03 · Architecture &amp; tech</span></div>
+  <h2>One frame, five hops, one person deciding</h2>
+  <p class="hint">Every hop runs on the same HP ZGX Nano. Click any card to turn it over.</p>
+  <div class="flow" id="flow"></div>
+
+  <h3 class="sub">What holds it up</h3>
+  <div class="flipgrid" id="stack"></div>
+</section>
+
+<section id="team">
+  <div class="head"><span class="lbl">04 · Team</span></div>
+  <h2>Five people, one GB10</h2>
+  <p class="hint">San José State University · Edge AI SJSUHack 2026.</p>
+  <div class="team" id="teamgrid"></div>
+</section>
+
+<footer>
+  Sentinel Machines · KryptonxWatch. Everything runs on one HP ZGX Nano (NVIDIA GB10).
+  Demo footage from <a href="https://www.crcv.ucf.edu/projects/real-world/">UCF-Crime</a>, research use.
+  Detections are suspected until a person reviews them.
+</footer>
+
+</div>
+
+<script>
+// Content below is written from this repo -- app/page.tsx, app/api, lib/server
+// and AGENTS.md -- not from any external deck.
+const ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+const TURN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+
+const card=([k,t,d])=>`
+ <button class="flip" type="button" aria-pressed="false">
+  <span class="inner">
+   <span class="face front"><span class="k">${k}</span><span class="t">${t}</span><span class="turn">${TURN}Turn</span></span>
+   <span class="face back"><span class="k">${k}</span><p>${d}</p><span class="turn">${TURN}Back</span></span>
+  </span>
+ </button>`;
+
+// The five hops a frame actually makes, in order, with arrows between them.
+const FLOW=[
+ ["Step 01","Watch","A recorded upload, a replayed feed or a live webcam. Many streams at once."],
+ ["Step 02","Sample","Four frames every eight seconds, one every two, at most 512 px wide."],
+ ["Step 03","Understand","Qwen3-VL-30B reads the four frames together and answers in JSON."],
+ ["Step 04","Locate","YOLO11 finds the people and snaps the box onto the right one, then tracks it."],
+ ["Step 05","Review","It arrives as suspected. A person confirms before any alert goes out."],
+];
+document.getElementById("flow").innerHTML=FLOW
+  .map(card)
+  .join(`<span class="arrow" aria-hidden="true">${ARROW}</span>`);
+
+// Everything the five hops stand on.
+const STACK=[
+ ["Hardware","HP ZGX Nano · GB10","One box, 121 GiB shared between CPU and GPU. No second machine, no cloud."],
+ ["Serving","vLLM via zrt","Runs the model in FP8 behind an OpenAI-compatible proxy on :8080."],
+ ["App","Next.js 15","One server on :3000. Keys live in .env.local and are never sent to the browser."],
+ ["Storage","IndexedDB","Recordings and review decisions stay in your browser. Only sampled frames are sent."],
+ ["Alerts","Twilio","SMS, WhatsApp or email to whoever a recording opted in. Deduplicated and capped."],
+ ["Fallback","OpenRouter","Any OpenAI-compatible cloud model, for comparison, only when you pick one."],
+ ["Telemetry","nvidia-smi · /proc","GPU, power and memory on the Edge node page. A reading we can't take says so."],
+ ["Evaluation","Bake-off","Every candidate model is re-scored on the same clips through the app's own pipeline."],
+];
+document.getElementById("stack").innerHTML=STACK.map(card).join("");
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".flip"); if(!b) return;
+  b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+});
+
+// ---- Team ---------------------------------------------------------------
+// photo: drop a square image at public/team/<file>. A missing file falls back
+// to the initials monogram, so the page is never broken by an absent photo.
+const TEAM=[
+ ["Sonakshi Panda","Dashboard, edge telemetry and owner alerts","sonakshi.jpg","https://www.linkedin.com/in/sonakshi-panda-5450533aa/"],
+ ["Shreyas Durairajalu","Model integration, bake-off, YOLO boxes and tracking","shreyas.jpg","https://www.linkedin.com/in/shreyas07/"],
+ ["Shravan Kumar","Serving models on the GB10, data pipeline and infrastructure","shravan.jpg","https://www.linkedin.com/in/shravan-kumar12/"],
+ ["Vidushi Verma","Shoplifting study, splits and hand-marked theft times","vidushi.jpg","https://www.linkedin.com/in/vidushi--verma/"],
+ ["Chaitanya Uppalapati","Fine-tuning runs on the shared GPU","chaitanya.jpg","https://www.linkedin.com/in/chaitanyauppalapati/"],
+];
+const LI='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.76-1.95C20.4 8.75 21 11.2 21 14.1V21h-4v-6.1c0-1.45-.03-3.3-2-3.3-2.01 0-2.32 1.57-2.32 3.2V21H9z"/></svg>';
+const initials=n=>n.split(" ").slice(0,2).map(w=>w[0]).join("");
+document.getElementById("teamgrid").innerHTML=TEAM.map(([n,r,img,url])=>`
+ <a class="member" href="${url}" target="_blank" rel="noopener noreferrer">
+  <span class="banner"></span>
+  <span class="body">
+   <span class="avatar">${initials(n)}</span>
+   <span class="nm">${n}</span>
+   <span class="rl">${r}</span>
+   <span class="loc">SAN JOSÉ STATE UNIVERSITY</span>
+   <span class="btn">${LI}View profile</span>
+  </span>
+ </a>`).join("");
+// Swap in a real photo only once it has actually loaded.
+document.querySelectorAll(".member").forEach((el,i)=>{
+  const av=el.querySelector(".avatar"), probe=new Image();
+  probe.onload=()=>{av.textContent="";const im=new Image();im.src=probe.src;im.alt=TEAM[i][0];av.appendChild(im)};
+  probe.src="team/"+TEAM[i][2];
+});
+
+// ---- Theme, shared with the dashboard -----------------------------------
+document.getElementById("theme").addEventListener("click",()=>{
+  const next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  document.documentElement.setAttribute("data-theme",next);
+  try{localStorage.setItem("kryptonxwatch-theme",next)}catch(e){}
+});
+</script>
+</body>
+</html>
