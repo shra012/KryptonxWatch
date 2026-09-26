@@ -94,6 +94,8 @@ export default function Dashboard(){
 
  // Incidents still waiting for someone to call 911 or tell the owner, most urgent first. Low-severity "suspicious activity" never pops up.
  const pending=open.filter(d=>isSecurityDetection(d)&&!d.response&&responseFor(d.category)&&rank(d)>0).sort((a,b)=>responsePriority(b)-responsePriority(a));
+ // Emergencies are called automatically (components/call-center.tsx); only owner incidents ask here.
+ const askOwner=pending.filter(d=>responseFor(d.category)==="owner");
  // Pop up only for incidents that are new since the last visit (e.g. an analysis just found a robbery), the most
  // urgent of them, once. The backlog never pops up; it waits in the open incidents list with Call 911 / Notify owner.
  // The first visit in a browser only records what is already there.
@@ -101,10 +103,10 @@ export default function Dashboard(){
   if(loading||autoShown.current)return;
   autoShown.current=true;
   let seen:string[]|null=null;try{seen=JSON.parse(localStorage.getItem("sm-response-seen")??"null")}catch{}
-  const fresh=seen?pending.filter(d=>!seen.includes(d.id)):[];
+  const fresh=seen?askOwner.filter(d=>!seen.includes(d.id)):[];
   try{localStorage.setItem("sm-response-seen",JSON.stringify([...new Set([...(seen??[]),...pending.map(d=>d.id)])].slice(-1000)))}catch{}
   if(fresh[0])setResponding(fresh[0]);
- },[loading,pending]);
+ },[loading,pending,askOwner]);
  const recordResponse=async(d:Row,record:ResponseRecord)=>{const v=videos.find(x=>x.id===d.videoId);if(!v)return;
   try{await saveVideo({...v,detections:v.detections.map(x=>x.id===d.id?{...x,response:record}:x)});fetchAlertStatus().then(setAlertState).catch(()=>{});}
   catch(e){setNote({tone:"error",text:e instanceof Error?e.message:"Could not save the response."})}};
@@ -153,6 +155,6 @@ export default function Dashboard(){
 
  <div className="mt-10"><Notice tone="muted">Bundled recordings and their detection annotations are simulated. Uploaded videos stay in this browser and receive no automated analysis until a detection service is connected.</Notice></div>
  {responding&&<ResponseDialog incident={{detection:responding,place:responding.videoTitle,sample:responding.source==="sample",recipient:responding.alertTo}} alertStatus={alertState}
-  more={pending.filter(d=>d.id!==responding.id).length} onDone={r=>recordResponse(responding,r)} onClose={closeResponse}/>}
+  more={askOwner.filter(d=>d.id!==responding.id).length} onDone={r=>recordResponse(responding,r)} onClose={closeResponse}/>}
  </>;
 }

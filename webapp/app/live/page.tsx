@@ -12,8 +12,10 @@ import { newId } from "@/lib/id";
 import { videoSource } from "@/components/video-source";
 import { PoseOverlay, type Pose } from "@/components/pose-overlay";
 import { ResponseDialog, type ResponseIncident } from "@/components/response-dialog";
+import { useCallCenter } from "@/components/call-center";
 import { fetchAlertStatus, type AlertStatus } from "@/lib/alert-client";
 import { responseFor, responsePriority } from "@/lib/response";
+import { gpuSampler, isLocalModel, logUsage, usageTally } from "@/lib/usage";
 
 type Source = { kind: "camera" } | { kind: "video"; id: string };
 interface FeedItem { id: string; at: number; result: WindowResult; alert: boolean }
@@ -54,6 +56,11 @@ export default function LiveMonitor() {
   const [responses, setResponses] = useState<Record<string, ResponseRecord>>({});
   const [alertStatus, setAlertStatus] = useState<AlertStatus | null>(null);
   const lastPrompt = useRef<Record<string, number>>({});
+  const { call } = useCallCenter();
+  // Usage for the Analytics page, one entry per monitoring session (GB10 GPU sampled while a local model runs).
+  const tally = useRef<ReturnType<typeof usageTally> | null>(null);
+  const gpu = useRef<ReturnType<typeof gpuSampler> | null>(null);
+  const sessionStart = useRef(0);
   useEffect(() => { fetchAlertStatus().then(setAlertStatus).catch(() => {}); }, []);
 
   const recordings = videos.filter(v => v.source === "upload" && v.blob);
@@ -67,13 +74,17 @@ export default function LiveMonitor() {
     analyzeWindow(frames, start, end, signal, source.kind === "camera" ? "Live webcam feed." : undefined)
       .then(result => {
         results.current.push(result);
+        tally.current?.add(result.usage, result.latencyMs);
         const alert = result.incidents.some(i => i.confidence >= INCIDENT_THRESHOLD);
         setFeed(f => [{ id: `${start}`, at: Date.now(), result, alert }, ...f].slice(0, 50));
         const top = result.incidents.filter(i => i.confidence >= INCIDENT_THRESHOLD && responseFor(i.category)).sort((a, b) => responsePriority(b) - responsePriority(a))[0];
         if (top && !(top.seconds - (lastPrompt.current[top.category] ?? -Infinity) < 60)) {
           lastPrompt.current[top.category] = top.seconds;
           const place = source.kind === "camera" ? "Webcam feed" : `Replay: ${videos.find(v => v.id === source.id)?.title ?? "recording"}`;
-          setPrompts(q => [...q, { feedId: `${start}`, place, detection: { id: `live-${start}-${top.category}`, videoId: "live", seconds: top.seconds, category: top.category, severity: top.severity, description: top.description, confidence: top.confidence } }]);
+          const detection = { id: `live-${start}-${top.category}`, videoId: "live", seconds: top.seconds, category: top.category, severity: top.severity, description: top.description, confidence: top.confidence };
+          // Danger to people: call 911 straight away. Owner incidents ask first.
+          if (responseFor(top.category) === "911") call({ id: detection.id, detection, place, onDone: r => setResponses(m => ({ ...m, [`${start}`]: r })) });
+          else setPrompts(q => [...q, { feedId: `${start}`, place, detection }]);
         }
         if (alert && alerts) {
           const top = [...result.incidents].sort((a, b) => b.confidence - a.confidence)[0];
@@ -82,7 +93,7 @@ export default function LiveMonitor() {
       })
       .catch(e => { if (!signal?.aborted) setError(e instanceof Error ? e.message : "Analysis request failed."); })
       .finally(() => setPending(p => p - 1));
-  }, [alerts, notify, source, videos]);
+  }, [alerts, notify, source, videos, call]);
 
   const tick = useCallback(() => {
     const el = player.current;
@@ -133,6 +144,8 @@ export default function LiveMonitor() {
 
   async function start() {
     setError(""); setFeed([]); setRecording(null); results.current = []; buffer.current = []; chunks.current = [];
+    tally.current = usageTally(); sessionStart.current = Date.now();
+    gpu.current = model?.model && isLocalModel(model.model) ? gpuSampler() : null;
     const el = player.current!;
     abort.current = new AbortController();
     try {
@@ -171,6 +184,10 @@ export default function LiveMonitor() {
   }
 
   function stop() {
+    const used = tally.current?.get(); tally.current = null;
+    const gpuSummary = gpu.current?.stop() ?? null; gpu.current = null;
+    if (used?.windows && model?.model) logUsage({ id: `live@${sessionStart.current}`, at: new Date().toISOString(), model: model.model, local: isLocalModel(model.model), source: "live",
+      title: source.kind === "camera" ? "Webcam feed" : `Replay: ${videos.find(v => v.id === source.id)?.title ?? "recording"}`, ...used, wallMs: Date.now() - sessionStart.current, gpu: gpuSummary });
     if (timer.current) clearInterval(timer.current);
     timer.current = null;
     if (buffer.current.length) { sendWindow(buffer.current); buffer.current = []; }

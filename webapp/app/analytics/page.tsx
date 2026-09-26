@@ -5,6 +5,8 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Too
 import { Download } from "lucide-react";
 import { useApp } from "@/components/app-provider";
 import { EmptyState, EventLabel, Notice, PageTitle, Panel, SeverityBadge, StatusBadge } from "@/components/ui";
+import { InferenceAnalytics } from "@/components/inference-analytics";
+import { LiveRun } from "@/components/live-run";
 import { allDetections, categoryChart, counts, downloadCsv, severityChart, trendChart, videoChart } from "@/lib/analytics";
 import { Sparkles } from "lucide-react";
 import { requestSummary, useModelStatus } from "@/lib/detection-client";
@@ -80,8 +82,12 @@ export default function Analytics(){
  const figures=[{label:"Recordings",value:stats.videos},{label:"Suspected incidents",value:stats.detections},{label:"High priority",value:stats.high},{label:"Reviewed",value:stats.reviewed},{label:"Queue measurements",value:stats.measurements}];
 
  return <>
- <PageTitle hero eyebrow="Recorded insights" title="Analytics" description="Where the annotations fall across recordings, categories and time. Everything here derives from the annotations in this browser."
+ <PageTitle hero eyebrow="Recorded insights" title="Analytics" description="Local inference on the HP ZGX Nano against cloud APIs, then where the annotations fall across recordings, categories and time."
   action={<button className="btn btn-outline btn-sm" disabled={!rows.length} onClick={()=>downloadCsv(rows)}><Download size={15}/>Export filtered CSV</button>}/>
+
+ <div className="mb-12"><Panel title="Live run · play the clip, watch the cost"><LiveRun/></Panel></div>
+
+ <div className="mb-12"><Panel title="Inference · local GB10 vs API"><InferenceAnalytics/></Panel></div>
 
  <div className="mb-10"><AiSummary videos={videos} fallback={stats.detections
   ? `${stats.detections} suspected incidents across ${stats.videos} recordings, of which ${stats.high} are high priority and ${stats.reviewed} reviewed. ${stats.measurements} queue measurements are counted separately because a queue is not an incident.${videos.some(v=>v.analysis==="complete")?" Uploads include model findings; bundled samples are simulated.":" Every figure comes from simulated sample annotations."}`

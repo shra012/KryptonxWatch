@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { isSecurityDetection, type AssistantReply, type Detection, type Moment, type VideoRecord } from "./types";
 import { trackThroughVideo, type PersonSample } from "./vlm/boxes";
 import { curatedFor, type CuratedAnalysis } from "./demo/curated";
+import { gpuSampler, isLocalModel, logUsage, usageTally, type WindowUsage } from "./usage";
 import { mergeDetections, planWindows, type Frame, type WindowResult } from "./vlm/analysis";
 import type { ChatTurn, SummaryRow } from "./vlm/assistant";
 import { isScorerModel, planScorerWindows } from "./vlm/scorer";
@@ -60,7 +61,10 @@ export function useModelStatus() {
 }
 
 async function post<T>(url: string, body: unknown, signal?: AbortSignal): Promise<T> {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...(body as object), model: selectedModel() }), signal });
+  // A request can name its model (the Analytics comparison runs two at once); otherwise the browser's pick.
+  const payload = { ...(body as Record<string, unknown>) };
+  payload.model ??= selectedModel();
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
   return data as T;
@@ -87,8 +91,8 @@ function seek(video: HTMLVideoElement, seconds: number) {
   });
 }
 
-export function analyzeWindow(frames: Frame[], start: number, end: number, signal?: AbortSignal, context?: string) {
-  return post<WindowResult & { model: string }>("/api/analyze", { frames, start, end, context }, signal);
+export function analyzeWindow(frames: Frame[], start: number, end: number, signal?: AbortSignal, context?: string, model?: string) {
+  return post<WindowResult & { model: string; latencyMs?: number; usage?: WindowUsage }>("/api/analyze", { frames, start, end, context, model }, signal);
 }
 
 export interface AnalysisProgress { done: number; total: number; failed: number; phase?: "windows" | "tracking" }
@@ -153,6 +157,10 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
   const frameWidth = scorer ? 640 : 512;
   const results: WindowResult[] = [];
   let model = "", failed = 0, done = 0, lastError = "";
+  // Usage for the Analytics page; GB10 GPU readings only while a local (zrt) model runs.
+  const tally = usageTally(); const started = Date.now();
+  const picked = withSelection(await fetchModelStatus()).model ?? "";
+  const gpu = isLocalModel(picked) ? gpuSampler() : null;
   const inFlight = new Set<Promise<void>>();
   onProgress({ done, total: windows.length, failed });
   for (const w of windows) {
@@ -160,7 +168,7 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
     const frames: Frame[] = [];
     for (const t of w.times) { await seek(el, t); frames.push({ seconds: t, image: grabFrame(el, frameWidth) }); }
     const job = analyzeWindow(frames, w.start, w.end, signal)
-      .then(r => { results.push(r); model = r.model; })
+      .then(r => { results.push(r); model = r.model; tally.add(r.usage, r.latencyMs); })
       .catch(e => { if (!signal.aborted) { failed++; lastError = e instanceof Error ? e.message : String(e); } })
       .finally(() => { done++; inFlight.delete(job); onProgress({ done, total: windows.length, failed }); });
     inFlight.add(job);
@@ -168,6 +176,9 @@ export async function analyzeRecording(video: VideoRecord, src: string, onProgre
   }
   await Promise.all(inFlight);
   results.sort((a, b) => a.start - b.start);
+  const gpuSummary = gpu?.stop() ?? null;
+  if (results.length) logUsage({ id: `${video.id}@${started}`, at: new Date().toISOString(), model: model || picked, local: isLocalModel(model || picked), source: "recording", title: video.title,
+    ...tally.get(), failed, wallMs: Date.now() - started, gpu: gpuSummary });
   let detections = mergeDetections(video.id, results, model);
   // Follow each suspect through the whole video, not only the analysed frames (needs the YOLO service; skipped without it).
   if (!signal.aborted && !scorer && detections.some(d => d.box)) detections = await trackAcrossVideo(el, duration, detections, onProgress, signal);

@@ -31,7 +31,7 @@ async function scoreWindow(config: ServerVlmConfig, frames: Frame[], start: numb
       return NextResponse.json({ error: `Local scorer request failed: ${message}. Is zrt serving ${config.model} at ${config.baseUrl}?` }, { status: 502 });
     }
     const { pYes } = parseYesNo(payload);
-    return NextResponse.json({ ...scorerWindowResult(pYes, start, end, INCIDENT_THRESHOLD), model: modelId(config), latencyMs: Date.now() - started });
+    return NextResponse.json({ ...scorerWindowResult(pYes, start, end, INCIDENT_THRESHOLD), model: modelId(config), latencyMs: Date.now() - started, usage: { local: true } });
   } catch (e) {
     return NextResponse.json({ error: `Local scorer request failed: ${e instanceof Error ? e.message : String(e)}. Is zrt running at ${config.baseUrl}?` }, { status: 502 });
   }
@@ -65,7 +65,9 @@ export async function POST(request: Request) {
       let result;
       try { result = parseWindow(reply.text, frames, start, end); } catch { continue; /* retry */ }
       // Snap boxes to YOLO persons and follow them across the frames (VLM boxes if YOLO is not configured).
-      return NextResponse.json({ ...(await groundBoxes(result, frames, request.signal)), model: modelId(config), latencyMs: reply.latencyMs });
+      // Usage for the Analytics page: tokens and cost as the endpoint reports them; `local` = served on the GB10 via zrt.
+      return NextResponse.json({ ...(await groundBoxes(result, frames, request.signal)), model: modelId(config), latencyMs: reply.latencyMs,
+        usage: { promptTokens: reply.promptTokens, completionTokens: reply.completionTokens, cost: reply.cost, local: !!config.local } });
     }
     return NextResponse.json({ error: "The model reply was not valid JSON twice in a row. Try again or choose another model.", raw: raw.slice(0, 500) }, { status: 502 });
   } catch (e) {

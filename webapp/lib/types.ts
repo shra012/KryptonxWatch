@@ -17,7 +17,7 @@ export interface Keyframe { seconds: number; box: BoundingBox; trackId?: string 
 /** What a person did about a detection from the response pop-up (lib/response.ts). The 911 call is simulated in this demo. */
 export interface ResponseRecord { kind: "911" | "owner"; at: string; reference: string; outcome: string }
 export interface Detection { response?: ResponseRecord; id: string; videoId: string; seconds: number; category: Category; severity: Severity; status: ReviewStatus; description: string; box?: BoundingBox; endSeconds?: number; confidence?: number; model?: string; keyframes?: Keyframe[] }
-export interface VideoRecord { curatedAnalysis?: boolean; alertTo?: AlertRecipient; id: string; title: string; recordedAt: string; duration: number; source: "sample" | "upload"; analysis: AnalysisStatus; mediaPath?: string; blob?: Blob; size?: number; detections: Detection[]; analysisModel?: string; analysisError?: string; moments?: Moment[] }
+export interface VideoRecord { analyzedAt?: string; curatedAnalysis?: boolean; alertTo?: AlertRecipient; id: string; title: string; recordedAt: string; duration: number; source: "sample" | "upload"; analysis: AnalysisStatus; mediaPath?: string; blob?: Blob; size?: number; detections: Detection[]; analysisModel?: string; analysisError?: string; moments?: Moment[] }
 
 export interface Moment { start: number; end: number; summary: string }
 export interface AssistantReply { text: string; references: { seconds: number; label: string }[] }

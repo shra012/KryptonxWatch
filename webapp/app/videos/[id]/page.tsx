@@ -28,7 +28,7 @@ function Assistant({video,onSeek,model}:{video:VideoRecord;onSeek:(s:number)=>vo
 function AnalysisPanel({video,src,model,autoStart,onSaved}:{video:VideoRecord;src:string;model:ModelStatus|null;autoStart:boolean;onSaved:(v:VideoRecord)=>Promise<void>}){
  const [progress,setProgress]=useState<AnalysisProgress|null>(null);const [error,setError]=useState("");const abort=useRef<AbortController|null>(null);const started=useRef(false);
  const run=useCallback(async()=>{if(!src||abort.current)return;const ctrl=new AbortController();abort.current=ctrl;setError("");setProgress({done:0,total:0,failed:0});
-  try{const out=await analyzeRecording(video,src,setProgress,ctrl.signal);await onSaved({...video,analysis:"complete",analysisModel:out.model,analysisError:out.failed?`${out.failed} window(s) could not be analysed.`:undefined,curatedAnalysis:out.curated,detections:out.detections,moments:out.moments});}
+  try{const out=await analyzeRecording(video,src,setProgress,ctrl.signal);await onSaved({...video,analysis:"complete",analysisModel:out.model,analysisError:out.failed?`${out.failed} window(s) could not be analysed.`:undefined,curatedAnalysis:out.curated,analyzedAt:new Date().toISOString(),detections:out.detections,moments:out.moments});}
   catch(e){if(!ctrl.signal.aborted){const msg=e instanceof Error?e.message:"Analysis failed.";setError(msg);await onSaved({...video,analysis:"failed",analysisError:msg}).catch(()=>{})}}
   finally{abort.current=null;setProgress(null)}},[src,video,onSaved]);
  useEffect(()=>{if(autoStart&&model?.configured&&src&&!started.current&&video.analysis==="not_analyzed"){started.current=true;run()}},[autoStart,model,src,video.analysis,run]);
