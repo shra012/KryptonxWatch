@@ -28,8 +28,8 @@ interface LaneRun { id: string; started: number; model: string; record: VideoRec
 
 const WINDOW_SEC = WINDOW.frameStep * WINDOW.framesPerWindow;
 const OFF = "";
-/** The pinned model per lane. */
-const PINNED: Record<Side, string> = { local: "sentinel-machines-v1", cloud: "local-vlm:qwen3-vl-30b-a3b" };
+/** The local Qwen service; the comparison lane uses a configured hosted model. */
+const LOCAL_MODEL = "local-vlm:qwen3-vl-30b-a3b";
 /** A box on the player: the lane's newest finding while the clip plays (the analysis runs a few seconds behind). */
 interface LiveBox { box: BoundingBox; label: string; until: number }
 /** The last position a window saw the person at: its latest keyframe, else the incident's own box. */
@@ -98,12 +98,15 @@ export function LiveRun() {
     return () => { live = false; if (url) URL.revokeObjectURL(url); };
   }, []);
 
-  // Each lane runs its pinned model when the server offers it, and is off otherwise.
+  // Keep local inference on the GB10 lane and hosted comparisons on the cloud lane.
   const offered = status?.options ?? [];
-  const model: Record<Side, string> = { local: offered.includes(PINNED.local) ? PINNED.local : OFF, cloud: offered.includes(PINNED.cloud) ? PINNED.cloud : OFF };
+  const realOf = (m: string) => Object.entries(status?.aliases ?? {}).find(([, alias]) => alias === m)?.[0] ?? m;
+  const model: Record<Side, string> = {
+    local: offered.includes(LOCAL_MODEL) ? LOCAL_MODEL : OFF,
+    cloud: status?.provider === "OpenRouter" ? offered.find(m => !isLocalModel(m) && realOf(m).includes("/")) ?? OFF : OFF,
+  };
   const active = SIDES.filter(s => model[s]);
   const name = (m: string) => isLocalModel(m) ? m.replace(/^local(-vlm)?:/, "") : displayModel(m, status) ?? m;
-  const realOf = (m: string) => Object.entries(status?.aliases ?? {}).find(([, alias]) => alias === m)?.[0] ?? m;
   const canRun = !!status?.configured && active.length > 0;
   const busy = phase === "running" || phase === "finishing";
 
@@ -290,7 +293,7 @@ export function LiveRun() {
         </div>
         {SIDES.map(side => lanes[side].error && <Notice key={side} tone="error" role="alert">{side === "local" ? "Local" : "Cloud"} model: {lanes[side].error}</Notice>)}
         {!status?.configured && status && <Notice tone="warning">No model is configured, so playing the clip analyses nothing. Set VLM_BASE_URL and VLM_MODEL in webapp/.env.local and restart the app.</Notice>}
-        {status?.configured && !active.length && <Notice tone="warning">Neither pinned model is configured. Add sentinel-machines-v1 to VLM_MODEL_ALIASES and qwen3-vl-30b-a3b to LOCAL_VLM_MODELS in webapp/.env.local.</Notice>}
+        {status?.configured && !active.length && <Notice tone="warning">No comparison model is configured. Configure the local Qwen3-VL-30B-A3B service or a hosted comparison model in Settings.</Notice>}
         {phase === "idle" && canRun && <p className="text-xs text-base-content/50 flex items-start gap-1.5"><Play size={12} className="mt-0.5 shrink-0" />Press play: every {WINDOW_SEC} s of video goes to {active.map(s => name(model[s])).join(" and ")} at once. Each run also lands in the Inference panel and the charts below.</p>}
       </div>
     </div>

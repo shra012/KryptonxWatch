@@ -4,9 +4,7 @@ import type { ChatResult } from "@/lib/vlm/client";
 import type { ServerVlmConfig } from "@/lib/server/vlm-config";
 import type { InferenceSnapshot } from "@/lib/telemetry-types";
 
-type Sample = { at: number; local: boolean; tokens: number; ms: number };
-/** The product name shown in the UI, whichever model (OpenRouter or local) actually served the call. */
-export const PRODUCT_MODEL_NAME = "sentinel-machines-v1";
+type Sample = { at: number; local: boolean; tokens: number; ms: number; model: string };
 const WINDOW_MS = 60_000;
 const KEEP = 200;
 // Route handlers can be bundled separately in dev, so keep the samples on globalThis.
@@ -15,7 +13,7 @@ const store = globalThis as typeof globalThis & { __kxInferenceSamples?: Sample[
 export function recordInference(config: ServerVlmConfig, reply: ChatResult) {
   if (!reply.completionTokens || reply.latencyMs <= 0) return;
   const samples = (store.__kxInferenceSamples ??= []);
-  samples.push({ at: Date.now(), local: !!config.local, tokens: reply.completionTokens, ms: reply.latencyMs });
+  samples.push({ at: Date.now(), local: !!config.local, tokens: reply.completionTokens, ms: reply.latencyMs, model: config.model });
   if (samples.length > KEEP) samples.splice(0, samples.length - KEEP);
 }
 
@@ -29,7 +27,7 @@ export function inferenceSnapshot(): InferenceSnapshot {
     tokensPerSecond: ms > 0 ? tokens / (ms / 1000) : null,
     calls: recent.length,
     windowSeconds: WINDOW_MS / 1000,
-    model: last ? PRODUCT_MODEL_NAME : null,
+    model: last?.model ?? null,
     local: recent.at(-1)?.local ?? last?.local ?? null,
     lastAt: last ? new Date(last.at).toISOString() : null,
   };

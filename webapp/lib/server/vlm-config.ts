@@ -44,7 +44,7 @@ export function localVlmModels(): string[] {
  * Display names for OpenRouter models, from VLM_MODEL_ALIASES (`alias=provider/model,...`). The browser only
  * sees the alias (dropdown, "Model:" lines, results); requests go to the real model.
  */
-export function modelAliases(): Map<string, string> {
+function configuredModelAliases(): Map<string, string> {
   const out = new Map<string, string>();
   for (const entry of (process.env.VLM_MODEL_ALIASES ?? "").split(",").map(m => m.trim()).filter(Boolean)) {
     const [alias, model] = entry.split("=", 2).map(x => x.trim());
@@ -53,12 +53,28 @@ export function modelAliases(): Map<string, string> {
   return out;
 }
 
+/** The product alias belongs only to the Qwen3-VL-30B-A3B model family. */
+function allowedModelAlias(alias: string, model: string): boolean {
+  return !/^sentin[ae]l-machines-v1$/i.test(alias)
+    || /^(?:qwen\/)?qwen3-vl-30b-a3b(?:-|$)/i.test(model);
+}
+
+export function modelAliases(): Map<string, string> {
+  return new Map([...configuredModelAliases()].filter(([alias, model]) => allowedModelAlias(alias, model)));
+}
+
+/** Keep an older endpoint mapping usable, but expose its real model when its product alias is invalid. */
+function canonicalModelName(model: string): string {
+  const real = configuredModelAliases().get(model);
+  return real && !allowedModelAlias(model, real) ? real : model;
+}
+
 /** Models the browser may pick from (VLM_MODEL_OPTIONS plus local models). Always includes VLM_MODEL. */
 export function modelOptions(): string[] {
   const list = (process.env.VLM_MODEL_OPTIONS ?? "").split(",").map(m => m.trim()).filter(Boolean);
   const main = process.env.VLM_MODEL;
   const all = [...(main && !list.includes(main) ? [main, ...list] : list), ...localVlmModels(), ...scorerModels()];
-  return [...new Set(all)];
+  return [...new Set(all.map(canonicalModelName))];
 }
 
 /**
@@ -66,7 +82,8 @@ export function modelOptions(): string[] {
  * analysis; chat (assistant, summary) keeps the server's chat model. Local general models do both.
  */
 export function vlmConfig(kind: "vision" | "chat" = "vision", requested?: unknown): ServerVlmConfig | null {
-  const picked = typeof requested === "string" && modelOptions().includes(requested) ? requested : undefined;
+  const requestedModel = typeof requested === "string" ? canonicalModelName(requested) : undefined;
+  const picked = requestedModel && modelOptions().includes(requestedModel) ? requestedModel : undefined;
   if (kind === "vision" && (isScorerModel(picked) || (!picked && !process.env.VLM_MODEL && scorerModels().length))) {
     const model = picked ?? scorerModels()[0];
     return { baseUrl: process.env.LOCAL_SCORER_BASE_URL!, apiKey: process.env.LOCAL_SCORER_API_KEY, model: servedName(model), timeoutMs: 300_000, scorer: true, local: true };
@@ -77,8 +94,9 @@ export function vlmConfig(kind: "vision" | "chat" = "vision", requested?: unknow
   }
   const baseUrl = process.env.VLM_BASE_URL;
   const choice = picked && !isScorerModel(picked) && !isLocalVlmModel(picked) ? picked : undefined;
-  const model = choice ?? (kind === "chat" ? process.env.VLM_CHAT_MODEL || process.env.VLM_MODEL : process.env.VLM_MODEL);
-  if (!baseUrl || !model) return null;
+  const configured = choice ?? (kind === "chat" ? process.env.VLM_CHAT_MODEL || process.env.VLM_MODEL : process.env.VLM_MODEL);
+  if (!baseUrl || !configured) return null;
+  const model = canonicalModelName(configured);
   const real = modelAliases().get(model);
   let extraBody = defaultExtraBody(baseUrl, real ?? model);
   if (process.env.VLM_EXTRA_BODY) {

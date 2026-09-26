@@ -34,7 +34,7 @@ LOCAL_VLM_MODELS=qwen3-vl-30b-a3b
 
 `VLM_BASE_URL` and `VLM_MODEL` establish the default model. `LOCAL_VLM_*` adds explicitly local options to Settings as `local-vlm:<served-name>`. Setting only `LOCAL_VLM_*` does not configure the default `/api/model` response in the current implementation; keep the default pair above configured too.
 
-The project model is [Sentinel Machines v1](../model/sentinel-machines-v1/README.md). A configured service label or UI alias must resolve to the correct deployed weights; changing the label does not fine-tune or load a model.
+The project model is [Sentinel Machines v1](../model/sentinel-machines-v1/README.md). A configured service label or UI alias must resolve to the correct deployed weights; changing the label does not fine-tune or load a model. The v1 alias is reserved for the Qwen3-VL-30B-A3B family. An older alias pointing to another model is exposed under that model’s actual name; telemetry records the served model identifier.
 
 | Variables | Purpose |
 | --- | --- |
