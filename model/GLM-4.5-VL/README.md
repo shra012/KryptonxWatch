@@ -1,15 +1,25 @@
-# GLM-4.5-VL
+# GLM-4.5-VL experiments
 
-**Status: skipped on 2026-09-25.** Gates G0 to G2 passed and G3 to G6 were not run; local work moved to dedicated VL models (`model/.plans/local-vlm-quality.md` (local plan, not in the repo)). Its plan was removed in commit d79bacd (git history). The bf16 weights remain at `/srv/kryptonx-data/models/glm-4.5v/` (201 GB) until someone deletes them.
+This directory preserves an earlier GLM-4.5V inference, quantization, and training pilot. The GLM model arm was skipped; it is not the Sentinel Machines v1 model.
 
-GLM-4.5V assets for KryptonxWatch are grouped here. The container in `env/glm/` (`kryptonx/glm:dev`: NGC vLLM 26.03 plus PEFT and bitsandbytes) is the planned container for Phase 5 fine-tuning in that plan.
+## Contents
 
-- `src/`: GLM inference, training pilot, quantization, and shared GLM helpers.
-- `env/glm/`: pinned environment, container, and run launcher.
-- `runs/glm45v/`: GLM pilot (`g2-pilot`, `g2-pilot-box`) and quantization (`nf4-cache`) outputs.
+| Path | Purpose |
+| --- | --- |
+| [src](src) | Shared GLM helpers, inference pilot, quantization cache, and training pilot |
+| [env/glm](env/glm) | Dockerfile, dependency locks, model metadata, and container launcher |
+| [runs/glm45v](runs/glm45v) | Saved pilot logs and environment records |
 
-Run commands from the KryptonxWatch repository root. For example:
+The `kryptonx/glm:dev` container also supplies the base environment used by the YOLO image. Retaining this environment does not require serving the GLM weights.
 
-```sh
-model/GLM-4.5-VL/env/glm/run.sh glm-g2 python -u model/GLM-4.5-VL/src/glm_pilot.py --windows 20 --out model/GLM-4.5-VL/runs/glm45v/g2-pilot
+## Environment
+
+Build from the repository root after checking available resources:
+
+```bash
+docker build -t kryptonx/glm:dev model/GLM-4.5-VL/env/glm
 ```
+
+The [run helper](env/glm/run.sh) configures the shared mounts and user identity for GPU work. Inspect its arguments and the pinned locks before reproducing an old pilot. Model weights belong in the shared data area, not Git.
+
+See [models](../README.md) for the current stack and [operations](../../ops/README.md) for GB10 resource constraints.

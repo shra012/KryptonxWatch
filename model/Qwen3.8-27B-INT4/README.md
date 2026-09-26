@@ -1,119 +1,54 @@
-# Qwen3.8-27B-INT4
+# Qwen3.8-27B shoplifting study
 
-Status (2026-09-26): this is the original edge-flow design. The app no longer uses Qwen3.8-27B; it runs Qwen3-VL-30B-A3B locally (see [model/README.md](../README.md)). This folder now mainly holds the shoplifting study ([plans/shoplifting-study.md](plans/shoplifting-study.md)): the LoRA result is not conclusive (ΔAUROC +0.027, every 95% CI includes 0) with about 3x the false positives per hour ([model card](runs/qwen38/exp3/MODEL_CARD.md)).
+This directory contains the team's earlier Qwen3.8-27B shoplifting experiment. It is a **separate model from Sentinel Machines v1**, which is based on Qwen3-VL-30B-A3B.
 
-Edge flow for HawkWatch. The camera path stays on device. Qwen3.8-27B-INT4 reads a short set of frames only after a suspicious event is detected, then the result goes to the dashboard.
+The completed experiment trains a LoRA adapter to score eight-second clips for suspected shoplifting using a fixed yes/no prompt. It does not generate the general model's scene log, crime categories, or actor boxes.
 
-## Model assets
+## Contents
 
-`src/` contains Qwen experiment and inference code, `env/qwen/` contains the pinned environment, `runs/qwen38/` contains run outputs, and `plans/` contains experiment plans. Shared study inputs remain in `../study/`. Run scripts from the KryptonxWatch repository root.
+| Directory | Contents |
+| --- | --- |
+| [src](src) | Data acquisition, leakage audit, window sampling, MIL training, selection, scoring, and localization |
+| [env/qwen](env/qwen) | Model metadata, environment locks, and weight checksums |
+| [runs/qwen38](runs/qwen38) | Pilot outputs and study results |
+| [runs/qwen38/exp3/README.md](runs/qwen38/exp3/README.md) | Detailed model card, methods, limitations, and results |
+| [../study](../study/README.md) | Source-video splits and annotation manifests |
 
-## HawkWatch edge AI flow
+The directory name is historical; inspect the environment and run metadata for the precision used in a particular experiment.
 
-```
-Camera Feed
-   ↓
-YOLO Detection
-   ↓
-Tracking + Pose / Motion Analysis
-   ↓
-Suspicious Event Detected?
-   ↓
-Yes
-   ↓
-Select 8–16 Important Frames
-   ↓
-Add Metadata
-- Timestamp
-- Camera ID
-- Person/Object Track ID
-- Bounding Boxes
-- Motion Information
-   ↓
-Qwen3.8-27B-INT4
-   ↓
-Event Understanding
-- What happened?
-- Severity
-- Confidence
-- Evidence
-- Recommended action
-   ↓
-Confidence / Evidence Check
-   ↓
- ┌───────────────────────┐
- │                       │
-High Confidence      Low Confidence
- │                       │
- ↓                       ↓
-Handle Locally       More Local Analysis
- │                       ↓
- ↓                 Still Uncertain?
-Local Alert                ↓
- │                     Yes
- ↓                       ↓
-Store Event          Cloud Escalation
- │                       ↓
- ↓                 Refined Result
-Dashboard                 ↓
- │                  Update Dashboard
- ↓
-Security Team
+## Protocol and findings
+
+Scoring uses 16 frames at 2 fps, native resolution, thinking disabled, and the normalized probability of yes versus no on the first answer token. Evaluation scans eight-second windows at four-second stride.
+
+Training used multiple-instance learning with model-selected positive windows, frozen vision parameters, LoRA rank 16, and three final seeds. The mean window AUROC gain over zero-shot was approximately 0.027, but the paired confidence intervals include zero. False positives increased and temporal localization worsened. These results do not establish a fine-tuning improvement for the review timeline.
+
+Use the detailed [model card](runs/qwen38/exp3/README.md) and [final artifacts](runs/qwen38/exp3/final) for the exact results. Do not attribute them to Sentinel Machines v1.
+
+## Local integration
+
+The app lists this scorer as `local:shoplifting-s2` when configured with:
+
+```dotenv
+LOCAL_SCORER_BASE_URL=http://127.0.0.1:8081/v1
+LOCAL_SCORER_MODELS=shoplifting-s2
 ```
 
-## Long-term memory flow
+It supports recorded video only and requires `ffmpeg` on the app server. Assistant and summary requests use the separately configured chat model.
 
-```
-Detected Event
-   ↓
-Create Event Summary
-   ↓
-Store:
-- Timestamp
-- Camera
-- Track ID
-- Event Type
-- Severity
-- Confidence
-- Important Frames / Clip
-- Embedding
-   ↓
-Local Database / Vector DB
-   ↓
-User asks:
-"What happened near the entrance in the last hour?"
-   ↓
-Retrieve Relevant Events
-   ↓
-Qwen3.8-27B-INT4
-   ↓
-Final Incident Summary
+The existing adapter deployment uses vLLM LoRA names `shoplifting-s1`, `shoplifting-s2`, and `shoplifting-s3`. HP Z Runtime's proxy routes its service label, so the adapter names require the direct localhost bridge to the underlying vLLM socket:
+
+```bash
+sg zrt -c 'socat TCP-LISTEN:8081,bind=127.0.0.1,reuseaddr,fork UNIX-CONNECT:/opt/hp/zrt/run/vllm-qwen38-shoplifting.sock'
 ```
 
-## Model stack
+This foreground bridge assumes the matching LoRA service is already running. Use a managed or detached process for persistent deployment. Serving configuration must register the adapter paths under `/srv/kryptonx-data/models/qwen3.8-27b-shoplifting-lora/` and retain the exact base revision in [env/qwen/model.json](env/qwen/model.json).
 
-```
-Camera
-   ↓
-YOLO
-   ↓
-ByteTrack / BoT-SORT
-   ↓
-Pose + Motion Logic
-   ↓
-Qwen3.8-27B-INT4
-   ↓
-Local / Cloud Router
-   ↓
-Dashboard + Alerts
+Score a local clip from the repository root:
+
+```bash
+python3 model/src/qwen_zrt_score.py \
+  --endpoint http://127.0.0.1:8081/v1 \
+  --model shoplifting-s2 --video /path/to/clip.mp4
 ```
 
-## 30 GB target
-
-| Piece | Memory |
-|---|---|
-| Qwen3.8-27B-INT4 | ~20–24 GB |
-| YOLO + tracking + pose | ~1–2 GB |
-| KV cache + runtime | ~4–7 GB |
-| Safety margin | ~2–4 GB |
-| **Total** | **≤ 30 GB** |
+The browser samples JPEG frames, which differ from the study's decoded-frame protocol. Do not assume identical scores. Coordinate GPU memory with other users before loading this model; see [operations](../../ops/README.md).
