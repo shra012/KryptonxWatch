@@ -96,4 +96,4 @@ Historical Qwen3-VL base-model and Qwen3.8 adapter results are documented separa
 
 ## Team and acknowledgements
 
-Built by **Shravan, Sonakshi, Shreyas, Vidushi, and Chaitanya**. The project was inspired by [HawkWatch at TreeHacks 2025](https://github.com/Grace-Shao/Treehacks2025). The stack brings together Qwen, YOLO, Next.js, HP Z Runtime, and an optional Hermes watch agent.
+Built by **Shravan, Sonakshi, Shreyas, Vidushi, and Chaitanya**. The stack brings together Qwen, YOLO, Next.js, HP Z Runtime, and an optional Hermes watch agent.
