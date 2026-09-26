@@ -5,7 +5,7 @@ code/qwen_model.py): 16 frames at 2 fps, native resolution, fixed prompt, thinki
 score = P(yes) / (P(yes) + P(no)) over the first answer token. Frames are cut losslessly with
 ffmpeg into a 16-frame clip and sent as a data URL, with vLLM frame sampling disabled.
 
-Serve first (see docs/archive/model-plans/qwen-lora-zrt.md), then e.g.:
+Serve first (the LoRA serving runbook, model/.plans/qwen-lora-zrt.md, is in git history before commit d79bacd), then e.g.:
   python3 model/src/qwen_zrt_score.py --video clip.mp4 --model shoplifting-s1
   python3 model/src/qwen_zrt_score.py --video clip.mp4 --model Qwen/Qwen3.8-27B --start 12
 """

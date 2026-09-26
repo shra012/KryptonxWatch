@@ -9,12 +9,12 @@ In the app, detections come from **`sentinel-machines-v1`**. This is the product
 | Model | Where it runs | Role | Bake-off v1 Score | Status |
 |---|---|---|---|---|
 | Qwen3-VL-30B-A3B-Instruct FP8 | GB10, served by zrt (vLLM) | Local VLM: detection, scene log, incident boxes | 69% | **Production local model** (`local-vlm:qwen3-vl-30b-a3b`). Zero-shot, not fine-tuned |
-| Gemini 2.5 Flash | OpenRouter | Benchmark only | 75% | Reference to beat. **Never used as a teacher**: Google's terms restrict training on its outputs |
+| Gemini 2.5 Flash | OpenRouter | Benchmark; can serve the app via the alias | 75% | Reference to beat. **Never used as a teacher**: Google's terms restrict training on its outputs |
 | Nemotron-3-Nano-Omni-30B-A3B | OpenRouter (local attempt archived) | Candidate | 69% / 67% (2 runs) | Statistically tied with Qwen3-VL. Served through zrt it reset the machine twice; no local benchmark result recorded. Plans archived |
 | Qwen3.8-27B | OpenRouter; GB10 with the shoplifting LoRA | First model we served; research scorer | 64% | Weakest option: misses most crimes. Not in the current app |
 | YOLO11m | GB10, container `kryptonx-yolo` on 127.0.0.1:8090 | Person boxes and tracking | – | In the app: snaps the VLM's incident box to a detected person |
 
-Sources: [openrouter-bakeoff/results/summary.md](openrouter-bakeoff/results/summary.md), [.plans/local-vlm-quality.md](.plans/local-vlm-quality.md), [docs/archive/model-plans/nemotron-local-serving.md](../docs/archive/model-plans/nemotron-local-serving.md).
+Sources: [openrouter-bakeoff/results/summary.md](openrouter-bakeoff/results/summary.md), `model/.plans/local-vlm-quality.md` (local plan, not in the repo).
 
 ### The Qwen3.8-27B shoplifting LoRA (what was trained)
 
@@ -52,13 +52,13 @@ Source: [openrouter-bakeoff/results/summary.md](openrouter-bakeoff/results/summa
 | Gemini 2.5 Flash | 69% | 73% | 91% | 53% | 38/42 | 0.78 |
 | Qwen3.8-27B | 65% | 77% | 37% | 7% | 15/42 | 0.66 |
 
-Source: [openrouter-bakeoff/results-v2/summary.md](openrouter-bakeoff/results-v2/summary.md). A larger **full** set (1,489 windows) gives the same picture: Nemotron 63%, Qwen3-VL 59%, Gemini 57% (Gemini names the crime best, 71%, but false-alarms on 57% of normal clips); see [openrouter-bakeoff/results-full/summary.md](openrouter-bakeoff/results-full/summary.md).
+Source: [openrouter-bakeoff/results-v2/summary.md](openrouter-bakeoff/results-v2/summary.md). On the larger **full** set (1,489 windows) the open models bunch together (Gemma-4-31B 65%, Nemotron 63%, Qwen3-VL 59%) and Gemini scores 57%: it names the crime best (71%) but false-alarms on 57% of normal clips. See [openrouter-bakeoff/results-full/summary.md](openrouter-bakeoff/results-full/summary.md).
 
 In short: the local Qwen3-VL ties Gemini on balanced accuracy and false-alarms less, but names the crime less often and hits fewer timed events.
 
 ## How we evaluate
 
-The bake-off ([openrouter-bakeoff/README.md](openrouter-bakeoff/README.md)) drives `webapp/scripts/vlm-benchmark.ts`, which calls the same code the app uses, so the numbers describe the product. Raw replies per window are kept in `openrouter-bakeoff/results*/*.jsonl`, so every table can be recomputed without new model calls. Measures, fixed before any tuning ([.plans/local-vlm-quality.md](.plans/local-vlm-quality.md)):
+The bake-off ([openrouter-bakeoff/README.md](openrouter-bakeoff/README.md)) drives `webapp/scripts/vlm-benchmark.ts`, which calls the same code the app uses, so the numbers describe the product. Raw replies per window are kept in `openrouter-bakeoff/results*/*.jsonl`, so every table can be recomputed without new model calls. Measures, fixed before any tuning (`model/.plans/local-vlm-quality.md` (local plan, not in the repo)):
 
 | # | Measure | Notes |
 |---|---|---|
@@ -70,7 +70,7 @@ The bake-off ([openrouter-bakeoff/README.md](openrouter-bakeoff/README.md)) driv
 
 ## Roadmap
 
-From [.plans/local-vlm-quality.md](.plans/local-vlm-quality.md). Goal: a local model as good as Gemini 2.5 Flash on detection, scene log and boxes, with Gemini as a benchmark only.
+From `model/.plans/local-vlm-quality.md` (local plan, not in the repo). Goal: a local model as good as Gemini 2.5 Flash on detection, scene log and boxes, with Gemini as the benchmark and never as a training teacher.
 
 | Phase | What | Status |
 |---|---|---|
@@ -94,12 +94,13 @@ sg zrt -c 'zrt serve hf:Qwen/Qwen3-VL-30B-A3B-Instruct-FP8@d9748a51ae66 --label 
 sg zrt -c 'zrt services'        # status; OpenAI-compatible proxy at http://127.0.0.1:8080/v1
 ```
 
-YOLO person boxes (command from [YOLO/src/yolo_server.py](YOLO/src/yolo_server.py); the app reads `YOLO_BASE_URL=http://127.0.0.1:8090`):
+YOLO person boxes, as the container `kryptonx-yolo` (server: [YOLO/src/yolo_server.py](YOLO/src/yolo_server.py); the app reads `YOLO_BASE_URL=http://127.0.0.1:8090`). Run from the repo root; `-e USER -e LOGNAME` are needed with `--user`, or PyTorch fails its user lookup:
 
 ```bash
-docker run --rm --runtime=nvidia --gpus all -p 127.0.0.1:8090:8090 \
-  -v /srv/kryptonx-data/models/yolo:/weights:ro -v "$PWD":/workspace -w /workspace kryptonx/yolo:dev \
-  python model/YOLO/src/yolo_server.py --weights /weights/yolo11m.pt --host 0.0.0.0
+docker run -d --name kryptonx-yolo --restart unless-stopped --runtime=nvidia --gpus all \
+  --user "$(id -u):$(id -g)" -e HOME=/tmp -e USER -e LOGNAME \
+  -p 127.0.0.1:8090:8090 -v /srv/kryptonx-data/models/yolo:/weights:ro -v "$PWD":/workspace -w /workspace \
+  kryptonx/yolo:dev python model/YOLO/src/yolo_server.py --weights /weights/yolo11m.pt --host 0.0.0.0
 ```
 
 **cuDNN gotcha:** in the NGC 26.03 image, cuDNN 9.20 makes conv models such as YOLO silently return no detections on the GB10 (sm_121). The YOLO scripts set `torch.backends.cudnn.enabled = False`, which gives correct results at about 10 ms per image.
@@ -108,18 +109,18 @@ docker run --rm --runtime=nvidia --gpus all -p 127.0.0.1:8090:8090 \
 
 | Path | Contents |
 |---|---|
-| [`.plans/`](.plans/) | Cross-model plans. Active: [local-vlm-quality.md](.plans/local-vlm-quality.md) |
+| `model/.plans` (local plan, not in the repo) | Cross-model plans. Active: local-vlm-quality.md (`model/.plans/local-vlm-quality.md`, a local plan not in the repo) |
 | [`openrouter-bakeoff/`](openrouter-bakeoff/README.md) | Model bake-off: `fetch_data.py` builds the test sets, `results*/` hold raw replies and summaries |
 | [`Qwen3.8-27B-INT4/`](Qwen3.8-27B-INT4/README.md) | Shoplifting study: data fetch (`src/fetch_ucf.py`), leak audit, LoRA training and evaluation, run outputs and model card |
 | [`YOLO/`](YOLO/src/) | `kryptonx/yolo:dev` image, box snapping (`yolo_snap.py`), review page (`box_review.py`), app server (`yolo_server.py`) |
 | [`GLM-4.5-VL/`](GLM-4.5-VL/README.md) | GLM-4.5V arm, **skipped** 2026-09-25. Its `env/glm/` image `kryptonx/glm:dev` is the planned container for Phase 5 training |
-| `Nemotron-3-Nano-Omni/` | No tracked files. Its plans are archived in [docs/archive/model-plans/](../docs/archive/model-plans/) |
+| `Nemotron-3-Nano-Omni/` | No tracked files. Its plans were removed (git history) |
 | [`study/v1/`](study/v1/) | Study splits, leak audit, exclusions and hand-marked theft times (`train_shoplifting_events.csv`) |
 | [`src/`](src/) | `qwen_zrt_score.py`: runs the shoplifting scorer through a zrt endpoint |
 | [`sonakshi/`](sonakshi/CLAUDE.md) | Sonakshi's UCF and MERL indexing scripts with tests, and her own working rules |
 | `certs/` | CA certificate used by the UCF download scripts |
 
-Earlier plans (GLM arm, Nemotron serving and fine-tune proposal, Qwen3.8-27B arm, first bake-off, LoRA serving runbook) are in [docs/archive/model-plans/](../docs/archive/model-plans/).
+Earlier plans (GLM arm, Nemotron serving and fine-tune proposal, Qwen3.8-27B arm, first bake-off, LoRA serving runbook) were removed in commit d79bacd and are in git history.
 
 ## Datasets and licences
 

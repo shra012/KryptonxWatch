@@ -1,9 +1,9 @@
 # Sentinel Machines web app
 
-Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter now, a local server on the GB10 later) analyses uploads and live feeds. Without a model configured, the app runs in demo mode. Another team builds the fine-tuned models; they integrate through [the data contract](../docs/data-contract.md). Roadmap history: [webapp-roadmap.md](../docs/archive/webapp-plans/webapp-roadmap.md). Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
+Next.js 15 dashboard for reviewing security video. A vision-language model behind `app/api/*` (any OpenAI-compatible endpoint: OpenRouter, or a local model served on the GB10 by zrt) analyses uploads and live feeds. Without a model configured, uploads save but are not analysed. Model work lives in `../model/` and integrates through [the data contract](../docs/data-contract.md); no fine-tuned model is in the app today. Model choice: [bake-off](../model/openrouter-bakeoff/README.md).
 
 ## Planning context
-Before planning or changing the web app, read the active plans in `.plans/` (finished ones are in `../docs/archive/webapp-plans/`) and use them alongside this guidance and the data contract. Keep the relevant plan there up to date when scope or decisions change. Save every new plan to `.plans/<topic>.md` with Context, ordered steps and Verification.
+Before planning or changing the web app, read the active plans in `.plans/` (finished ones are deleted; see git history) and use them alongside this guidance and the data contract. Keep the relevant plan there up to date when scope or decisions change. Save every new plan to `.plans/<topic>.md` with Context, ordered steps and Verification.
 
 ## Commands
 - `npm run dev`: http://localhost:3000. Config lives in `.env.local`: model settings from `.env.example`, alerts and the watch agent from `.env.local.example`; restart after changing it.
@@ -14,7 +14,7 @@ Before planning or changing the web app, read the active plans in `.plans/` (fin
 - `npx --no-install jiti scripts/vlm-benchmark.ts frames|run|score`: model bake-off using the app's analysis code (data from `../model/openrouter-bakeoff/fetch_data.py`). First e2e run: `npx playwright install chromium`.
 
 ## Where things live
-- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics` (includes a live head-to-head run), `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
+- `app/`: pages: `/` landing page (no sidebar; `Shell` skips it), `/overview` console overview, `/upload`, `/live` (webcam or replay feed with live analysis), `/videos`, `/videos/[id]` (player, AI analysis, timeline, boxes, scene log, assistant), `/detections`, `/analytics` (includes a live head-to-head run, staged for a demo video: its lanes are pinned with labels deliberately swapped, see `PINNED` in `components/live-run.tsx`, so it is not a real comparison), `/system` (edge node telemetry), `/settings`. Pages are client components because state lives in the browser.
 - `app/api/`: server routes `model`, `analyze` (one window of frames), `chat`, `summary`, `track`, `pose`, `detect`, `alerts`, `system`, `demo-clips`, and for the Hermes watch agent `mcp`, `briefings`, `watch/events`. They are the only code that reads `VLM_*` env vars (via `lib/server/vlm-config.ts`).
 - `lib/vlm/`: prompt, parsing and merging (`analysis.ts`), assistant/summary prompts (`assistant.ts`), OpenAI-compatible client (`client.ts`). No runtime imports, so the benchmark script shares them.
 - `lib/detection-client.ts`: browser side: frame capture, windowed analysis, assistant and summary calls, `useModelStatus()`.
@@ -24,7 +24,7 @@ Before planning or changing the web app, read the active plans in `.plans/` (fin
 - `lib/types.ts`: domain types and the `DetectionService` / `AssistantService` integration points.
 - `lib/analytics.ts`: all counts, chart data and CSV. `lib/storage.ts`: IndexedDB. `lib/demo.ts`: simulated samples.
 - `lib/server/`: server-only modules. `telemetry.ts` reads nvidia-smi and `/proc`; `alerts.ts` holds the Twilio call and the alert policy; `watch-log.ts` and `watch-tools.ts` are the watch agent's feed log and MCP tools; `inference-stats.ts` measures inference speed. Never import these from a `"use client"` file — the browser talks to `/api/system` and `/api/alerts` instead, through `components/use-telemetry.ts` and `lib/alert-client.ts`.
-- Secrets live in `webapp/.env.local` (git-ignored). `.env.example` and `.env.local.example` together list every variable and what it does.
+- Secrets live in `webapp/.env.local` (git-ignored). `.env.example` (models, local models, YOLO, demo clips) and `.env.local.example` (alerts, watch agent) list the variables and what they do; README.md has the full table.
 
 ## UI rules
 - Tailwind 4 + daisyUI 5 classes, `lucide-react` icons, Recharts for charts. Ask before adding a UI library.

@@ -2,7 +2,7 @@
 
 Status: done 2026-09-24 · 12 models + HawkWatch baseline · total spend ≈ $0.87 on OpenRouter.
 
-Outcome (2026-09-25): the app now runs **Qwen3-VL-30B-A3B-Instruct FP8 locally** through zrt (Score 69% on v1, in [`results/summary.md`](results/summary.md)); serving Nemotron locally through zrt reset the machine, so it was not adopted. Follow-up work: [local-vlm-quality.md](../.plans/local-vlm-quality.md).
+Outcome (2026-09-25): the app now runs **Qwen3-VL-30B-A3B-Instruct FP8 locally** through zrt (Score 69% on v1, in [`results/summary.md`](results/summary.md)); serving Nemotron locally through zrt reset the machine, so it was not adopted. Follow-up work: local-vlm-quality.md (`model/.plans/local-vlm-quality.md`, a local plan not in the repo).
 
 ## Question
 

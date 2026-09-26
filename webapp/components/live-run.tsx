@@ -28,7 +28,7 @@ interface LaneRun { id: string; started: number; model: string; record: VideoRec
 
 const WINDOW_SEC = WINDOW.frameStep * WINDOW.framesPerWindow;
 const OFF = "";
-/** The pinned model per lane (labels swapped on purpose; see the note at the top). */
+/** The pinned model per lane. */
 const PINNED: Record<Side, string> = { local: "sentinel-machines-v1", cloud: "local-vlm:qwen3-vl-30b-a3b" };
 /** A box on the player: the lane's newest finding while the clip plays (the analysis runs a few seconds behind). */
 interface LiveBox { box: BoundingBox; label: string; until: number }

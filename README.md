@@ -31,7 +31,7 @@ flowchart LR
   S -- "briefing" --> B
 ```
 
-Two published pages go into more detail:
+Two published pages (shared by link) go into more detail:
 
 - [Current architecture on the GB10](https://claude.ai/artifact/SGkdFg7v8faiQ6wqSVcLKo): what runs today.
 - [Cloud blueprint](https://claude.ai/artifact/3MyeD9YsLmk2b8mNbU1Keo): a **future plan** for many stores. It has not been built.
@@ -47,9 +47,9 @@ The product shows one model name: **Sentinel Machines v1** (`sentinel-machines-v
 | Boxes | YOLO11 person detector (n / m) | `model/YOLO/src/yolo_server.py` in the `kryptonx/yolo:dev` container |
 | Watch agent | `qwen/qwen3.8-flash` (text) | OpenRouter, called by Hermes |
 
-**No model in the current architecture is fine-tuned.** The next milestone is a LoRA fine-tune of Qwen3-VL-30B-A3B on human-written labels (UCA sentences plus hand-marked theft times). It is Phase 5 of [model/.plans/local-vlm-quality.md](model/.plans/local-vlm-quality.md) and has not started.
+**No model in the current architecture is fine-tuned.** The next milestone is a LoRA fine-tune of Qwen3-VL-30B-A3B on human-written labels (UCA sentences plus hand-marked theft times). It is Phase 5 of `model/.plans/local-vlm-quality.md` (local plan, not in the repo) and has not started.
 
-Gemini 2.5 Flash is used only as a benchmark, never as a teacher for training, because Google's terms restrict training on its outputs.
+Gemini 2.5 Flash is the benchmark to beat and is never used to train our models, because Google's terms restrict training on its outputs. Like any configured model, it can serve the app through the `sentinel-machines-v1` alias.
 
 ### Earlier experiment: Qwen3.8-27B shoplifting LoRA
 
@@ -57,7 +57,7 @@ The team trained a LoRA on Qwen3.8-27B as a yes/no shoplifting scorer (3 seeds).
 
 ## Results
 
-All numbers come from the app's own analysis pipeline on UCF-Crime clips. Full tables: [model/openrouter-bakeoff/README.md](model/openrouter-bakeoff/README.md) and [model/.plans/local-vlm-quality.md](model/.plans/local-vlm-quality.md).
+All numbers come from the app's own analysis pipeline on UCF-Crime clips. Full tables: [model/openrouter-bakeoff/README.md](model/openrouter-bakeoff/README.md) and `model/.plans/local-vlm-quality.md` (local plan, not in the repo).
 
 **Bake-off v1** (36 clips: 18 crime, 18 normal):
 
@@ -67,7 +67,7 @@ All numbers come from the app's own analysis pipeline on UCF-Crime clips. Full t
 | **Qwen3-VL-30B-A3B FP8 (local, GB10)** | 69% | 81% | 61% | 22% | 3/6 |
 | Qwen3.8-27B (OpenRouter) | 64% | 69% | 28% | 0% | 1/6 |
 
-**Bake-off v2** (65 fresh clips, cut around each crime; OpenRouter runs): Qwen3-VL-30B-A3B 80%, Qwen3.8-27B 65%, Gemini 2.5 Flash 69% (it false-alarmed on 53% of normal clips).
+**Bake-off v2** (65 fresh clips: 35 crime clips cut around the crime, 30 normal; OpenRouter runs): Qwen3-VL-30B-A3B 80%, Qwen3.8-27B 65%, Gemini 2.5 Flash 69% (it false-alarmed on 53% of normal clips).
 
 How to read this:
 
@@ -102,12 +102,13 @@ Then set `LOCAL_VLM_BASE_URL=http://127.0.0.1:8080/v1` and `LOCAL_VLM_MODELS=qwe
 **3. YOLO person boxes** (optional; set `YOLO_BASE_URL=http://127.0.0.1:8090`)
 
 ```bash
-docker run --rm --runtime=nvidia --gpus all -p 127.0.0.1:8090:8090 \
-  -v /srv/kryptonx-data/models/yolo:/weights:ro -v "$PWD":/workspace -w /workspace kryptonx/yolo:dev \
-  python model/YOLO/src/yolo_server.py --weights /weights/yolo11m.pt --host 0.0.0.0
+docker run -d --name kryptonx-yolo --restart unless-stopped --runtime=nvidia --gpus all \
+  --user "$(id -u):$(id -g)" -e HOME=/tmp -e USER -e LOGNAME \
+  -p 127.0.0.1:8090:8090 -v /srv/kryptonx-data/models/yolo:/weights:ro -v "$PWD":/workspace -w /workspace \
+  kryptonx/yolo:dev python model/YOLO/src/yolo_server.py --weights /weights/yolo11m.pt --host 0.0.0.0
 ```
 
-The image is built from `model/YOLO/env/Dockerfile`. On a laptop: `pip install ultralytics && python model/YOLO/src/yolo_server.py`.
+Run it from the repo root. `-e USER -e LOGNAME` are needed with `--user`, or PyTorch fails its user lookup. Stop it with `sg docker -c 'docker rm -f kryptonx-yolo'`. The image is built from `model/YOLO/env/Dockerfile`. On a laptop: `pip install ultralytics && python model/YOLO/src/yolo_server.py`.
 
 **4. Hermes watch agent** (optional; needs an OpenRouter key in `webapp/.env.local`)
 
@@ -124,7 +125,7 @@ Restart the web app after the first run so it picks up the token. See [ops/herme
 |---|---|
 | [`webapp/`](webapp/README.md) | Next.js 15 dashboard and API routes (analysis, assistant, summary, alerts, MCP endpoint) |
 | [`model/`](model/README.md) | Model work, one folder per model |
-| [`model/.plans/local-vlm-quality.md`](model/.plans/local-vlm-quality.md) | Active plan: a local model as good as Gemini 2.5 Flash |
+| `model/.plans/local-vlm-quality.md` (local plan, not in the repo) | Active plan: a local model as good as Gemini 2.5 Flash |
 | [`model/openrouter-bakeoff/`](model/openrouter-bakeoff/README.md) | Model bake-off on the app's pipeline; raw replies in `results*/` |
 | `model/Qwen3.8-27B-INT4/` | Shoplifting study and the Qwen3.8-27B LoRA experiment |
 | `model/YOLO/` | Person-box server, snapping and box review tools |
@@ -149,7 +150,7 @@ Restart the web app after the first run so it picks up the token. See [ops/herme
 - **Keys stay on the server.** API keys and alert credentials live in `webapp/.env.local` (git-ignored) and are only read by `app/api`.
 - **Minimal data leaves the browser.** Only sampled frames are sent for analysis. Detections are stored in the browser's IndexedDB.
 - **One large GPU job at a time.** The GB10's 121 GiB of memory is shared by CPU and GPU and by several users. Serve a model *or* train, never both, and stop services when done.
-- **Plans before big work.** Approved plans live in `webapp/.plans/` and `model/.plans/`; finished or dropped ones move to [`docs/archive/`](docs/archive/README.md).
+- **Plans before big work.** Plans live in local `.plans/` folders (git-ignored, not published); the READMEs hold the current state.
 
 ## Team
 

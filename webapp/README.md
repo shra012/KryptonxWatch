@@ -19,7 +19,7 @@ The model can run on the HP ZGX Nano (NVIDIA GB10) through HP Z Runtime (`zrt`),
 | `/system` | Device operations: GPU, unified memory, SoC power, temperature and inference speed. |
 | `/settings` | Preferences (model choice, theme) and owner SMS alert status. |
 
-**Staged demo, not a benchmark:** the live head-to-head on `/analytics` (`components/live-run.tsx`) is pinned to two models with their "Local" and "Cloud" labels deliberately swapped for a demo video, so its numbers are not a real local-vs-cloud comparison. It also shows the clip's UCF-Crime ground-truth label and a "Named the crime" row.
+**Staged demo, not a benchmark:** the live head-to-head on `/analytics` (`components/live-run.tsx`) was staged for a demo video. Its two lanes are pinned and their labels are deliberately swapped: the lane labelled "Local · GB10" runs `sentinel-machines-v1` (an alias for a cloud model on OpenRouter) and the lane labelled "Cloud · OpenRouter" runs Qwen3-VL-30B-A3B on the GB10. Its numbers are not a real local-vs-cloud comparison; for real model numbers see the [bake-off](../model/openrouter-bakeoff/README.md). It also shows the clip's UCF-Crime ground-truth label and a "Named the crime" row.
 
 ## API routes
 
@@ -61,7 +61,7 @@ The server only honours a model the browser picks if it is in the allow-list (`V
 
 ## Configuration
 
-Two example files together list every variable: `.env.example` (cloud and local models, YOLO, demo clips) and `.env.local.example` (owner alerts and the watch agent). Copy what you need into `.env.local` (git-ignored) and restart the dev server after any change. Never commit or print its values. Variables by group:
+There are two example files: `.env.example` (cloud and local models, YOLO, demo clips) and `.env.local.example` (owner alerts and the watch agent, plus a short model block). Copy what you need into `.env.local` (git-ignored) and restart the dev server after any change. Never commit or print its values. The table below is the full list, including a few variables that are in neither example file (`LOCAL_SCORER_API_KEY`, `DEMO_EXCLUDED_DIR`, `DETECTION_SERVICE_URL`, `SENDGRID_API_BASE`, `NEXT_PUBLIC_DEMO_SAMPLES`):
 
 | Group | Variables |
 |---|---|
@@ -69,7 +69,7 @@ Two example files together list every variable: `.env.example` (cloud and local 
 | Local models (GB10) | `LOCAL_VLM_BASE_URL`, `LOCAL_VLM_MODELS`, `LOCAL_VLM_EXTRA_BODY`, `LOCAL_SCORER_BASE_URL`, `LOCAL_SCORER_MODELS`, `LOCAL_SCORER_API_KEY` |
 | YOLO boxes and joints | `YOLO_BASE_URL` |
 | Owner alerts | `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` or `TWILIO_MESSAGING_SERVICE_SID`, `TWILIO_WHATSAPP_FROM`, `ALERT_OWNER_NUMBER`, `SENDGRID_API_KEY`, `ALERT_EMAIL_FROM` |
-| Alert policy | `ALERT_MIN_SEVERITY`, `ALERT_MAX_PER_HOUR`, `ALERT_REVIEW_BASE`, `ALERT_API_TOKEN`, `ALERT_ALLOW_CLIENT_RECIPIENT`, `TWILIO_API_BASE` |
+| Alert policy | `ALERT_MIN_SEVERITY`, `ALERT_MAX_PER_HOUR`, `ALERT_REVIEW_BASE`, `ALERT_API_TOKEN`, `ALERT_ALLOW_CLIENT_RECIPIENT`, `TWILIO_API_BASE`, `SENDGRID_API_BASE` (test sandboxes) |
 | Watch agent | `WATCH_AGENT_TOKEN`, `WATCH_DATA_DIR` |
 | Demo clips | `DEMO_CLIPS_DIR`, `DEMO_EXCLUDED_DIR` |
 | Other | `DETECTION_SERVICE_URL`; `NEXT_PUBLIC_DEMO_SAMPLES=1` turns on simulated samples (the e2e tests set it) |
@@ -97,8 +97,8 @@ The GB10's system Node is v18, so run `.ts` scripts with `npx --no-install jiti 
 
 ### Local model serving
 
-- **VLM on the GB10:** the `zrt serve` command for Qwen3-VL-30B-A3B is in the root [AGENTS.md](../AGENTS.md). zrt's proxy answers on `http://127.0.0.1:8080/v1`; set `LOCAL_VLM_BASE_URL` to it and list the served label in `LOCAL_VLM_MODELS`.
-- **YOLO:** start `model/YOLO/src/yolo_server.py` (its docstring has the Docker command for the GB10 and a laptop option) and set `YOLO_BASE_URL=http://127.0.0.1:8090`.
+- **VLM on the GB10:** the `zrt serve` command for Qwen3-VL-30B-A3B is in [model/README.md](../model/README.md#serving-on-the-gb10). zrt's proxy answers on `http://127.0.0.1:8080/v1`; set `LOCAL_VLM_BASE_URL` to it and list the served label in `LOCAL_VLM_MODELS`.
+- **YOLO:** run `model/YOLO/src/yolo_server.py` in the `kryptonx-yolo` container (command in [model/README.md](../model/README.md#serving-on-the-gb10); a laptop option is in the script's docstring) and set `YOLO_BASE_URL=http://127.0.0.1:8090`.
 - The GB10 is shared. Run one large model at a time and stop services you no longer need.
 
 ## Guardrails
@@ -123,4 +123,4 @@ The GB10's system Node is v18, so run `.ts` scripts with `npx --no-install jiti 
 | `scripts/` | Bake-off benchmark and sample generator. |
 | `tests/` | Playwright specs (`workflows.spec.ts`, `alerts.spec.ts`) and the fake Twilio server. |
 
-More: [CLAUDE.md](CLAUDE.md) (conventions and UI rules), [data contract](../docs/data-contract.md), [model bake-off](../model/openrouter-bakeoff/README.md), [watch agent plan](.plans/hermes-watch-agent.md). Older plans are in [docs/archive/webapp-plans](../docs/archive/webapp-plans/).
+More: [CLAUDE.md](CLAUDE.md) (conventions and UI rules), [data contract](../docs/data-contract.md), [model bake-off](../model/openrouter-bakeoff/README.md), watch agent plan (`webapp/.plans/hermes-watch-agent.md`, a local plan not in the repo). Finished plans were removed; they are in git history.

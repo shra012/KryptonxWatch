@@ -1,7 +1,7 @@
 """Shared GLM-4.5V helpers: model/processor loading, window decoding and yes/no scoring.
 
 Used by glm_pilot.py (G2), glm_quantize_cache.py and glm_train_pilot.py (G3).
-See docs/archive/model-plans/glm-4.5v-arm.md.
+See the GLM-4.5V arm plan in git history, before commit d79bacd.
 """
 
 import csv

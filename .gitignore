@@ -34,3 +34,5 @@ venv/
 # Secrets and OS files
 .env
 .DS_Store
+# Plans are the team's local working notes; they are not published
+.plans/

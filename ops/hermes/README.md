@@ -1,6 +1,6 @@
 # Hermes watch agent
 
-A small scheduled agent that reads what the Sentinel Machines web app has seen across all feeds and posts one short briefing to the dashboard. It runs [Hermes Agent](https://hermes-agent.nousresearch.com) in Docker. Plan and decisions: [webapp/.plans/hermes-watch-agent.md](../../webapp/.plans/hermes-watch-agent.md).
+A small scheduled agent that reads what the Sentinel Machines web app has seen across all feeds and posts one short briefing to the dashboard. It runs [Hermes Agent](https://hermes-agent.nousresearch.com) in Docker. Plan and decisions: `webapp/.plans/hermes-watch-agent.md` (local plan, not in the repo).
 
 ## What it does
 

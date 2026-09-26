@@ -1,6 +1,6 @@
 # GLM-4.5-VL
 
-**Status: skipped on 2026-09-25.** Gates G0 to G2 passed and G3 to G6 were not run; local work moved to dedicated VL models ([model/.plans/local-vlm-quality.md](../.plans/local-vlm-quality.md)). Plan and history: [docs/archive/model-plans/glm-4.5v-arm.md](../../docs/archive/model-plans/glm-4.5v-arm.md). The bf16 weights remain at `/srv/kryptonx-data/models/glm-4.5v/` (201 GB) until someone deletes them.
+**Status: skipped on 2026-09-25.** Gates G0 to G2 passed and G3 to G6 were not run; local work moved to dedicated VL models (`model/.plans/local-vlm-quality.md` (local plan, not in the repo)). Its plan was removed in commit d79bacd (git history). The bf16 weights remain at `/srv/kryptonx-data/models/glm-4.5v/` (201 GB) until someone deletes them.
 
 GLM-4.5V assets for KryptonxWatch are grouped here. The container in `env/glm/` (`kryptonx/glm:dev`: NGC vLLM 26.03 plus PEFT and bitsandbytes) is the planned container for Phase 5 fine-tuning in that plan.
 
