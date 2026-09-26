@@ -56,7 +56,7 @@ with that ceiling in mind.
 
 - **Data:** UCF-Crime Shoplifting and Normal videos, split by source video and store camera. A leakage audit
   (perceptual hashes and scene clusters) removed 6 training videos that shared a camera with test videos.
-  Study split: Shoplifting 21 train / 5 val / 21 test, Normal 30 / 7 / 150. Split lists are in `study/`.
+  Study split: Shoplifting 21 train / 5 val / 21 test, Normal 30 / 7 / 150. Split lists are in [the study manifests](../../../../study/README.md).
 - **Labels: multiple-instance learning (MIL).** UCF-Crime training videos only have a video-level label, and no
   human time stamps exist for them. Each round takes the model's own top 3 windows of every training
   shoplifting video as positives (round 1 uses zero-shot scores), plus random Normal windows at 5:1, trains one
@@ -76,8 +76,8 @@ with that ceiling in mind.
 | 2e-4 | 2 | 0.0088 | 1.000 |
 | 2e-4 | 3 | 0.0202 | 1.000 |
 
-- **Seeds:** the selected setting was trained with seeds 1, 2 and 3. The repo root holds seed 1; all three are in
-  `seed1/`, `seed2/`, `seed3/`. SHA-256 checksums are in `results/adapters.sha256`.
+- **Seeds:** the selected setting was trained with seeds 1, 2 and 3. The published adapter repository holds seed 1 at its root and all three seeds in
+  `seed1/`, `seed2/`, `seed3/`. Local SHA-256 checksums are in [final/adapters.sha256](final/adapters.sha256).
 - **Environment:** NVIDIA H100 PCIe, 580.159.04, 81559 MiB, torch 2.14.0+cu130, transformers
   5.17.0, peft 0.21.0.
 
@@ -85,7 +85,7 @@ with that ceiling in mind.
 
 The model answers one fixed yes/no question per 8-second window (16 frames at 2 fps, native resolution), and the
 score is P("yes") from the answer-token log-probabilities with thinking off. Use the exact prompt and scoring in
-`code/qwen_model.py`, since other prompts or frame rates were not evaluated.
+[qwen_model.py](../../../src/qwen_model.py), since other prompts or frame rates were not evaluated.
 
 ```python
 from peft import PeftModel
@@ -93,11 +93,11 @@ from transformers import AutoModelForImageTextToText, AutoProcessor
 import torch
 processor = AutoProcessor.from_pretrained("Qwen/Qwen3.8-27B", revision="1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0")
 model = AutoModelForImageTextToText.from_pretrained("Qwen/Qwen3.8-27B", revision="1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0", dtype=torch.bfloat16, device_map="auto")
-model = PeftModel.from_pretrained(model, "<this repo>")
+model = PeftModel.from_pretrained(model, "<adapter-repository-or-local-path>")
 ```
 
-`code/localize.py` turns window scores into events in the KryptonxWatch `Detection` format (`startSec`, `endSec`,
-`peakSec`, `confidence`). `results/detections_sample.json` shows the output for a few test videos. The model gives no
+[localize.py](../../../src/localize.py) turns window scores into events in the KryptonxWatch `Detection` format (`startSec`, `endSec`,
+`peakSec`, `confidence`). The [final outputs](final/) contain detections for the evaluated seeds. The model gives no
 location in the frame, so each keyframe box is the full frame.
 
 ## Limitations

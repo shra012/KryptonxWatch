@@ -1,4 +1,4 @@
-// Measured accuracy from the team's bake-off (model/openrouter-bakeoff, model/.plans/local-vlm-quality.md): the app's own
+// Measured accuracy from the team's bake-off (model/openrouter-bakeoff, model/README.md): the app's own
 // analysis pipeline on test set v1, 36 UCF-Crime clips (18 crime, 18 normal). Differences under ~10 points are noise.
 // score = mean of (crime clips with the right crime named) and (normal clips with no alarm).
 

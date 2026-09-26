@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Starts the Hermes watch agent in Docker and schedules its briefings
-# (webapp/.plans/hermes-watch-agent.md). Safe to re-run. Never prints a secret.
+# (ops/hermes/README.md). Safe to re-run. Never prints a secret.
 #
 #   ops/hermes/setup.sh          # set up, start, schedule
 #   ops/hermes/stop.sh           # stop and remove the container (state is kept)

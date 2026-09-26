@@ -1,4 +1,4 @@
-"""Side-by-side box review page (plan: model/.plans/local-vlm-quality.md, Phases 3 and 6).
+"""Side-by-side box review page (plan: model/README.md, Phases 3 and 6).
 
 Picks incidents where the reference model and the candidate flagged the same moment (same video,
 key frames within 2 s), draws the reference box, the candidate's raw box and its YOLO-snapped box on

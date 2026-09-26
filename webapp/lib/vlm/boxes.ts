@@ -1,7 +1,7 @@
 // Person-grounded boxes: snap a VLM incident box to a YOLO person, follow that person across the
 // window's frames, and interpolate between keyframes during playback. Pure functions with no runtime
 // imports, shared by app/api/analyze, the video page and scripts/vlm-benchmark.ts.
-// Plan: .plans/yolo-boxes-in-app.md; snapping rule from model/YOLO/src/yolo_snap.py.
+// Plan: ../model/YOLO/README.md; snapping rule from model/YOLO/src/yolo_snap.py.
 import type { BoundingBox, Detection, Keyframe } from "../types";
 
 export type Rect = Pick<BoundingBox, "x" | "y" | "width" | "height">;

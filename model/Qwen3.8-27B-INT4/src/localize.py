@@ -7,7 +7,7 @@ of that window. The threshold is the 1 FP/h validation threshold from evaluate.p
 validation videos have no time stamps, so nothing else is tuned).
 
   metrics : event recall / precision at tIoU 0.3 and 0.5, median onset error, AP@tIoU on the test split
-  payload : results JSON in the Detection format of docs/data-contract.md, one job per video
+  payload : results JSON in the Detection format of docs/api/README.md, one job per video
 
   python model/Qwen3.8-27B-INT4/src/localize.py --scores ft_test.csv --threshold-from ft_val.csv --out loc.json \\
       --payload detections.json

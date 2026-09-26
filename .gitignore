@@ -36,3 +36,14 @@ venv/
 .DS_Store
 # Plans are the team's local working notes; they are not published
 .plans/
+
+# Local agent handoffs and planning notes; maintained docs use README.md.
+AGENTS.md
+CLAUDE.md
+**/.plans/
+**/plans/*.md
+/docs/archive/
+
+# Generated benchmark Markdown; curated README snapshots stay versioned.
+/model/openrouter-bakeoff/results*/summary.md
+/model/openrouter-bakeoff/results*/boxes.md

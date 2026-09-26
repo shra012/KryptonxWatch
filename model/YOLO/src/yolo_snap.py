@@ -1,4 +1,4 @@
-"""Ground VLM incident boxes on YOLO person detections (plan: model/.plans/local-vlm-quality.md, Phase 3).
+"""Ground VLM incident boxes on YOLO person detections (plan: model/README.md, Phase 3).
 
 Reads a benchmark results file (model/openrouter-bakeoff/results/<model>.jsonl), runs a YOLO person
 detector on each incident's key frame (the cached benchmark frame at incident.seconds), replaces the

@@ -5,7 +5,7 @@ import { callWatchTool, watchTools } from "@/lib/server/watch-tools";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// MCP server for the Hermes watch agent (webapp/.plans/hermes-watch-agent.md): stateless
+// MCP server for the Hermes watch agent (ops/hermes/README.md): stateless
 // Streamable HTTP, answered as plain JSON. Only a caller holding WATCH_AGENT_TOKEN gets in.
 const PROTOCOL = "2025-06-18";
 const INSTRUCTIONS = "KryptonxWatch feed log. Read with list_feeds, recent_events, feed_activity, get_incident, system_status and last_briefing; publish with post_briefing. Detections are suspected until a person reviews them. Cite incident ids for every claim.";

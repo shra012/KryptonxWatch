@@ -1,4 +1,4 @@
-"""G2 inference pilot for Qwen3.8-27B (see model/Qwen3.8-27B-INT4/plans/qwen3.8-27b-arm.md).
+"""G2 inference pilot for Qwen3.8-27B (see model/Qwen3.8-27B-INT4/README.md).
 
 Scores a few 8 s windows with the model loaded in bf16, thinking disabled, and reports
 P("yes") from the first answer token, seconds per window, peak memory and determinism.

@@ -1,4 +1,4 @@
-// Browser side of the watch agent's feed log (webapp/.plans/hermes-watch-agent.md). It only ever
+// Browser side of the watch agent's feed log (ops/hermes/README.md). It only ever
 // talks to our own /api routes; when the agent is not set up, the server ignores these calls.
 import type { Detection, VideoRecord } from "@/lib/types";
 import type { BriefingsResponse, FeedSource } from "@/lib/watch-types";

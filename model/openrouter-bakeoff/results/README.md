@@ -1,3 +1,7 @@
+# Historical v1 benchmark results
+
+Saved base-model comparison; these are not Sentinel Machines v1 release metrics. See the [evaluation guide](../README.md) for methodology and [summary.json](summary.json) for machine-readable results.
+
 | Model | Windows | Score @0.5 | CV score (tuned threshold) | Balanced acc. | Clips detected | Right category | Normal clips false-alarmed | False alarms / min | Window AUROC | Timed events hit | Median onset error | p50 latency | Cost |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | google/gemini-2.5-flash (HawkWatch pipeline) | 409/409 | 81% | 81% (0.5/0.5) | 81% | 67% | – | 6% | 0.19 | 0.56 | 3/6 | 2.5 s | 1.5 s | $0.159 |
@@ -30,3 +34,4 @@
 | mistralai/mistral-small-3.2-24b-instruct | 163/163 | 44% | 61% (0.9/0.9) | 58% | 94% | 67% | 78% | 3.36 | 0.79 | 5/6 | 5.0 s | 3.8 s | $0.018 |
 | mistralai/mistral-small-2603 | 159/163 | 42% | 42% (0.5/0.8) | 58% | 50% | 17% | 33% | 1.68 | 0.44 | 1/6 | 3.0 s | 1.3 s | $0.019 |
 | z-ai/glm-4.6v | 163/163 | 39% | 69% (0.9/0.9) | 64% | 94% | 44% | 67% | 2.99 | 0.74 | 3/6 | 2.3 s | 3.5 s | $0.034 |
+

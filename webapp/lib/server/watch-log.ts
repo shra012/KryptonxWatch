@@ -1,5 +1,5 @@
 // Server-only: the append-only feed log the watch agent reads, and the briefings it writes back
-// (webapp/.plans/hermes-watch-agent.md). JSONL under data/watch/ (git-ignored), newest entries
+// (ops/hermes/README.md). JSONL under data/watch/ (git-ignored), newest entries
 // kept in memory. Nothing is logged until WATCH_AGENT_TOKEN is set, so the app stores no feed
 // history unless the agent is in use.
 import { randomUUID } from "node:crypto";

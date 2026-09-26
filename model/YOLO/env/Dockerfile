@@ -1,4 +1,4 @@
-# YOLO person detector for grounding VLM boxes (plan: model/.plans/local-vlm-quality.md, Phase 3).
+# YOLO person detector for grounding VLM boxes (plan: model/README.md, Phase 3).
 # Builds on the GB10 CUDA/PyTorch image; --no-deps keeps its NVIDIA torch build instead of a pip torch.
 # Build: docker build -t kryptonx/yolo:dev model/YOLO/env
 FROM kryptonx/glm:dev

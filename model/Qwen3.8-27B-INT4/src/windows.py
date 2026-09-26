@@ -1,4 +1,4 @@
-"""Windows and labels for the shoplifting study (definitions in model/Qwen3.8-27B-INT4/plans/shoplifting-study.md).
+"""Windows and labels for the shoplifting study (definitions in model/Qwen3.8-27B-INT4/README.md).
 
 A window is 8 s long with a 4 s stride, sampled at 2 fps (16 frames) at native resolution.
 A window is positive if it overlaps an annotated event by at least 50% of its length or at least

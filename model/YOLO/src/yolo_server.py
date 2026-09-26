@@ -1,4 +1,4 @@
-"""Person boxes over HTTP for the web app (plan in git history: webapp/.plans/yolo-boxes-in-app.md, before commit d79bacd).
+"""Person boxes over HTTP for the web app (plan in git history: model/YOLO/README.md, before commit d79bacd).
 
 POST /detect  {"images": ["data:image/jpeg;base64,...", ...], "conf": 0.25}
           ->  {"persons": [[{"x", "y", "width", "height", "score"}, ...], ...]}   (one list per image, normalised 0-1)

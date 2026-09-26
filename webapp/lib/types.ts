@@ -12,7 +12,7 @@ export const alertChannels: { value: AlertChannel; label: string; hint: string; 
 ];
 
 export interface BoundingBox { x: number; y: number; width: number; height: number; label: string }
-/** A box at one moment of video time; the video page interpolates between keyframes (docs/data-contract.md). */
+/** A box at one moment of video time; the video page interpolates between keyframes (docs/api/README.md). */
 export interface Keyframe { seconds: number; box: BoundingBox; trackId?: string }
 /** What a person did about a detection from the response pop-up (lib/response.ts). The 911 call is simulated in this demo. */
 export interface ResponseRecord { kind: "911" | "owner"; at: string; reference: string; outcome: string }

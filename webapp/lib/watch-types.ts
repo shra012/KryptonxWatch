@@ -1,5 +1,5 @@
 // Shape of the feed log the watch agent reads and of the briefings it writes
-// (webapp/.plans/hermes-watch-agent.md). Shared by the server and the dashboard.
+// (ops/hermes/README.md). Shared by the server and the dashboard.
 
 export type FeedKind = "live" | "upload" | "sample";
 /** Which feed a window came from. `sample` footage is simulated and never reaches a briefing. */
