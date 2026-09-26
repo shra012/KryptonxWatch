@@ -226,15 +226,7 @@ footer a{text-decoration:underline;text-underline-offset:3px}
 }
 .hero.launch .tagline{max-width:28ch;margin:0 auto;color:var(--ink);font-weight:600;font-size:clamp(1.25rem,2.6vw,2rem);line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
 .hero.launch .lede{max-width:52ch;margin:16px auto 0;color:var(--muted);font-size:clamp(1rem,1.4vw,1.15rem);text-wrap:balance}
-.shot{margin:56px auto 0;width:100%;max-width:1080px;border-radius:18px;overflow:hidden;border:1px solid var(--base-300);background:var(--base-200);
-  box-shadow:0 30px 100px color-mix(in oklch,var(--ink) 10%,transparent);
-  transform:scale(var(--s,1));transform-origin:50% 0;will-change:transform}
-.shot img{display:block;width:100%;height:auto}
-/* the product shot follows the page theme, like the app */
-.shot .dark{display:none}
-:root[data-theme="dark"] .shot .light{display:none}
-:root[data-theme="dark"] .shot .dark{display:block}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .shot .light{display:none}:root:not([data-theme="light"]) .shot .dark{display:block}}
+.hero.launch>.sl{width:100%;display:flex;flex-direction:column;align-items:center}
 .hero.launch .stats{width:100%;max-width:1080px;margin:56px auto 0;text-align:left}
 /* section headlines: big, bold, centred */
 section h2{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:700;letter-spacing:-.04em;line-height:1.02;text-align:center}
@@ -245,33 +237,109 @@ section p.hint{margin:16px auto 34px;text-align:center;font-size:clamp(1rem,1.5v
 #solution .cats{justify-content:center}
 #solution h3.sub,#architecture h3.sub,#metrics h3.sub{text-align:center}
 
-/* ---- Scroll-scrubbed scenes (Apple launch style) ---------------------------
-   html.scrub is set by script unless reduced motion is on or the window is very short;
-   without it every scene is a normal static section. */
-html.scrub [data-scene]{position:relative}
-html.scrub .pin{position:sticky;top:60px;height:calc(100vh - 60px);overflow:hidden}
-html.scrub .hero.launch{padding-top:0;padding-bottom:0;display:block;height:280vh}
-html.scrub .hero.launch .pin{display:block}
-html.scrub .hero .htext{padding-top:8vh;will-change:transform,opacity}
-html.scrub .hero .shot{position:absolute;left:50%;top:calc(50% - 40px);margin:0;width:min(1080px,90vw,calc((100vh - 280px) * 1.6));will-change:transform}
-html.scrub .hero .stats{position:absolute;left:50%;bottom:20px;margin:0;width:min(1080px,92vw);opacity:0;will-change:transform,opacity}
-html.scrub [data-scene="problem"]{height:430vh}
-html.scrub [data-scene="problem"] .pin{display:flex;flex-direction:column;justify-content:center}
-html.scrub #problem .story{margin-top:14px}
-html.scrub #problem .story li{opacity:.16;transition:opacity .35s ease}
-html.scrub #problem .story li.past{opacity:.42}
-html.scrub #problem .story li.now{opacity:1}
-html.scrub #problem .punch{opacity:0;transition:opacity .3s}
-html.scrub #problem .punch.on{opacity:1}
-html.scrub #problem .punch .w{color:var(--ink);opacity:.18;transition:opacity .25s}
-html.scrub #problem .punch .w.lit{opacity:1}
-html.scrub #problem .punch b{font-weight:600}
-html.scrub [data-scene="arch"]{height:360vh}
-html.scrub [data-scene="arch"] .pin{display:flex;flex-direction:column;justify-content:center}
-html.scrub #flow .flip{transition:opacity .35s}
-html.scrub #flow .flip.later{opacity:.35}
-html.scrub [data-rise]{will-change:transform,opacity}
-@media (max-height:760px){html.scrub #problem .story li{padding:8px 0} html.scrub #problem .story p{font-size:.96rem}}
+/* ---- Hero player: the app's live analysis, replayed from a measured run ------
+   Same frame, box and label styles as .video-frame / .video-box in globals.css. */
+.stage{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;width:100%;max-width:1080px;margin:44px auto 0;text-align:left;align-items:start}
+@media (max-width:820px){.stage{grid-template-columns:1fr}}
+.vf{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3;
+  box-shadow:0 30px 100px color-mix(in oklch,var(--ink) 12%,transparent)}
+.vf video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.vbox{position:absolute;border:1.5px solid #fff;border-radius:6px;box-shadow:0 0 0 1px rgba(0,0,0,.65);pointer-events:none;
+  transition:left .5s ease,top .5s ease,width .5s ease,height .5s ease,opacity .3s}
+.vbox span{position:absolute;left:0;bottom:100%;white-space:nowrap;background:#fff;color:#000;font:500 .62rem/1.3 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:.15rem .45rem;border-radius:5px 5px 0 0}
+.live{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;border-radius:999px;background:rgb(0 0 0 / .7);color:#fff;padding:5px 10px;font:500 .62rem/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.rec{width:6px;height:6px;border-radius:999px;background:var(--error);animation:rec 1.2s ease-in-out infinite}
+@keyframes rec{50%{opacity:.25}}
+.vmsg{position:absolute;inset:0;display:grid;place-items:center;color:rgb(255 255 255 / .6);font-size:.85rem}
+.vmsg[hidden]{display:none}
+.tl{display:flex;align-items:center;gap:12px;margin-top:12px}
+.track{position:relative;flex:1;height:.9rem;border-radius:999px;background:var(--base-300);overflow:hidden}
+.track .mk{position:absolute;top:0;bottom:0;border-radius:999px;background:var(--ink);min-width:.3rem;animation:mk .4s ease}
+.track .mk.med{opacity:.45}
+@keyframes mk{from{opacity:0}}
+.track .head{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.55;left:0}
+.clock{font:500 .72rem/1 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums;min-width:4.6ch;text-align:right}
+.cap{margin-top:10px;font-size:.85rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.cap b{color:var(--ink);font-weight:500}
+.cap .cl{font:500 .66rem/1.9 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.cap .cl b{font-family:var(--sans);letter-spacing:0;text-transform:none;font-size:.8rem}
+.side{border:1px solid var(--base-300);border-radius:12px;overflow:hidden;background:var(--base-100)}
+.side .k,.side .k2{display:block;font:500 .62rem/1.3 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.side .sh{padding:12px 14px;background:var(--base-200);border-bottom:1px solid var(--base-300);display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:baseline}
+.side .sh .m{grid-column:1;grid-row:2;font:500 .82rem/1.3 var(--mono);color:var(--ink)}
+.side .sh .k2{grid-column:2;grid-row:1/3;align-self:center;border:1px solid var(--base-300);border-radius:999px;padding:4px 8px;color:var(--muted)}
+.side .ro{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--base-300)}
+.side .ro>div{padding:10px 14px}.side .ro>div+div{border-left:1px solid var(--base-300)}
+.side .ro b{display:block;margin-top:4px;font:600 1.25rem/1 var(--mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.side .sec{padding:12px 14px}.side .sec+.sec{border-top:1px solid var(--base-300)}
+.fl,.lg{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:7px}
+.fl li{display:grid;grid-template-columns:3.2em 1fr auto auto;gap:10px;align-items:center;font-size:.86rem;animation:in .45s ease}
+.fl .t,.lg .t{font:500 .72rem/1.4 var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.fl .sv{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted)}
+.fl .sv i{width:8px;height:8px;border-radius:2px;background:var(--sev-medium)}
+.fl .sv.high i{background:var(--sev-high)}.fl .sv.critical i{background:var(--sev-critical)}.fl .sv.low i{background:var(--sev-low)}
+.fl .pc{font:500 .72rem/1 var(--mono);color:var(--muted);width:3ch;text-align:right}
+.lg li{display:grid;grid-template-columns:5.6em 1fr;gap:10px;font-size:.82rem;line-height:1.45;color:var(--ink);animation:in .45s ease}
+.lg li:nth-child(n+2){color:var(--muted)}
+.fl li.empty,.lg li.empty{display:block;font-size:.82rem;color:var(--faint)}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.rec,.fl li,.lg li,.track .mk{animation:none}.vbox{transition:none}}
+
+/* ---- Presentation mode ----------------------------------------------------
+   html.deck is set by script on screens big enough to present. Every section is a
+   full-screen slide; wheel, keys, swipe or the buttons play the next one. Without it
+   (phones, small windows, no script) the page is an ordinary document. */
+.deckctl,.deckprog{display:none}
+html.deck,html.deck body{height:100%;overflow:hidden;overscroll-behavior:none}
+html.deck body{padding:0}
+html.deck .wrap{max-width:none}
+html.deck .bar{position:fixed;left:0;right:0;top:0;margin:0;padding:0 24px}
+html.deck .deck{position:fixed;left:0;right:0;top:60px;bottom:0;overflow:hidden}
+html.deck .slide{position:absolute;inset:0;margin:0;padding:0;opacity:0;visibility:hidden;
+  transform:scale(1.06);filter:blur(10px);
+  transition:opacity .55s ease,transform .9s cubic-bezier(.2,.7,.1,1),filter .55s ease,visibility 0s linear .9s}
+html.deck .slide.before{transform:scale(.92)}
+html.deck .slide.on{opacity:1;visibility:visible;transform:none;filter:none;
+  transition:opacity .7s ease .2s,transform 1.1s cubic-bezier(.16,.8,.12,1) .12s,filter .7s ease .2s,visibility 0s}
+html.deck .slide>.sl{position:absolute;left:50%;top:calc(50% - 20px);width:min(1140px,calc(100vw - 64px));
+  transform:translate(-50%,-50%) scale(var(--k,1))}
+/* each slide's parts arrive one after another, like a keynote build */
+html.deck .slide>.sl>*{transition:opacity .7s ease var(--d,0s),transform 1s cubic-bezier(.16,.8,.12,1) var(--d,0s)}
+html.deck .slide:not(.on)>.sl>*{opacity:0;transform:translateY(34px);transition-delay:0s}
+html.deck .hero.launch{margin:0;padding:0;display:block}
+html.deck .hero.launch h1{margin:18px 0 20px}
+html.deck section h2{margin-top:0}
+html.deck section p.hint{margin-bottom:28px}
+html.deck .sl>.sub:first-child{margin-top:0;font-size:clamp(1.6rem,3.2vw,2.4rem);font-weight:700;letter-spacing:-.03em}
+html.deck .diagram{overflow:visible}
+html.deck .tblwrap{overflow:visible}
+html.deck footer{margin-top:40px}
+/* problem: the story plays one moment at a time, then the punchline lights word by word */
+html.deck #problem .story li{transition:opacity .5s ease,transform .6s cubic-bezier(.16,.8,.12,1)}
+html.deck #problem .story li.later{opacity:0;transform:translateY(16px)}
+html.deck #problem .story li.past{opacity:.38}
+html.deck #problem .punch{transition:opacity .4s}
+html.deck #problem .punch:not(.on){opacity:0}
+html.deck #problem .punch .w{color:var(--ink);opacity:.15;transition:opacity .35s ease calc(var(--wi,0) * .13s + .15s)}
+html.deck #problem .punch.on .w{opacity:1}
+/* architecture: the six steps light up in turn */
+html.deck .flowd .stp{transition:opacity .45s ease}
+html.deck .flowd .stp.later{opacity:.15}
+html.deck .flowd .stp.past{opacity:.55}
+html.deck .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
+/* controls */
+html.deck .deckctl{display:flex;align-items:center;gap:6px;position:fixed;right:20px;bottom:18px;z-index:40}
+.deckctl .count{font:500 .72rem/1 var(--mono);color:var(--faint);font-variant-numeric:tabular-nums;margin-right:6px}
+.deckctl .tbtn{margin:0}
+.deckctl .tbtn:disabled{opacity:.35;cursor:default}
+html.deck .deckprog{display:block;position:fixed;left:0;right:0;bottom:0;height:2px;z-index:40;background:var(--base-300)}
+.deckprog i{display:block;height:100%;width:0;background:var(--ink);transition:width .6s cubic-bezier(.2,.7,.1,1)}
+.bar nav a.cur{color:var(--ink);background:var(--base-200)}
+/* reduced motion: slides cut instead of zooming */
+html.deck.still .slide,html.deck.still .slide.on,html.deck.still .slide>.sl>*{transition:none;transform:none;filter:none}
+html.deck.still .slide>.sl{transform:translate(-50%,-50%) scale(var(--k,1))}
+html.deck.still .slide:not(.on)>.sl>*{opacity:1;transform:none}
+html.deck.still #problem .story li,html.deck.still #problem .punch .w,html.deck.still .flowd .stp{transition:none}
 
 /* ---- Architecture diagrams, recoloured to the dashboard tokens ------------
    Calls that leave the machine are dashed ink (the originals used amber). */
@@ -296,13 +364,6 @@ html.scrub [data-rise]{will-change:transform,opacity}
 .diagram .e-a{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-dasharray:6 4}
 .diagram .e-d{stroke:var(--muted);stroke-width:1.3;fill:none;stroke-dasharray:5 4}
 .diagram .ah,.diagram .ah-a{fill:var(--ink)} .diagram .ah-d{fill:var(--muted)} .diagram .dot{fill:var(--ink)}
-/* scroll scene: the six steps light up in turn */
-.flowd .stp{transition:opacity .35s ease}
-html.scrub .flowd .stp{opacity:.22}
-html.scrub .flowd .stp.past{opacity:.6}
-html.scrub .flowd .stp.now{opacity:1}
-html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
-
 /* demo video */
 .videobox{position:relative;width:100%;max-width:1080px;margin:6px auto 0;aspect-ratio:16/9;border:1px solid var(--base-300);border-radius:18px;overflow:hidden;background:var(--base-200);
   box-shadow:0 30px 100px color-mix(in oklch,var(--ink) 10%,transparent)}
@@ -344,15 +405,33 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
   </button>
 </div>
 
-<header class="hero launch" data-scene="hero">
- <div class="pin">
+<main class="deck" id="deck">
+<header class="hero launch slide" id="top" data-title="Sentinel Machines">
+ <div class="sl">
  <div class="htext">
   <span class="pill"><span class="dot"></span>Edge AI SJSUHack 2026 · HP ZGX Nano</span>
   <h1>Sentinel Machines.</h1>
   <p class="tagline">Your cameras already see theft. Now something is watching.</p>
   <p class="lede">A vision-language model on an HP ZGX Nano, in the store, names the incident and hands it to a person.</p>
  </div>
-  <figure class="shot"><img class="light" src="demo/app-analytics-light.jpg" width="2160" height="1350" alt="Sentinel Machines analytics: a local model on the GB10 and a cloud model analyse the same clip side by side, with live GB10 telemetry"><img class="dark" src="demo/app-analytics-dark.jpg" width="2160" height="1350" alt="Sentinel Machines analytics: a local model on the GB10 and a cloud model analyse the same clip side by side, with live GB10 telemetry"></figure>
+  <div class="stage" id="player">
+   <div class="pl">
+    <div class="vf">
+     <video id="hv" muted playsinline loop preload="auto" aria-label="Demo clip Shoplifting0"></video>
+     <div class="vboxes" id="hboxes"></div>
+     <span class="live"><span class="rec"></span>Live analysis · 1 model</span>
+     <span class="vmsg" id="hmsg" hidden>Clip unavailable</span>
+    </div>
+    <div class="tl"><div class="track" id="htrack"><i class="head" id="hhead"></i></div><span class="clock" id="hclock">0:00</span></div>
+    <div class="cap"><b>Shoplifting0</b> · UCF-Crime demo clip<span class="cl">UCF-Crime label · <b>Shoplifting</b></span></div>
+   </div>
+   <aside class="side" aria-live="off">
+    <div class="sh"><span class="k">Model</span><span class="m">sentinel-machines-v1</span><span class="k2">Cloud · OpenRouter</span></div>
+    <div class="ro"><div><span class="k">Windows</span><b id="hwin">0</b></div><div><span class="k">Last answer</span><b id="hlat">—</b></div><div><span class="k">Findings</span><b id="hfind">0</b></div></div>
+    <div class="sec"><span class="k">Latest findings</span><ul id="hfindings" class="fl"></ul></div>
+    <div class="sec"><span class="k">Scene log</span><ul id="hlog" class="lg"></ul></div>
+   </aside>
+  </div>
   <div class="stats">
     <div class="stat"><b>8 s</b><span>Every camera gets a fresh look every eight seconds</span></div>
     <div class="stat"><b>2.1 s</b><span>Median answer per window, Qwen3-VL on the GB10</span></div>
@@ -362,14 +441,13 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
  </div>
 </header>
 
-<section id="team">
+<section id="team" class="slide"><div class="sl">
   <h2>Team</h2>
   <p class="hint">San José State University · Edge AI SJSUHack 2026.</p>
   <div class="team" id="teamgrid"></div>
-</section>
+</div></section>
 
-<section id="problem">
-<div data-scene="problem"><div class="pin">
+<section id="problem" class="slide" data-steps="7"><div class="sl">
   <h2>Problem</h2>
   <ol class="story">
     <li><time>2:14 PM</time><p>A shopper slips a phone into their jacket. Camera 12 records it clearly.</p></li>
@@ -380,10 +458,10 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
     <li class="alt"><time>The alternative?</time><p>Streaming every camera to the cloud means shipping the store floor to someone else's servers, and paying for it.</p></li>
   </ol>
   <p class="punch"><span class="w">The</span> <span class="w">camera</span> <span class="w">saw</span> <span class="w">everything.</span> <b><span class="w">Nobody</span> <span class="w">was</span> <span class="w">watching.</span></b></p>
-</div></div>
+</div>
 </section>
 
-<section id="solution">
+<section id="solution" class="slide"><div class="sl">
   <h2>Solution</h2>
   <p class="hint">An on-site AI watches every camera and names what happened. A person decides.</p>
   <div class="probs">
@@ -405,10 +483,9 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
     <span class="cat" title="Concerning behaviour that fits none of the above.">Suspicious activity</span>
     <span class="cat" title="Measured as a count, never treated as an incident.">Queue tracking <i>· measured</i></span>
   </div>
-</section>
+</div></section>
 
-<section id="architecture">
-<div data-scene="arch"><div class="pin">
+<section id="architecture" class="slide" data-steps="6"><div class="sl">
   <h2>Architecture</h2>
   <p class="hint">Everything runs on one HP ZGX Nano. Only the dashed calls leave the machine.</p>
   <h3 class="sub">What happens to 8 seconds of video</h3>
@@ -453,7 +530,8 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
       <path class="e-d" d="M560 40C560 10 470 10 470 38" marker-end="url(#dflow-bd)"/>
       <text class="lab" x="515" y="14" text-anchor="middle">BAD JSON: RETRY ONCE</text>
     </svg></div>
-</div></div>
+</div></section>
+<section class="slide" data-nav="architecture"><div class="sl">
   <h3 class="sub">Who talks to whom</h3>
   <div class="diagram"><svg viewBox="0 130 1200 612" role="img" aria-label="The browser calls API routes on the Next.js server on the GB10. The server calls Qwen3-VL-30B-A3B on vLLM through zrt, YOLO for people boxes and pose, nvidia-smi for telemetry. A Hermes agent container reads the feed log through /api/mcp and posts briefings. Only OpenRouter and Twilio are outside the machine.">
       <defs>
@@ -574,6 +652,8 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
       <text class="t" x="1024" y="587">OpenRouter</text>
       <text class="s" x="1024" y="604">qwen3.8-flash, the agent</text>
     </svg></div>
+</div></section>
+<section class="slide" data-nav="architecture"><div class="sl">
   <h3 class="sub">Scaling out: from one GB10 to a fleet of stores</h3>
   <p class="hint">The same pipeline, event-driven in the cloud: each layer scales on its own signal.</p>
   <div class="diagram"><svg viewBox="0 0 1400 792" role="img" aria-label="Six layers on AWS: stores and users; API Gateway, CloudFront, WAF and ALB at the edge; stateless services on EKS; Amazon MSK as the event bus; stream processors and autoscaled GPU pools running Qwen3-VL-30B-A3B and YOLO; and S3, Aurora, Redis, OpenSearch and an Iceberg lake for data. A Hermes watch agent reads suspected and reviewed incidents and sends briefings through live push. Observability, security and the model loop sit to the right.">
@@ -774,18 +854,20 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
       <path class="e-a" d="M1372 535H1390V56H1202" marker-end="url(#dcloud-pa)"/>
       <text class="lab-a" x="1384" y="300" transform="rotate(-90 1384 300)" text-anchor="middle">LEAVES AWS</text>
     </svg></div>
-</section>
+</div></section>
 
-<section id="metrics">
+<section id="metrics" class="slide"><div class="sl">
   <h2>Metrics</h2>
   <p class="hint">Every number below was measured from our HP ZGX Nano against the UCF-Crime test split: local models on the box, Gemini through its API.</p>
   <div class="stats" style="margin-top:8px">
     <div class="stat"><b>$85K → $251</b><span>Projected cloud cost per store per year (30 cameras, 24/7): Sentinel Machines v1 on every window vs our cascade. That is $236 vs $0.70 per camera-month, or ~$8.5M vs ~$25K for a 100-store chain</span></div>
     <div class="stat"><b>99.7%</b><span>Fewer cloud calls: 450 windows per camera-hour become 0.3–1.3 alerts</span></div>
-    <div class="stat"><b>0 / h</b><span>False alarms on legitimate shopping (MERL shoppers handling products), detector</span></div>
+    <div class="stat"><b>~12</b><span>Cameras watched live by one model on the GB10: Qwen3-VL-8B answers a window in 0.64 s batched, and each camera needs one every 8 s</span></div>
     <div class="stat"><b>38 J</b><span>Energy per 8-second window, Qwen3.5-9B on the GB10 with 4 in parallel (61 J one at a time; 8 GB, $0)</span></div>
   </div>
 
+</div></section>
+<section class="slide" data-nav="metrics"><div class="sl">
   <h3 class="sub">Naming the crime: cloud vs on the GB10</h3>
   <p style="margin-bottom:14px">Same 277 eight-second windows from 13 crime classes and normal footage, same prompt, 8 frames each.</p>
   <div class="tblwrap"><table class="tbl split">
@@ -803,15 +885,18 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
   </table></div>
   <p class="src">*Projected: 30 cameras, 24/7, every 8-second window sent to the model, at the cost OpenRouter billed per window in this test. Cloud runs the model through OpenRouter; Local runs it on-device in the store (Qwen3.5-9B and Qwen3.8-27B locally in 4-bit). Qwen3.5-9B's cloud provider timed out. Local timings are batch 1 unless noted. Small classes (1–5 windows) make per-class figures noisy; overall differences under ~8 points are within noise.</p>
 
+</div></section>
+<section class="slide" data-nav="metrics"><div class="sl">
   <h3 class="sub">What we learned</h3>
   <div class="probs">
-    <div><span class="n">01</span><h3>The cascade beats either half</h3><p>The on-box detector is quiet (0.7% of normal videos alarmed, 0.17–0.33 alarms per hour) but misses exact moments; the VLM names crimes but is slow and, in the cloud, costly. Screening first, naming second, keeps both strengths.</p></div>
-    <div><span class="n">02</span><h3>Fine-tuning needs labels, not just GPUs</h3><p>On 11 hand-labelled theft videos, fine-tuned VideoMAE did not beat frozen features (frame AUROC 0.852 frozen vs 0.78–0.80, paired bootstrap, 3 seeds), though LoRA lifted recall at 1 false alarm an hour from 3% to 19%.</p></div>
-    <div><span class="n">03</span><h3>Local is private and cheap; cloud is sharper</h3><p>Gemini names 64% of crimes; Sentinel Machines v1, running on the box, names 57% with no footage leaving the store. Our roadmap closes the gap with more labelled incidents, not bigger models.</p></div>
+    <div><span class="n">01</span><h3>Benchmark the deployment, not the model name</h3><p>The same weights gave different answers depending on where they ran. Qwen3-VL-8B false-alarmed 9.5% of normal clips through a cloud provider and 4.1% on the box; Qwen3.8-27B named 28.7% vs 24.0% and took 9.49 s vs 2.84 s. Provider, quantisation and serving stack all move the numbers, so every candidate is scored through our own pipeline on our own clips.</p></div>
+    <div><span class="n">02</span><h3>Our biggest model got more cautious, not more accurate</h3><p>Qwen3.8-27B named the fewest crimes (24–29%) but almost never raised a false alarm (0–1.4%); Qwen3-VL-8B named more (37–40%) and alarmed more (4–10%). Picking a model means picking an operating point: the screener should catch everything, the model that pages a guard should rarely be wrong. That split is why the system is a cascade.</p></div>
+    <div><span class="n">03</span><h3>Models spot theft videos, not the moment of theft</h3><p>Frozen video features separate theft footage from normal footage (frame AUROC 0.852), but inside a theft video none of the seven detector setups we tested, frozen or fine-tuned, could tell the seconds of concealment from the rest (AUROC 0.48–0.58, where 0.5 is chance). Fine-tuning on 11 hand-labelled videos didn't fix it (0.78–0.80). So a person reviews the whole window, and the next investment is hand-marked theft times, not bigger GPUs.</p></div>
+    <div><span class="n">04</span><h3>Batching is what makes one box enough</h3><p>Qwen3-VL-8B takes 2.93 s per window one at a time but 0.64 s per window batched. At one window every 8 seconds per camera, that is about 12 cameras in real time on one model instance, where batch 1 covers under 3. Throughput per box, not latency per call, decides how many stores the edge can serve.</p></div>
   </div>
-</section>
+</div></section>
 
-<section id="edge">
+<section id="edge" class="slide"><div class="sl">
   <h2>What sets us apart</h2>
   <div class="probs">
     <div><span class="n">01</span><h3>Footage never leaves the building</h3><p>Every frame is analysed on the HP ZGX Nano (NVIDIA GB10) inside the store, not in a third-party data centre. CCTV of customers and staff is some of the most sensitive data a shop holds, and with us it stays on the premises. Recordings and review decisions are stored locally too, so there's no central server holding it all.</p></div>
@@ -819,25 +904,33 @@ html.scrub .flowd .stp.now rect{stroke:var(--ink);stroke-width:2}
     <div><span class="n">03</span><h3>Faster than real time, with or without internet</h3><p>The GB10 analyses each 8-second window of video in a median 2.1 seconds, about 4× faster than the footage plays (163 windows in 146 s). Because it runs on site, there are no network outages, API rate limits or provider downtime. That matters when a detection may need to trigger a 911 call.</p></div>
     <div><span class="n">04</span><h3>An AI analyst on watch, not a flood of alerts</h3><p>Other systems send a ping for every detection until staff stop reading them. Our Hermes agent runs on the edge box and reviews every feed every 5 minutes. It merges repeated detections, drops low-confidence and already-dismissed events, and posts a briefing you can read in 20 seconds: what's happening, what needs attention now, and what's worth knowing. Every hour it adds a digest of patterns, such as the same crime repeating at one store or a camera going silent. Every claim has to cite a real incident ID, and the server rejects anything it can't verify. The agent can't send alerts or change reviews, so a human always makes the final call.</p></div>
   </div>
-</section>
+</div></section>
 
-<section id="demo">
+<section id="demo" class="slide"><div class="sl">
   <h2>Demo</h2>
   <p class="hint">Sentinel Machines running on the HP ZGX Nano.</p>
   <div class="videobox">
-    <iframe src="https://www.youtube-nocookie.com/embed/Mi7Q1wsWgcw?rel=0" title="Sentinel Machines demo video"
+    <iframe src="https://www.youtube-nocookie.com/embed/Mi7Q1wsWgcw?rel=0&amp;enablejsapi=1" title="Sentinel Machines demo video"
       loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen
       referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </div>
   <p class="src" style="text-align:center"><a href="https://youtu.be/Mi7Q1wsWgcw" target="_blank" rel="noopener noreferrer">Watch on YouTube</a></p>
-</section>
-
 
 <footer>
   Sentinel Machines · KryptonxWatch. Everything runs on one HP ZGX Nano (NVIDIA GB10).
   Demo footage from <a href="https://www.crcv.ucf.edu/projects/real-world/">UCF-Crime</a>, research use.
   Detections are suspected until a person reviews them.
 </footer>
+</div></section>
+</main>
+<div class="deckctl" aria-label="Slides" role="group">
+  <span class="count" id="dcount" aria-live="polite">1 / 1</span>
+  <button class="tbtn" id="dprev" aria-label="Previous slide" title="Previous (↑)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+  <button class="tbtn" id="dnext" aria-label="Next slide" title="Next (↓, Space)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+</div>
+<div class="deckprog" aria-hidden="true"><i id="dprog"></i></div>
+
+
 
 </div>
 
@@ -921,44 +1014,141 @@ document.getElementById("theme").addEventListener("click",()=>{
 
 
 <script>
-// Scroll-scrubbed scenes: progress is recomputed every frame from the scroll position,
-// so scrolling back rewinds. Skipped under reduced motion or on very short windows.
+// ---- Hero: the app's live analysis, replayed ---------------------------------
+// The clip plays from the app's own /api/demo-clips route. RUN is one real pass of this
+// clip through /api/analyze (sentinel-machines-v1, 2026-09-25): four frames every two
+// seconds, one window per eight seconds, the latency each answer actually took. Each
+// answer appears at the video time it arrived in that run, as it does on /analytics.
 (() => {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches || innerHeight < 520) return;
-  const root = document.documentElement; root.classList.add("scrub");
-  const BAR = 60, clamp = v => Math.max(0, Math.min(1, v));
-  const prog = el => { const r = el.getBoundingClientRect(), len = r.height - (innerHeight - BAR); return len > 0 ? clamp((BAR - r.top) / len) : 0; };
-
-  const hero = document.querySelector('[data-scene="hero"]');
-  const htext = hero.querySelector(".htext"), shot = hero.querySelector(".shot"), stats = hero.querySelector(".stats");
-  const prob = document.querySelector('[data-scene="problem"]'), items = [...prob.querySelectorAll(".story li")];
-  const punch = prob.querySelector(".punch"), words = [...punch.querySelectorAll(".w")];
-  const arch = document.querySelector('[data-scene="arch"]');
-  // Everything else rises into place with the scroll (and sinks back when scrolling up).
-  const risers = [...document.querySelectorAll("#team h2, #team .hint, #team .member, #solution h2, #solution .hint, #solution .probs > div, #solution .sub, #solution .cat, #architecture > .sub, #architecture > .diagram, #architecture > p.hint, #metrics h2, #metrics .hint, #metrics .stat, #metrics .sub, #metrics .tblwrap, #metrics .src, #metrics .probs > div, #edge h2, #edge .probs > div, #demo h2, #demo .hint, #demo .videobox, #demo .src")];
-  risers.forEach(el => el.setAttribute("data-rise", ""));
-
-  const frame = () => {
-    raf = 0; const vh = innerHeight;
-    // Hero: title shrinks away while the product shot rises and grows to fill the stage.
-    const p = prog(hero), t = clamp(p / 0.3), a = clamp(p / 0.5), st = clamp((p - 0.58) / 0.22);
-    htext.style.opacity = 1 - t; htext.style.transform = `translateY(${-t * 90}px) scale(${1 - t * 0.14})`;
-    shot.style.transform = `translate(-50%, calc(-50% + ${(1 - a) * 0.5 * vh}px)) scale(${0.7 + 0.3 * a})`;
-    stats.style.opacity = st; stats.style.transform = `translate(-50%, ${(1 - st) * 24}px)`;
-    // Problem: one moment of the story at a time, then the punchline lights word by word.
-    const n = items.length, step = prog(prob) * (n + 2.2), cur = Math.min(n - 1, Math.floor(step));
-    items.forEach((li, i) => { li.classList.toggle("now", i === cur && step < n + 0.4); li.classList.toggle("past", i < cur || step >= n + 0.4); });
-    const q = clamp((step - n) / 1.8); punch.classList.toggle("on", step > n - 0.2);
-    words.forEach((w, i) => w.classList.toggle("lit", i < Math.round(q * words.length)));
-    // Architecture: the six steps light up one after another.
-    const stps = [...arch.querySelectorAll(".stp")], k = Math.min(stps.length - 1, Math.floor(prog(arch) * stps.length));
-    stps.forEach((g, i) => { g.classList.toggle("now", i === k); g.classList.toggle("past", i < k); });
-    // Risers: 0 when an element's top is at the bottom edge, 1 once it is 30% up the screen.
-    risers.forEach((el, i) => { const r = el.getBoundingClientRect(); const e = clamp((vh - r.top - (i % 5) * 18) / (vh * 0.3));
-      el.style.opacity = e; el.style.transform = `translateY(${(1 - e) * 56}px)`; });
+  const RUN = [{"s":0,"e":7,"ms":1287,"sum":"A man appears to be examining jewelry at a counter, possibly as a customer or employee.","inc":[]},{"s":7,"e":15,"ms":1394,"sum":"A man appears to be examining jewelry at a counter, possibly trying to steal it, while another person is distracted.","inc":[{"c":"Suspicious activity","p":0.7,"sev":"medium","b":[0.3,0.38,0.3,0.31]}]},{"s":15,"e":23,"ms":1475,"sum":"A man at a counter appears to be examining jewelry, then puts something into his pocket, and then continues to examine the jewelry.","inc":[{"c":"Shoplifting","p":0.8,"sev":"high","b":[0.3,0.23,0.38,0.46]}]},{"s":23,"e":31,"ms":1270,"sum":"A man at a counter appears to be examining jewelry, then puts something in his pocket, and then places an item on the counter.","inc":[{"c":"Shoplifting","p":0.8,"sev":"high","b":[0.3,0.398,0.29,0.282]}]}];
+  const $ = id => document.getElementById(id);
+  const v = $("hv"), boxes = $("hboxes"), track = $("htrack"), head = $("hhead");
+  const fmt = t => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  const cat = c => c.toLowerCase();
+  // An answer lands once the window's last frame is taken (end - 1 s) plus the measured latency.
+  RUN.forEach(w => { w.at = w.e - 1 + w.ms / 1000; });
+  let shown = -1, dur = 32;
+  const render = t => {
+    head.style.left = `${Math.min(100, t / dur * 100)}%`; $("hclock").textContent = fmt(t);
+    const n = RUN.filter(w => w.at <= t).length;
+    if (n === shown) return; shown = n;
+    const got = RUN.slice(0, n), finds = got.flatMap(w => w.inc.filter(i => i.p >= 0.5).map(i => ({ ...i, s: w.s })));
+    $("hwin").textContent = n; $("hlat").textContent = n ? `${(got[n - 1].ms / 1000).toFixed(1)} s` : "—"; $("hfind").textContent = finds.length;
+    $("hfindings").innerHTML = finds.length ? finds.slice().reverse().slice(0, 3).map(f =>
+      `<li><span class="t">${fmt(f.s)}</span><span>Suspected ${cat(f.c)}</span><span class="sv ${f.sev}"><i></i>${f.sev[0].toUpperCase() + f.sev.slice(1)}</span><span class="pc">${Math.round(f.p * 100)}%</span></li>`).join("")
+      : `<li class="empty">Findings the model is at least 50% sure of appear here as the clip plays.</li>`;
+    $("hlog").innerHTML = got.length ? got.slice().reverse().slice(0, 2).map(w => `<li><span class="t">${fmt(w.s)}–${fmt(w.e)}</span><span>${w.sum}</span></li>`).join("")
+      : `<li class="empty">Every 8 s of video goes to the model.</li>`;
+    // boxes stay up for a window and a bit after the answer, like the live run
+    const last = got.filter(w => w.inc.some(i => i.b && i.p >= 0.5)).pop();
+    boxes.innerHTML = last && t < last.at + 10 ? last.inc.filter(i => i.b && i.p >= 0.5).map(i =>
+      `<div class="vbox" style="left:${i.b[0] * 100}%;top:${i.b[1] * 100}%;width:${i.b[2] * 100}%;height:${i.b[3] * 100}%"><span>${i.c}</span></div>`).join("") : "";
+    track.querySelectorAll(".mk").forEach(m => m.remove());
+    got.forEach(w => w.inc.filter(i => i.p >= 0.5).forEach(i => track.insertAdjacentHTML("beforeend",
+      `<span class="mk ${i.sev === "medium" ? "med" : ""}" style="left:${w.s / dur * 100}%;width:${(w.e - w.s) / dur * 100}%"></span>`)));
   };
-  let raf = 0; const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); frame();
+  let raf = 0;
+  const tick = () => { render(v.currentTime || 0); raf = v.paused ? 0 : requestAnimationFrame(tick); };
+  v.addEventListener("play", () => { if (!raf) raf = requestAnimationFrame(tick); });
+  v.addEventListener("seeked", () => { shown = -1; render(v.currentTime); });
+  v.addEventListener("loadedmetadata", () => { if (v.duration) dur = v.duration; });
+  // Looping: the run starts over with the clip.
+  v.addEventListener("timeupdate", () => { if (v.currentTime < 0.3) shown = -1; });
+  render(0);
+  // Same route and same fetch-as-blob as components/live-run.tsx.
+  fetch("/api/demo-clips/Shoplifting0.mp4").then(r => { if (!r.ok) throw 0; return r.blob(); }).then(b => {
+    v.src = URL.createObjectURL(b);
+    if (!document.documentElement.classList.contains("deck") || document.getElementById("top").classList.contains("on")) v.play().catch(() => {});
+  }).catch(() => { $("hmsg").hidden = false; });
+  window.heroVideo = on => { if (!v.src) return; on ? v.play().catch(() => {}) : v.pause(); };
+})();
+
+// ---- Presentation mode -----------------------------------------------------------
+// One slide on screen at a time. Wheel or trackpad, arrow keys, Space, Page Up/Down,
+// swipes and the buttons step through the slides and the builds inside them.
+(() => {
+  if (innerWidth < 900 || innerHeight < 560) return; // phones and small windows keep the plain page
+  const root = document.documentElement;
+  root.classList.add("deck");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) root.classList.add("still");
+  const deck = document.getElementById("deck"), slides = [...deck.querySelectorAll(":scope > .slide")];
+  const links = [...document.querySelectorAll('.bar nav a[href^="#"]')];
+  const navOf = el => el.id || el.dataset.nav || "top";
+  slides.forEach(sl => [...sl.querySelector(".sl").children].forEach((c, i) => c.style.setProperty("--d", `${Math.min(0.25 + i * 0.09, 0.8)}s`)));
+  document.querySelectorAll("#problem .punch .w").forEach((w, i) => w.style.setProperty("--wi", i));
+
+  // Builds: Problem (six moments, then the punchline) and the six architecture steps.
+  const builds = {
+    problem: (sl, k) => { const li = [...sl.querySelectorAll(".story li")];
+      li.forEach((el, i) => { el.classList.toggle("later", i > k); el.classList.toggle("past", i < k || k >= li.length); });
+      sl.querySelector(".punch").classList.toggle("on", k >= li.length); },
+    architecture: (sl, k) => sl.querySelectorAll(".flowd .stp").forEach((g, i) => { g.classList.toggle("later", i > k); g.classList.toggle("past", i < k); g.classList.toggle("now", i === k); }),
+  };
+  const steps = sl => Number(sl.dataset.steps || 1);
+
+  // Fit: a slide that is taller than the stage is scaled down (and given more width) until it fits.
+  const fit = () => {
+    const H = deck.clientHeight - 84, base = Math.min(1140, innerWidth - 64);
+    slides.forEach(sl => { const inner = sl.querySelector(".sl"); let k = 1;
+      for (let i = 0; i < 3; i++) { inner.style.width = `${base / k}px`; const h = inner.offsetHeight; k = Math.max(0.45, Math.min(1, H / h)); }
+      inner.style.width = `${base / k}px`; inner.style.setProperty("--k", k); });
+  };
+
+  let cur = -1, step = 0;
+  const yt = document.querySelector("#demo iframe");
+  const go = (i, k = 0) => {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    const changed = i !== cur; cur = i; step = Math.max(0, Math.min(steps(slides[i]) - 1, k));
+    slides.forEach((sl, j) => { sl.classList.toggle("on", j === i); sl.classList.toggle("before", j < i); sl.setAttribute("aria-hidden", j === i ? "false" : "true"); });
+    const sl = slides[i]; builds[sl.id]?.(sl, step);
+    if (changed) {
+      window.heroVideo?.(sl.id === "top");
+      if (sl.id !== "demo") yt?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
+      const nav = navOf(sl); links.forEach(a => a.classList.toggle("cur", a.getAttribute("href") === `#${nav}`));
+      try { history.replaceState(null, "", nav === "top" && i === 0 ? location.pathname : `#${sl.id || `${nav}-${i}`}`); } catch (e) {}
+    }
+    document.getElementById("dcount").textContent = `${i + 1} / ${slides.length}`;
+    document.getElementById("dprev").disabled = i === 0 && step === 0;
+    document.getElementById("dnext").disabled = i === slides.length - 1 && step >= steps(sl) - 1;
+    const total = slides.reduce((n, s) => n + steps(s), 0), done = slides.slice(0, i).reduce((n, s) => n + steps(s), 0) + step + 1;
+    document.getElementById("dprog").style.width = `${done / total * 100}%`;
+  };
+  const next = () => step < steps(slides[cur]) - 1 ? go(cur, step + 1) : go(cur + 1, 0);
+  const prev = () => step > 0 ? go(cur, step - 1) : cur > 0 && go(cur - 1, steps(slides[cur - 1]) - 1);
+  const byHash = h => { const id = decodeURIComponent(h.slice(1)); if (!id) return 0;
+    const m = id.match(/^(\w+)-(\d+)$/); if (m) return Number(m[2]);
+    const j = slides.findIndex(s => s.id === id); return j < 0 ? slides.findIndex(s => s.dataset.nav === id) : j; };
+
+  // Wheel and trackpad: one gesture moves one step; the inertia tail that follows is ignored.
+  let acc = 0, lastMove = 0, lastWheel = 0;
+  addEventListener("wheel", e => {
+    if (e.ctrlKey) return; // pinch-zoom
+    e.preventDefault(); const now = performance.now(), gap = now - lastWheel; lastWheel = now;
+    if (now - lastMove < 650 || (gap < 90 && now - lastMove < 1400)) { acc = 0; return; }
+    acc += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (Math.abs(acc) > 28) { acc > 0 ? next() : prev(); acc = 0; lastMove = now; }
+  }, { passive: false });
+  addEventListener("keydown", e => {
+    if (e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.("input, textarea, select")) return;
+    const onControl = e.target.closest?.("button, a");
+    if (["ArrowDown", "ArrowRight", "PageDown"].includes(e.key) || (e.key === " " && !e.shiftKey && !onControl)) { e.preventDefault(); next(); }
+    else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key) || (e.key === " " && e.shiftKey && !onControl)) { e.preventDefault(); prev(); }
+    else if (e.key === "Home") { e.preventDefault(); go(0); }
+    else if (e.key === "End") { e.preventDefault(); go(slides.length - 1); }
+  });
+  let tx = 0, ty = 0;
+  addEventListener("touchstart", e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  addEventListener("touchend", e => { const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 50) (Math.abs(dy) > Math.abs(dx) ? dy : dx) < 0 ? next() : prev(); }, { passive: true });
+  document.getElementById("dnext").addEventListener("click", next);
+  document.getElementById("dprev").addEventListener("click", prev);
+  document.addEventListener("click", e => { const a = e.target.closest('a[href^="#"]'); if (!a) return;
+    const j = byHash(a.getAttribute("href")); if (j >= 0) { e.preventDefault(); go(j); } });
+  addEventListener("resize", fit);
+  document.fonts?.ready.then(fit);
+  document.querySelectorAll("#deck img").forEach(im => im.addEventListener("load", fit));
+  new MutationObserver(fit).observe(document.getElementById("teamgrid"), { childList: true, subtree: true });
+  fit(); go(Math.max(0, byHash(location.hash)), 0);
 })();
 </script>
 </body>
